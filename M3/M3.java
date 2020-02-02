@@ -35,58 +35,67 @@ public class M3 extends Application {
 
         Image image = new Image("SpaceTraderBackground.jpeg");
         ImageView mv = new ImageView(image);
-        mv.setFitHeight(300);
-        mv.setFitWidth(300);
+        mv.setFitHeight(600);
+        mv.setFitWidth(600);
         mv.setLayoutX(0);
         mv.setLayoutY(0);
 
-        Text t = new Text(25, 50, "SPACE TRADER");
+        Text t = new Text(125, 100, "SPACE TRADER");
         t.setFill(Color.YELLOW);
-        t.setFont(new Font(40));
+        t.setFont(new Font(60));
 
         Button playButton = new Button();
+        playButton.setPrefHeight(100);
+        playButton.setPrefWidth(100);
         playButton.setText("Play");
         playButton.setTextFill(Color.YELLOW);
+        playButton.setStyle("-fx-font-size:90");
         playButton.setStyle("-fx-background-color: transparent;");
-        playButton.setLayoutX(100);
-        playButton.setPrefHeight(20);
-        playButton.setPrefWidth(100);
-        playButton.setLayoutY(60);
+        playButton.setLayoutX(250);
+        playButton.setLayoutY(400);
 
         Group grp = new Group();
         grp.getChildren().add(mv);
         grp.getChildren().add(t);
         grp.getChildren().add(playButton);
 
-        Scene scene1 = new Scene(grp, 300, 300);
+        Scene scene1 = new Scene(grp, 600, 600);
 
 
         //STAGE TWO
         Image image2 = new Image("SpaceTraderBackground.jpeg");
         ImageView mv2 = new ImageView(image2);
+        mv2.setFitHeight(600);
+        mv2.setFitWidth(600);
+        mv2.setLayoutX(0);
+        mv2.setLayoutY(0);
+
+        Text t2 = new Text(125, 100, "SPACE TRADER");
+        t2.setFill(Color.YELLOW);
+        t2.setFont(new Font(60));
 
         TextField name = new TextField();
         name.setPromptText("Enter player name here!");
-        name.setLayoutX(0);
-        name.setPrefHeight(20);
-        name.setPrefWidth(300);
-        name.setLayoutY(0);
+        name.setLayoutX(200);
+        name.setPrefHeight(50);
+        name.setPrefWidth(200);
+        name.setLayoutY(250);
 
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.getItems().addAll("Easy", "Medium", "Hard");
         choiceBox.setValue("Please choose a difficulty level!");
-        choiceBox.setLayoutX(100);
-        choiceBox.setPrefHeight(20);
+        choiceBox.setLayoutX(250);
+        choiceBox.setPrefHeight(50);
         choiceBox.setPrefWidth(100);
-        choiceBox.setLayoutY(30);
+        choiceBox.setLayoutY(350);
 
 
         Button startButton = new Button();
         startButton.setText("Start Game");
-        startButton.setLayoutX(100);
-        startButton.setPrefHeight(20);
+        startButton.setLayoutX(250);
+        startButton.setPrefHeight(50);
         startButton.setPrefWidth(100);
-        startButton.setLayoutY(60);
+        startButton.setLayoutY(450);
 
         startButton.setOnAction((e) -> {
             getDifficultyChoice(choiceBox);
@@ -110,7 +119,8 @@ public class M3 extends Application {
         grp2.getChildren().add(name);
         grp2.getChildren().add(choiceBox);
         grp2.getChildren().add(startButton);
-        Scene scene2 = new Scene(grp2, 300, 300);
+        grp2.getChildren().add(t2);
+        Scene scene2 = new Scene(grp2, 600, 600);
         playButton.setOnAction(e -> window.setScene(scene2));
 
         //Starting the demo
