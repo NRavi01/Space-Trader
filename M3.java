@@ -1,7 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -21,7 +17,11 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
 
 public class M3 extends Application {
     private int difficultyLevel = 0;
@@ -30,12 +30,40 @@ public class M3 extends Application {
     }
 
     public void start(Stage primaryStage) throws Exception {
-        Image image = new Image("file: SpaceTraderBackground.jpeg");
+        Stage window = primaryStage;
+        //STAGE 1
+
+        Image image = new Image("SpaceTraderBackground.jpeg");
         ImageView mv = new ImageView(image);
-        mv.setFitHeight(200);
-        mv.setFitWidth(200);
+        mv.setFitHeight(300);
+        mv.setFitWidth(300);
         mv.setLayoutX(0);
         mv.setLayoutY(0);
+
+        Text t = new Text(25, 50, "SPACE TRADER");
+        t.setFill(Color.YELLOW);
+        t.setFont(new Font(40));
+
+        Button playButton = new Button();
+        playButton.setText("Play");
+        playButton.setTextFill(Color.YELLOW);
+        playButton.setStyle("-fx-background-color: transparent;");
+        playButton.setLayoutX(100);
+        playButton.setPrefHeight(20);
+        playButton.setPrefWidth(100);
+        playButton.setLayoutY(60);
+
+        Group grp = new Group();
+        grp.getChildren().add(mv);
+        grp.getChildren().add(t);
+        grp.getChildren().add(playButton);
+
+        Scene scene1 = new Scene(grp, 300, 300);
+
+
+        //STAGE TWO
+        Image image2 = new Image("SpaceTraderBackground.jpeg");
+        ImageView mv2 = new ImageView(image2);
 
         TextField name = new TextField();
         name.setPromptText("Enter player name here!");
@@ -76,14 +104,18 @@ public class M3 extends Application {
             }
 
         });
-        Group grp = new Group();
-        grp.getChildren().add(mv);
-        grp.getChildren().add(name);
-        grp.getChildren().add(choiceBox);
-        grp.getChildren().add(startButton);
-        Scene scene = new Scene(grp, 300, 300);
+
+        Group grp2 = new Group();
+        grp2.getChildren().add(mv2);
+        grp2.getChildren().add(name);
+        grp2.getChildren().add(choiceBox);
+        grp2.getChildren().add(startButton);
+        Scene scene2 = new Scene(grp2, 300, 300);
+        playButton.setOnAction(e -> window.setScene(scene2));
+
+        //Starting the demo
+        window.setScene(scene1);
         primaryStage.setTitle("Space Trader");
-        primaryStage.setScene(scene);
         primaryStage.show();
     }
 
