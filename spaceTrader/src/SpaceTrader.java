@@ -1,6 +1,8 @@
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -20,9 +22,12 @@ import javafx.stage.Stage;
 import java.io.FileInputStream;
 
 
-public class spaceTrader extends Application {
+public class SpaceTrader extends Application {
     private String playerName;
     private SimpleIntegerProperty value = new SimpleIntegerProperty(this, "value");
+    private int skillPoints = 0;
+    private int difficultyLevel = 0;
+    private int[] points = new int[4];
 
     public SpaceTrader() {
     }
@@ -71,17 +76,17 @@ public class spaceTrader extends Application {
         mv2.setLayoutX(0);
         mv2.setLayoutY(0);
 
-        Text t2 = new Text(100, 200, "SPACE TRADER");
+        Text t2 = new Text(100, 100, "SPACE TRADER");
         t2.setFill(Color.YELLOW);
 //        t2.setFont(transformers_medium);
         t2.setFont(new Font(60));
 
         TextField name = new TextField();
-        name.setText("Enter player name here!");
+        name.setPromptText("Enter player name here!");
         name.setLayoutX(200);
         name.setPrefHeight(50);
         name.setPrefWidth(200);
-        name.setLayoutY(250);
+        name.setLayoutY(150);
 
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.getItems().addAll("Easy", "Medium", "Hard");
@@ -89,16 +94,106 @@ public class spaceTrader extends Application {
         choiceBox.setLayoutX(250);
         choiceBox.setPrefHeight(50);
         choiceBox.setPrefWidth(100);
-        choiceBox.setLayoutY(350);
+        choiceBox.setLayoutY(250);
 
+        HBox pilotBox = new HBox();
+        pilotBox.setLayoutX(50);
+        pilotBox.setLayoutY(350);
+        Text pilot = new Text(50, 350, "Pilot  \t");
+        pilot.setFill(Color.YELLOW);
+        pilot.setFont(new Font(15));
+        Slider pilotSlider = new Slider(0, 10, 0);
+        pilotSlider.setPrefWidth(400);
+        pilotSlider.setShowTickMarks(true);
+        pilotSlider.setMajorTickUnit(1);
+        pilotSlider.setMinorTickCount(0);
+        pilotSlider.setBlockIncrement(10);
+        pilotSlider.setSnapToTicks(true);
+        points[0] = (int) pilotSlider.getValue();
+        Label pilotLabel = new Label("0");
+        pilotLabel.setTextFill(Color.YELLOW);
+        pilotSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1){
+                pilotLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                points[0] = t1.intValue();
+            }
+        });
+        pilotBox.getChildren().addAll(pilot, pilotSlider, pilotLabel);
+
+        HBox fighterBox = new HBox();
+        fighterBox.setLayoutX(50);
+        fighterBox.setLayoutY(400);
+        Text fighter = new Text(50, 350, "Fighter \t");
+        fighter.setFill(Color.YELLOW);
+        fighter.setFont(new Font(15));
+        Slider fighterSlider = new Slider(0, 10, 0);
+        fighterSlider.setPrefWidth(400);
+        fighterSlider.setShowTickMarks(true);
+        fighterSlider.setMajorTickUnit(1);
+        fighterSlider.setMinorTickCount(0);
+        fighterSlider.setBlockIncrement(10);
+        fighterSlider.setSnapToTicks(true);
+        points[1] = (int) fighterSlider.getValue();
+        fighterBox.getChildren().addAll(fighter, fighterSlider);
+
+        HBox engineerBox = new HBox();
+        engineerBox.setLayoutX(50);
+        engineerBox.setLayoutY(450);
+        Text engineer = new Text(50, 350, "Engineer\t");
+        engineer.setFill(Color.YELLOW);
+        engineer.setFont(new Font(15));
+        Slider engineerSlider = new Slider(0, 10, 0);
+        engineerSlider.setPrefWidth(400);
+        engineerSlider.setShowTickMarks(true);
+        engineerSlider.setMajorTickUnit(1);
+        engineerSlider.setMinorTickCount(0);
+        engineerSlider.setBlockIncrement(10);
+        engineerSlider.setSnapToTicks(true);
+        points[2] = (int) engineerSlider.getValue();
+        engineerBox.getChildren().addAll(engineer, engineerSlider);
+
+
+        HBox traderBox = new HBox();
+        traderBox.setLayoutX(50);
+        traderBox.setLayoutY(500);
+        Text trader = new Text(50, 350, "Trader  \t");
+        trader.setFill(Color.YELLOW);
+        trader.setFont(new Font(15));
+        Slider traderSlider = new Slider(0, 10, 0);
+        traderSlider.setPrefWidth(400);
+        traderSlider.setShowTickMarks(true);
+        traderSlider.setMajorTickUnit(1);
+        traderSlider.setMinorTickCount(0);
+        traderSlider.setBlockIncrement(10);
+        traderSlider.setSnapToTicks(true);
+        points[3] = (int) traderSlider.getValue();
+        traderBox.getChildren().addAll(trader, traderSlider);
 
         Button startButton = new Button("Start Game");
         startButton.setTextFill(Color.YELLOW);
 //        startButton.setFont(transformers_small);
         startButton.setFont(new Font(20));
         startButton.setStyle("-fx-background-color: transparent;");
-        startButton.setLayoutX(250);
-        startButton.setLayoutY(450);
+        startButton.setPrefWidth(150);
+        startButton.setLayoutX(225);
+        startButton.setLayoutY(550);
+
+        startButton.setOnAction((e) -> {
+            getDifficultyChoice(choiceBox);
+            String playerName = name.getText();
+            name.clear();
+
+            try {
+                if (playerName == null || playerName.equals("")) {
+                    throw new IllegalArgumentException("Name cannot be blank");
+                }
+
+                System.out.printf("Game Started! %n%s has entered the game", playerName);
+            } catch (IllegalArgumentException var4) {
+                System.out.println(var4.getMessage());
+            }
+        });
 
         Group grp2 = new Group();
         grp2.getChildren().add(mv2);
@@ -106,6 +201,10 @@ public class spaceTrader extends Application {
         grp2.getChildren().add(choiceBox);
         grp2.getChildren().add(startButton);
         grp2.getChildren().add(t2);
+        grp2.getChildren().add(pilotBox);
+        grp2.getChildren().add(fighterBox);
+        grp2.getChildren().add(engineerBox);
+        grp2.getChildren().add(traderBox);
         Scene scene2 = new Scene(grp2, 600, 600);
         playButton.setOnAction(e -> window.setScene(scene2));
 
@@ -139,7 +238,6 @@ public class spaceTrader extends Application {
         Label t6 = new Label("Player name");
         t6.setLayoutX(125);
         t6.setLayoutY(100);
-        t6.setPrefWidth(50);
         t6.textProperty().bind(name.textProperty());
         System.out.println(t6.textProperty());
         t6.setTextFill(Color.RED);
@@ -198,12 +296,15 @@ public class spaceTrader extends Application {
         String level = choiceBox.getValue();
         if (level.equals("Easy")) {
             value.set(1000);
+            difficultyLevel = 1;
         }
         else if (level.equals("Medium")) {
             value.set(500);
+            difficultyLevel = 2;
         }
         else if (level.equals("Hard")) {
             value.set(100);
+            difficultyLevel = 3;
         }
         else {
             throw new IllegalArgumentException("Difficulty Level must be selected");
@@ -214,6 +315,9 @@ public class spaceTrader extends Application {
         return value.getValue();
     }
 
+    private void setSkillPoints() {
+        skillPoints = 20 - 4 * difficultyLevel;
+    }
 
     public static void main(String[] args) {
         launch(args);
