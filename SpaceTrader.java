@@ -24,7 +24,7 @@ public class spaceTrader extends Application {
     private String playerName;
     private SimpleIntegerProperty value = new SimpleIntegerProperty(this, "value");
 
-    public spaceTrader() {
+    public SpaceTrader() {
     }
 
     public void start(Stage primaryStage) throws Exception {
