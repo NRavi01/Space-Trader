@@ -1,3 +1,5 @@
+
+
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -53,8 +55,10 @@ public class SpaceTrader extends Application {
         //new FileInputStream("C:\\Users\\bobby\\Documents\\Year1" +
         //"\\CS2340\\spaceTrader\\resources\\transformers_font.ttf"), 20);
         //playButton.setFont(transformers_small);
-        playButton.setFont(new Font(20));
+        playButton.setFont(new Font(30));
         playButton.setStyle("-fx-background-color: transparent;");
+        playButton.setOnMouseEntered(e -> playButton.setTextFill(Color.RED));
+        playButton.setOnMouseExited(e -> playButton.setTextFill(Color.YELLOW));
         playButton.setLayoutX(250);
         playButton.setLayoutY(350);
 
@@ -87,12 +91,20 @@ public class SpaceTrader extends Application {
         name.setLayoutY(150);
 
 
-        Text pointsText = new Text(455, 300, "Points left: ");
-        pointsText.setFill(Color.YELLOW);
+        Label pointsText = new Label("Skill points left: ");
+        pointsText.setTextFill(Color.YELLOW);
+        pointsText.setLayoutX(400);
+        pointsText.setLayoutY(250);
+        pointsText.setPrefWidth(150);
+        pointsText.setPrefHeight(50);
         pointsText.setFont(new Font(12));
+        pointsText.setFont(new Font(20));
+
         Label numPoints = new Label("16");
         numPoints.setLayoutX(550);
-        numPoints.setLayoutY(287);
+        numPoints.setLayoutY(250);
+        numPoints.setPrefHeight(50);
+        numPoints.setFont(new Font(20));
         numPoints.setTextFill(Color.YELLOW);
 
         HBox pilotBox = new HBox();
@@ -113,7 +125,7 @@ public class SpaceTrader extends Application {
         pilotSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue,
-                                    Number number, Number t1) {
+                                Number number, Number t1) {
                 points[0].set(t1.intValue());
                 if ((points[0].getValue() + points[1].getValue()
                         + points[2].getValue() + points[3].getValue()) > skillPoints) {
@@ -123,7 +135,7 @@ public class SpaceTrader extends Application {
                     pilotLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 }
                 numPoints.setText(Integer.toString(skillPoints - (points[0].getValue()
-                    + points[1].getValue() + points[2].getValue() + points[3].getValue())));
+                        + points[1].getValue() + points[2].getValue() + points[3].getValue())));
             }
         });
         pilotBox.getChildren().addAll(pilot, pilotSlider, pilotLabel);
@@ -146,7 +158,7 @@ public class SpaceTrader extends Application {
         fighterSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue,
-                                    Number number, Number t1) {
+                                Number number, Number t1) {
                 points[1].set(t1.intValue());
                 if ((points[0].getValue() + points[1].getValue() + points[2].getValue()
                         + points[3].getValue()) > skillPoints) {
@@ -179,7 +191,7 @@ public class SpaceTrader extends Application {
         engineerSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue,
-                                    Number number, Number t1) {
+                                Number number, Number t1) {
                 points[2].set(t1.intValue());
                 if ((points[0].getValue() + points[1].getValue() + points[2].getValue()
                         + points[3].getValue()) > skillPoints) {
@@ -189,7 +201,7 @@ public class SpaceTrader extends Application {
                     engineerLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 }
                 numPoints.setText(Integer.toString(skillPoints - (points[0].getValue()
-                    + points[1].getValue() + points[2].getValue() + points[3].getValue())));
+                        + points[1].getValue() + points[2].getValue() + points[3].getValue())));
             }
         });
         engineerBox.getChildren().addAll(engineer, engineerSlider, engineerLabel);
@@ -213,24 +225,32 @@ public class SpaceTrader extends Application {
         traderSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue,
-                                    Number number, Number t1) {
+                                Number number, Number t1) {
                 points[3].set(t1.intValue());
                 if ((points[0].getValue() + points[1].getValue() + points[2].getValue()
-                    + points[3].getValue()) > skillPoints) {
+                        + points[3].getValue()) > skillPoints) {
                     points[3].set(points[3].getValue() - 1);
                     traderSlider.setValue(points[3].getValue());
                 } else {
                     traderLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 }
                 numPoints.setText(Integer.toString(skillPoints - (points[0].getValue()
-                    + points[1].getValue() + points[2].getValue() + points[3].getValue())));
+                        + points[1].getValue() + points[2].getValue() + points[3].getValue())));
             }
         });
         traderBox.getChildren().addAll(trader, traderSlider, traderLabel);
 
+        Label choiceBoxDescription = new Label("Difficulty Level: ");
+        choiceBoxDescription.setLayoutX(100);
+        choiceBoxDescription.setLayoutY(250);
+        choiceBoxDescription.setPrefWidth(150);
+        choiceBoxDescription.setPrefHeight(50);
+        choiceBoxDescription.setFont(new Font(20));
+        choiceBoxDescription.setTextFill(Color.YELLOW);
+
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
         choiceBox.getItems().addAll("Easy", "Medium", "Hard");
-        choiceBox.setValue("Please choose a difficulty level!");
+        choiceBox.setValue("Easy");
         choiceBox.setLayoutX(250);
         choiceBox.setPrefHeight(50);
         choiceBox.setPrefWidth(100);
@@ -238,7 +258,7 @@ public class SpaceTrader extends Application {
         choiceBox.valueProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue,
-                                    String level, String newLevel) {
+                                String level, String newLevel) {
                 pilotSlider.setValue(0);
                 fighterSlider.setValue(0);
                 engineerSlider.setValue(0);
@@ -262,6 +282,8 @@ public class SpaceTrader extends Application {
         //startButton.setFont(transformers_small);
         startButton.setFont(new Font(20));
         startButton.setStyle("-fx-background-color: transparent;");
+        startButton.setOnMouseEntered(e -> startButton.setTextFill(Color.RED));
+        startButton.setOnMouseExited(e -> startButton.setTextFill(Color.YELLOW));
         startButton.setPrefWidth(150);
         startButton.setLayoutX(225);
         startButton.setLayoutY(550);
@@ -286,6 +308,7 @@ public class SpaceTrader extends Application {
         grp2.getChildren().add(mv2);
         grp2.getChildren().add(name);
         grp2.getChildren().add(choiceBox);
+        grp2.getChildren().add(choiceBoxDescription);
         grp2.getChildren().add(startButton);
         grp2.getChildren().add(t2);
         grp2.getChildren().add(pilotBox);
@@ -300,10 +323,17 @@ public class SpaceTrader extends Application {
         //STAGE 3
         Image image3 = new Image("\\resources\\SpaceTraderBackground.jpg");
         ImageView mv3 = new ImageView(image3);
-        mv2.setFitHeight(600);
-        mv2.setFitWidth(600);
-        mv2.setLayoutX(0);
-        mv2.setLayoutY(0);
+        mv3.setFitHeight(600);
+        mv3.setFitWidth(600);
+        mv3.setLayoutX(0);
+        mv3.setLayoutY(0);
+
+        Image ship = new Image("SpaceTraderShip.png");
+        ImageView shipView = new ImageView(ship);
+        shipView.setFitHeight(325);
+        shipView.setFitWidth(200);
+        shipView.setLayoutX(350);
+        shipView.setLayoutY(125);
 
         Text t3 = new Text(100, 50, "SPACE TRADER");
         t3.setFill(Color.YELLOW);
@@ -433,6 +463,7 @@ public class SpaceTrader extends Application {
         grp3.getChildren().add(t14);
         grp3.getChildren().add(t15);
         grp3.getChildren().add(t16);
+        grp3.getChildren().add(shipView);
         Scene scene3 = new Scene(grp3, 600, 600);
         startButton.setOnAction((e) -> {
             getDifficultyChoice(choiceBox);
