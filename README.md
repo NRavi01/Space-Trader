@@ -5,8 +5,8 @@
 ---
 
 ## Built With
-* [Java](https://www.java.com/en/)
-* [JavaFX](https://openjfx.io/)
+* [Java](https://www.java.com/en/) - The programming language used
+* [JavaFX](https://openjfx.io/) - The framework used to develop the front-end graphical user interface (GUI)
 
 ## Authors
 * **Nishant Ravi** - [@nravi34](https://github.gatech.edu/nravi34)
