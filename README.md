@@ -4,6 +4,10 @@
 
 ---
 
+## Built With
+* [Java](https://www.java.com/en/)
+* [JavaFX](https://openjfx.io/)
+
 ## Authors
 * **Nishant Ravi** - [@nravi34](https://github.gatech.edu/nravi34)
 * **Bobby Bloomquist** - [@rbloomquist6](https://github.gatech.edu/rbloomquist6)
