@@ -25,11 +25,14 @@ import java.io.FileInputStream;
 public class SpaceTrader extends Application {
     private String playerName;
     private SimpleIntegerProperty value = new SimpleIntegerProperty(this, "value");
-    private int skillPoints = 0;
+    private int skillPoints = 16;
     private int difficultyLevel = 0;
-    private int[] points = new int[4];
+    private SimpleIntegerProperty[] points = new SimpleIntegerProperty[4];
 
     public SpaceTrader() {
+        for (int i = 0; i < 4; i++) {
+            points[i] = new SimpleIntegerProperty();
+        }
     }
 
     public void start(Stage primaryStage) throws Exception {
@@ -88,13 +91,14 @@ public class SpaceTrader extends Application {
         name.setPrefWidth(200);
         name.setLayoutY(150);
 
-        ChoiceBox<String> choiceBox = new ChoiceBox<>();
-        choiceBox.getItems().addAll("Easy", "Medium", "Hard");
-        choiceBox.setValue("Please choose a difficulty level!");
-        choiceBox.setLayoutX(250);
-        choiceBox.setPrefHeight(50);
-        choiceBox.setPrefWidth(100);
-        choiceBox.setLayoutY(250);
+
+        Text pointsText = new Text(455, 300, "Points left: ");
+        pointsText.setFill(Color.YELLOW);
+        pointsText.setFont(new Font(12));
+        Label numPoints = new Label("16");
+        numPoints.setLayoutX(550);
+        numPoints.setLayoutY(287);
+        numPoints.setTextFill(Color.YELLOW);
 
         HBox pilotBox = new HBox();
         pilotBox.setLayoutX(50);
@@ -114,8 +118,15 @@ public class SpaceTrader extends Application {
         pilotSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1){
-                pilotLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                points[0] = t1.intValue();
+                points[0].set(t1.intValue());
+                if ((points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue()) > skillPoints) {
+                    points[0].set(points[0].getValue() - 1);
+                    pilotSlider.setValue(points[0].getValue());
+                }
+                else {
+                    pilotLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                }
+                numPoints.setText(Integer.toString(skillPoints - (points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue())));
             }
         });
         pilotBox.getChildren().addAll(pilot, pilotSlider, pilotLabel);
@@ -138,8 +149,15 @@ public class SpaceTrader extends Application {
         fighterSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1){
-                fighterLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                points[1] = t1.intValue();
+                points[1].set(t1.intValue());
+                if ((points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue()) > skillPoints) {
+                    points[1].set(points[1].getValue() - 1);
+                    fighterSlider.setValue(points[1].getValue());
+                }
+                else {
+                    fighterLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                }
+                numPoints.setText(Integer.toString(skillPoints - (points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue())));
             }
         });
         fighterBox.getChildren().addAll(fighter, fighterSlider, fighterLabel);
@@ -162,8 +180,15 @@ public class SpaceTrader extends Application {
         engineerSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1){
-                engineerLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                points[2] = t1.intValue();
+                points[2].set(t1.intValue());
+                if ((points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue()) > skillPoints) {
+                    points[2].set(points[2].getValue() - 1);
+                    engineerSlider.setValue(points[2].getValue());
+                }
+                else {
+                    engineerLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                }
+                numPoints.setText(Integer.toString(skillPoints - (points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue())));
             }
         });
         engineerBox.getChildren().addAll(engineer, engineerSlider, engineerLabel);
@@ -187,11 +212,48 @@ public class SpaceTrader extends Application {
         traderSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1){
-                traderLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                points[2] = t1.intValue();
+                points[3].set(t1.intValue());
+                if ((points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue()) > skillPoints) {
+                    points[3].set(points[3].getValue() - 1);
+                    traderSlider.setValue(points[3].getValue());
+                }
+                else {
+                    traderLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                }
+                numPoints.setText(Integer.toString(skillPoints - (points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue())));
             }
         });
         traderBox.getChildren().addAll(trader, traderSlider, traderLabel);
+
+        ChoiceBox<String> choiceBox = new ChoiceBox<>();
+        choiceBox.getItems().addAll("Easy", "Medium", "Hard");
+        choiceBox.setValue("Please choose a difficulty level!");
+        choiceBox.setLayoutX(250);
+        choiceBox.setPrefHeight(50);
+        choiceBox.setPrefWidth(100);
+        choiceBox.setLayoutY(250);
+        choiceBox.valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String level, String newLevel){
+                pilotSlider.setValue(0);
+                fighterSlider.setValue(0);
+                engineerSlider.setValue(0);
+                traderSlider.setValue(0);
+                if (newLevel.equals("Easy")) {
+                    setSkillPoints(16);
+                    numPoints.setText("16");
+                }
+                else if (newLevel.equals("Medium")) {
+                    setSkillPoints(12);
+                    numPoints.setText("12");
+                }
+                else {
+                    setSkillPoints(8);
+                    numPoints.setText("8");
+                }
+            }
+        });
+
 
         Button startButton = new Button("Start Game");
         startButton.setTextFill(Color.YELLOW);
@@ -228,9 +290,10 @@ public class SpaceTrader extends Application {
         grp2.getChildren().add(fighterBox);
         grp2.getChildren().add(engineerBox);
         grp2.getChildren().add(traderBox);
+        grp2.getChildren().add(numPoints);
+        grp2.getChildren().add(pointsText);
         Scene scene2 = new Scene(grp2, 600, 600);
         playButton.setOnAction(e -> window.setScene(scene2));
-
 
         //STAGE 3
         Image image3 = new Image("SpaceTraderBackground.jpg");
@@ -284,6 +347,74 @@ public class SpaceTrader extends Application {
 //        t2.setFont(transformers_medium);
         t8.setFont(new Font(20));
 
+        Label t9 = new Label("Pilot Skill Points: ");
+        t9.setLayoutX(0);
+        t9.setLayoutY(200);
+        t9.setPrefWidth(175);
+        t9.setTextFill(Color.YELLOW);
+//        t2.setFont(transformers_medium);
+        t9.setFont(new Font(20));
+
+        Label t10 = new Label("10");
+        t10.setLayoutX(200);
+        t10.setLayoutY(200);
+        t10.setPrefWidth(50);
+        t10.textProperty().bind(Bindings.convert(points[0]));
+        t10.setTextFill(Color.RED);
+//        t2.setFont(transformers_medium);
+        t10.setFont(new Font(20));
+
+        Label t11 = new Label("Fighter Skill Points: ");
+        t11.setLayoutX(0);
+        t11.setLayoutY(250);
+        t11.setPrefWidth(175);
+        t11.setTextFill(Color.YELLOW);
+//        t2.setFont(transformers_medium);
+        t11.setFont(new Font(20));
+
+        Label t12 = new Label("10");
+        t12.setLayoutX(200);
+        t12.setLayoutY(250);
+        t12.setPrefWidth(50);
+        t12.textProperty().bind(Bindings.convert(points[1]));
+        t12.setTextFill(Color.RED);
+//        t2.setFont(transformers_medium);
+        t12.setFont(new Font(20));
+
+        Label t13 = new Label("Engineer Skill Points: ");
+        t13.setLayoutX(0);
+        t13.setLayoutY(300);
+        t13.setPrefWidth(200);
+        t13.setTextFill(Color.YELLOW);
+//        t2.setFont(transformers_medium);
+        t13.setFont(new Font(20));
+
+        Label t14 = new Label("10");
+        t14.setLayoutX(200);
+        t14.setLayoutY(300);
+        t14.setPrefWidth(50);
+        t14.textProperty().bind(Bindings.convert(points[2]));
+        t14.setTextFill(Color.RED);
+//        t2.setFont(transformers_medium);
+        t14.setFont(new Font(20));
+
+        Label t15 = new Label("Trader Skill Points: ");
+        t15.setLayoutX(0);
+        t15.setLayoutY(350);
+        t15.setPrefWidth(175);
+        t15.setTextFill(Color.YELLOW);
+//        t2.setFont(transformers_medium);
+        t15.setFont(new Font(20));
+
+        Label t16 = new Label("10");
+        t16.setLayoutX(200);
+        t16.setLayoutY(350);
+        t16.setPrefWidth(50);
+        t16.textProperty().bind(Bindings.convert(points[3]));
+        t16.setTextFill(Color.RED);
+//        t2.setFont(transformers_medium);
+        t16.setFont(new Font(20));
+
         Group grp3 = new Group();
         grp3.getChildren().add(mv3);
         grp3.getChildren().add(t3);
@@ -292,6 +423,14 @@ public class SpaceTrader extends Application {
         grp3.getChildren().add(t6);
         grp3.getChildren().add(t7);
         grp3.getChildren().add(t8);
+        grp3.getChildren().add(t9);
+        grp3.getChildren().add(t10);
+        grp3.getChildren().add(t11);
+        grp3.getChildren().add(t12);
+        grp3.getChildren().add(t13);
+        grp3.getChildren().add(t14);
+        grp3.getChildren().add(t15);
+        grp3.getChildren().add(t16);
         Scene scene3 = new Scene(grp3, 600, 600);
         startButton.setOnAction((e) -> {
             getDifficultyChoice(choiceBox);
@@ -320,14 +459,17 @@ public class SpaceTrader extends Application {
         if (level.equals("Easy")) {
             value.set(1000);
             difficultyLevel = 1;
+            setSkillPoints();
         }
         else if (level.equals("Medium")) {
             value.set(500);
             difficultyLevel = 2;
+            setSkillPoints();
         }
         else if (level.equals("Hard")) {
             value.set(100);
             difficultyLevel = 3;
+            setSkillPoints();
         }
         else {
             throw new IllegalArgumentException("Difficulty Level must be selected");
@@ -340,6 +482,10 @@ public class SpaceTrader extends Application {
 
     private void setSkillPoints() {
         skillPoints = 20 - 4 * difficultyLevel;
+    }
+
+    private void setSkillPoints(int points) {
+        skillPoints = points;
     }
 
     public static void main(String[] args) {
