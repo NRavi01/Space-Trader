@@ -315,6 +315,7 @@ public class SpaceTrader extends Application {
         primaryStage.show();
     }
 
+    //provide different difficulty levels(easy, medium, hard)
     private void getDifficultyChoice(ChoiceBox<String> choiceBox) {
         String level = choiceBox.getValue();
         if (level.equals("Easy")) {
