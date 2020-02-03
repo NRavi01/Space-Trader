@@ -32,7 +32,7 @@ public class SpaceTrader extends Application {
         Stage window = primaryStage;
 
         //STAGE 1
-        Image image = new Image("SpaceTraderBackground.jpg");
+        Image image = new Image("\\resources\\SpaceTraderBackground.jpg");
         ImageView mv = new ImageView(image);
         mv.setFitHeight(600);
         mv.setFitWidth(600);
@@ -67,7 +67,7 @@ public class SpaceTrader extends Application {
 
 
         //STAGE TWO
-        Image image2 = new Image("SpaceTraderBackground.jpg");
+        Image image2 = new Image("\\resources\\SpaceTraderBackground.jpg");
         ImageView mv2 = new ImageView(image2);
         mv2.setFitHeight(600);
         mv2.setFitWidth(600);
@@ -298,7 +298,7 @@ public class SpaceTrader extends Application {
         playButton.setOnAction(e -> window.setScene(scene2));
 
         //STAGE 3
-        Image image3 = new Image("SpaceTraderBackground.jpg");
+        Image image3 = new Image("\\resources\\SpaceTraderBackground.jpg");
         ImageView mv3 = new ImageView(image3);
         mv2.setFitHeight(600);
         mv2.setFitWidth(600);
