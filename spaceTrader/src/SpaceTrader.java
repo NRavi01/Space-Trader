@@ -109,7 +109,6 @@ public class SpaceTrader extends Application {
         pilotSlider.setMinorTickCount(0);
         pilotSlider.setBlockIncrement(10);
         pilotSlider.setSnapToTicks(true);
-        points[0] = (int) pilotSlider.getValue();
         Label pilotLabel = new Label("0");
         pilotLabel.setTextFill(Color.YELLOW);
         pilotSlider.valueProperty().addListener(new ChangeListener<Number>() {
@@ -134,8 +133,16 @@ public class SpaceTrader extends Application {
         fighterSlider.setMinorTickCount(0);
         fighterSlider.setBlockIncrement(10);
         fighterSlider.setSnapToTicks(true);
-        points[1] = (int) fighterSlider.getValue();
-        fighterBox.getChildren().addAll(fighter, fighterSlider);
+        Label fighterLabel = new Label("0");
+        fighterLabel.setTextFill(Color.YELLOW);
+        fighterSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1){
+                fighterLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                points[1] = t1.intValue();
+            }
+        });
+        fighterBox.getChildren().addAll(fighter, fighterSlider, fighterLabel);
 
         HBox engineerBox = new HBox();
         engineerBox.setLayoutX(50);
@@ -150,8 +157,16 @@ public class SpaceTrader extends Application {
         engineerSlider.setMinorTickCount(0);
         engineerSlider.setBlockIncrement(10);
         engineerSlider.setSnapToTicks(true);
-        points[2] = (int) engineerSlider.getValue();
-        engineerBox.getChildren().addAll(engineer, engineerSlider);
+        Label engineerLabel = new Label("0");
+        engineerLabel.setTextFill(Color.YELLOW);
+        engineerSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1){
+                engineerLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                points[2] = t1.intValue();
+            }
+        });
+        engineerBox.getChildren().addAll(engineer, engineerSlider, engineerLabel);
 
 
         HBox traderBox = new HBox();
@@ -167,8 +182,16 @@ public class SpaceTrader extends Application {
         traderSlider.setMinorTickCount(0);
         traderSlider.setBlockIncrement(10);
         traderSlider.setSnapToTicks(true);
-        points[3] = (int) traderSlider.getValue();
-        traderBox.getChildren().addAll(trader, traderSlider);
+        Label traderLabel = new Label("0");
+        traderLabel.setTextFill(Color.YELLOW);
+        traderSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1){
+                traderLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                points[2] = t1.intValue();
+            }
+        });
+        traderBox.getChildren().addAll(trader, traderSlider, traderLabel);
 
         Button startButton = new Button("Start Game");
         startButton.setTextFill(Color.YELLOW);
