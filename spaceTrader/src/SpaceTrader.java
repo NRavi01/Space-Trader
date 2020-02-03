@@ -21,7 +21,7 @@ import javafx.stage.Stage;
 import java.io.FileInputStream;
 
 
-public class spaceTrader extends Application {
+public class SpaceTrader extends Application {
     private int difficultyLevel = 0;
     private int skillPoints = 0;
     private int[] points = new int[4];
