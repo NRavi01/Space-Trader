@@ -3,12 +3,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -17,9 +12,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import java.io.FileInputStream;
 
 
 public class SpaceTrader extends Application {
@@ -47,17 +40,19 @@ public class SpaceTrader extends Application {
         mv.setLayoutY(0);
 
         Text t = new Text(100, 200, "SPACE TRADER");
-//        Font transformers_medium = Font.loadFont(new FileInputStream("C:\\Users\\bobby\\Documents\\Year1" +
-//                "\\CS2340\\spaceTrader\\resources\\transformers_font.ttf"), 60);
+        //Font transformers_medium = Font.loadFont(
+        //new FileInputStream("C:\\Users\\bobby\\Documents\\Year1" +
+        //"\\CS2340\\spaceTrader\\resources\\transformers_font.ttf"), 60);
         t.setFont(new Font(60));
         t.setFill(Color.YELLOW);
-//        t.setFont(transformers_medium);
+        //t.setFont(transformers_medium);
 
         Button playButton = new Button("Play");
         playButton.setTextFill(Color.YELLOW);
-//        Font transformers_small = Font.loadFont(new FileInputStream("C:\\Users\\bobby\\Documents\\Year1" +
-//                "\\CS2340\\spaceTrader\\resources\\transformers_font.ttf"), 20);
-//        playButton.setFont(transformers_small);
+        //Font transformers_small = Font.loadFont(
+        //new FileInputStream("C:\\Users\\bobby\\Documents\\Year1" +
+        //"\\CS2340\\spaceTrader\\resources\\transformers_font.ttf"), 20);
+        //playButton.setFont(transformers_small);
         playButton.setFont(new Font(20));
         playButton.setStyle("-fx-background-color: transparent;");
         playButton.setLayoutX(250);
@@ -81,7 +76,7 @@ public class SpaceTrader extends Application {
 
         Text t2 = new Text(100, 100, "SPACE TRADER");
         t2.setFill(Color.YELLOW);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t2.setFont(new Font(60));
 
         TextField name = new TextField();
@@ -117,16 +112,18 @@ public class SpaceTrader extends Application {
         pilotLabel.setTextFill(Color.YELLOW);
         pilotSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1){
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                    Number number, Number t1) {
                 points[0].set(t1.intValue());
-                if ((points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue()) > skillPoints) {
+                if ((points[0].getValue() + points[1].getValue()
+                        + points[2].getValue() + points[3].getValue()) > skillPoints) {
                     points[0].set(points[0].getValue() - 1);
                     pilotSlider.setValue(points[0].getValue());
-                }
-                else {
+                } else {
                     pilotLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 }
-                numPoints.setText(Integer.toString(skillPoints - (points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue())));
+                numPoints.setText(Integer.toString(skillPoints - (points[0].getValue()
+                    + points[1].getValue() + points[2].getValue() + points[3].getValue())));
             }
         });
         pilotBox.getChildren().addAll(pilot, pilotSlider, pilotLabel);
@@ -148,16 +145,18 @@ public class SpaceTrader extends Application {
         fighterLabel.setTextFill(Color.YELLOW);
         fighterSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1){
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                    Number number, Number t1) {
                 points[1].set(t1.intValue());
-                if ((points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue()) > skillPoints) {
+                if ((points[0].getValue() + points[1].getValue() + points[2].getValue()
+                        + points[3].getValue()) > skillPoints) {
                     points[1].set(points[1].getValue() - 1);
                     fighterSlider.setValue(points[1].getValue());
-                }
-                else {
+                } else {
                     fighterLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 }
-                numPoints.setText(Integer.toString(skillPoints - (points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue())));
+                numPoints.setText(Integer.toString(skillPoints - (points[0].getValue()
+                        + points[1].getValue() + points[2].getValue() + points[3].getValue())));
             }
         });
         fighterBox.getChildren().addAll(fighter, fighterSlider, fighterLabel);
@@ -179,16 +178,18 @@ public class SpaceTrader extends Application {
         engineerLabel.setTextFill(Color.YELLOW);
         engineerSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1){
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                    Number number, Number t1){
                 points[2].set(t1.intValue());
-                if ((points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue()) > skillPoints) {
+                if ((points[0].getValue() + points[1].getValue() + points[2].getValue()
+                        + points[3].getValue()) > skillPoints) {
                     points[2].set(points[2].getValue() - 1);
                     engineerSlider.setValue(points[2].getValue());
-                }
-                else {
+                } else {
                     engineerLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 }
-                numPoints.setText(Integer.toString(skillPoints - (points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue())));
+                numPoints.setText(Integer.toString(skillPoints - (points[0].getValue()
+                    + points[1].getValue() + points[2].getValue() + points[3].getValue())));
             }
         });
         engineerBox.getChildren().addAll(engineer, engineerSlider, engineerLabel);
@@ -211,16 +212,19 @@ public class SpaceTrader extends Application {
         traderLabel.setTextFill(Color.YELLOW);
         traderSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1){
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                    Number number, Number t1) {
                 points[3].set(t1.intValue());
-                if ((points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue()) > skillPoints) {
+                if ((points[0].getValue() + points[1].getValue() + points[2].getValue()
+                    + points[3].getValue()) > skillPoints) {
                     points[3].set(points[3].getValue() - 1);
                     traderSlider.setValue(points[3].getValue());
                 }
                 else {
                     traderLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 }
-                numPoints.setText(Integer.toString(skillPoints - (points[0].getValue() + points[1].getValue() + points[2].getValue() + points[3].getValue())));
+                numPoints.setText(Integer.toString(skillPoints - (points[0].getValue()
+                    + points[1].getValue() + points[2].getValue() + points[3].getValue())));
             }
         });
         traderBox.getChildren().addAll(trader, traderSlider, traderLabel);
@@ -234,7 +238,8 @@ public class SpaceTrader extends Application {
         choiceBox.setLayoutY(250);
         choiceBox.valueProperty().addListener(new ChangeListener<String>() {
             @Override
-            public void changed(ObservableValue<? extends String> observableValue, String level, String newLevel){
+            public void changed(ObservableValue<? extends String> observableValue,
+                                    String level, String newLevel) {
                 pilotSlider.setValue(0);
                 fighterSlider.setValue(0);
                 engineerSlider.setValue(0);
@@ -242,12 +247,10 @@ public class SpaceTrader extends Application {
                 if (newLevel.equals("Easy")) {
                     setSkillPoints(16);
                     numPoints.setText("16");
-                }
-                else if (newLevel.equals("Medium")) {
+                } else if (newLevel.equals("Medium")) {
                     setSkillPoints(12);
                     numPoints.setText("12");
-                }
-                else {
+                } else {
                     setSkillPoints(8);
                     numPoints.setText("8");
                 }
@@ -257,7 +260,7 @@ public class SpaceTrader extends Application {
 
         Button startButton = new Button("Start Game");
         startButton.setTextFill(Color.YELLOW);
-//        startButton.setFont(transformers_small);
+        //startButton.setFont(transformers_small);
         startButton.setFont(new Font(20));
         startButton.setStyle("-fx-background-color: transparent;");
         startButton.setPrefWidth(150);
