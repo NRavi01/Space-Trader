@@ -179,7 +179,7 @@ public class SpaceTrader extends Application {
         engineerSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue,
-                                    Number number, Number t1){
+                                    Number number, Number t1) {
                 points[2].set(t1.intValue());
                 if ((points[0].getValue() + points[1].getValue() + points[2].getValue()
                         + points[3].getValue()) > skillPoints) {
@@ -219,8 +219,7 @@ public class SpaceTrader extends Application {
                     + points[3].getValue()) > skillPoints) {
                     points[3].set(points[3].getValue() - 1);
                     traderSlider.setValue(points[3].getValue());
-                }
-                else {
+                } else {
                     traderLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 }
                 numPoints.setText(Integer.toString(skillPoints - (points[0].getValue()
@@ -308,12 +307,12 @@ public class SpaceTrader extends Application {
 
         Text t3 = new Text(100, 50, "SPACE TRADER");
         t3.setFill(Color.YELLOW);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t3.setFont(new Font(60));
 
         Text t4 = new Text(175, 100, "Commander Status");
         t4.setFill(Color.YELLOW);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t4.setFont(new Font(30));
 
         Label t5 = new Label("Player Name: ");
@@ -321,7 +320,7 @@ public class SpaceTrader extends Application {
         t5.setLayoutY(100);
         t5.setPrefWidth(125);
         t5.setTextFill(Color.YELLOW);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t5.setFont(new Font(20));
 
         Label t6 = new Label("Player name");
@@ -330,7 +329,7 @@ public class SpaceTrader extends Application {
         t6.textProperty().bind(name.textProperty());
         System.out.println(t6.textProperty());
         t6.setTextFill(Color.RED);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t6.setFont(new Font(20));
 
         Label t7 = new Label("Number of Credits: ");
@@ -338,7 +337,7 @@ public class SpaceTrader extends Application {
         t7.setLayoutY(150);
         t7.setPrefWidth(175);
         t7.setTextFill(Color.YELLOW);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t7.setFont(new Font(20));
 
         Label t8 = new Label("10");
@@ -347,7 +346,7 @@ public class SpaceTrader extends Application {
         t8.setPrefWidth(50);
         t8.textProperty().bind(Bindings.convert(value));
         t8.setTextFill(Color.RED);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t8.setFont(new Font(20));
 
         Label t9 = new Label("Pilot Skill Points: ");
@@ -355,7 +354,7 @@ public class SpaceTrader extends Application {
         t9.setLayoutY(200);
         t9.setPrefWidth(175);
         t9.setTextFill(Color.YELLOW);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t9.setFont(new Font(20));
 
         Label t10 = new Label("10");
@@ -364,7 +363,7 @@ public class SpaceTrader extends Application {
         t10.setPrefWidth(50);
         t10.textProperty().bind(Bindings.convert(points[0]));
         t10.setTextFill(Color.RED);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t10.setFont(new Font(20));
 
         Label t11 = new Label("Fighter Skill Points: ");
@@ -372,7 +371,7 @@ public class SpaceTrader extends Application {
         t11.setLayoutY(250);
         t11.setPrefWidth(175);
         t11.setTextFill(Color.YELLOW);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t11.setFont(new Font(20));
 
         Label t12 = new Label("10");
@@ -381,7 +380,7 @@ public class SpaceTrader extends Application {
         t12.setPrefWidth(50);
         t12.textProperty().bind(Bindings.convert(points[1]));
         t12.setTextFill(Color.RED);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t12.setFont(new Font(20));
 
         Label t13 = new Label("Engineer Skill Points: ");
@@ -389,7 +388,7 @@ public class SpaceTrader extends Application {
         t13.setLayoutY(300);
         t13.setPrefWidth(200);
         t13.setTextFill(Color.YELLOW);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t13.setFont(new Font(20));
 
         Label t14 = new Label("10");
@@ -398,7 +397,7 @@ public class SpaceTrader extends Application {
         t14.setPrefWidth(50);
         t14.textProperty().bind(Bindings.convert(points[2]));
         t14.setTextFill(Color.RED);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t14.setFont(new Font(20));
 
         Label t15 = new Label("Trader Skill Points: ");
@@ -406,7 +405,7 @@ public class SpaceTrader extends Application {
         t15.setLayoutY(350);
         t15.setPrefWidth(175);
         t15.setTextFill(Color.YELLOW);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t15.setFont(new Font(20));
 
         Label t16 = new Label("10");
@@ -415,7 +414,7 @@ public class SpaceTrader extends Application {
         t16.setPrefWidth(50);
         t16.textProperty().bind(Bindings.convert(points[3]));
         t16.setTextFill(Color.RED);
-//        t2.setFont(transformers_medium);
+        //t2.setFont(transformers_medium);
         t16.setFont(new Font(20));
 
         Group grp3 = new Group();
@@ -464,18 +463,15 @@ public class SpaceTrader extends Application {
             value.set(1000);
             difficultyLevel = 1;
             setSkillPoints();
-        }
-        else if (level.equals("Medium")) {
+        } else if (level.equals("Medium")) {
             value.set(500);
             difficultyLevel = 2;
             setSkillPoints();
-        }
-        else if (level.equals("Hard")) {
+        } else if (level.equals("Hard")) {
             value.set(100);
             difficultyLevel = 3;
             setSkillPoints();
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Difficulty Level must be selected");
         }
     }
