@@ -16,6 +16,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+
 
 public class SpaceTrader extends Application {
     //Player properties
@@ -26,18 +28,51 @@ public class SpaceTrader extends Application {
     private int difficultyLevel = 0;
     private SimpleIntegerProperty[] points = new SimpleIntegerProperty[4];
 
+    private final int regionNumber = 10;
+
     Region currentSystem;
     private final String[] governments = {"Democratic", "Fascist", "Communist", "Separatist"};
+    private ArrayList<String> names = new ArrayList<String>();
+
+    private Region[] regions = new Region[regionNumber];
 
     public SpaceTrader() {
+        names.add("NishSystem");
+        names.add("BobSystem");
+        names.add("Undorix");
+        names.add("Bubriri");
+        names.add("Menereth");
+        names.add("Peccora");
+        names.add("Sestrion");
+        names.add("Eimia");
+        names.add("Vautov");
+        names.add("Bathenope");
         for (int i = 0; i < 4; i++) {
             points[i] = new SimpleIntegerProperty();
         }
-        int regionSize = (int) (Math.random() * 20 + 10);
+        int regionSize = (int) (Math.random() * 10 + 10);
         int techLevel = (int) (Math.random() * 3 + 1);
         String government = governments[(int) (Math.random() * governments.length)];
-        int policePresence = (int) (Math.random() * 3 + 1);
-        currentSystem = new Region("NishSystem", regionSize, techLevel, government, policePresence);
+        int policePresence = (int) (Math.random() * 3 +  1);
+        int currRegionName = (int) (Math.random() * regionNumber);
+        currentSystem = new Region(names.get(currRegionName), (int) (Math.random() * 600), (int) (Math.random() * 600), regionSize, techLevel, government, policePresence);
+        names.remove(currRegionName);
+
+        regions[0] = currentSystem;
+        for (int i = 1; i < regions.length; i++) {
+            Region newSystem;
+            int regionSize2 = (int) (Math.random() * 10 + 10);
+            int techLevel2 = (int) (Math.random() * 3 + 1);
+            String government2 = governments[(int) (Math.random() * governments.length)];
+            int policePresence2 = (int) (Math.random() * 3 +  1);
+            int sysName = (int) (Math.random() * names.size());
+            newSystem = new Region(names.get(sysName), (int) (Math.random() * 600), (int) (Math.random() * 600), regionSize2, techLevel2, government2, policePresence2);
+            regions[i] = newSystem;
+            names.remove(sysName);
+        }
+        for (int i = 0; i < regions.length; i++) {
+            System.out.println("Region 0 is " + regions[i].getName() + regions[i].getUniX() + " " + regions[i].getUniY());
+        }
     }
 
     public void start(Stage primaryStage) throws Exception {
@@ -416,23 +451,50 @@ public class SpaceTrader extends Application {
 
         Label fourLabel = createLabel("SPACE TRADER", 210, 0, 25, Color.YELLOW, 180);
 
+        Group grp4 = new Group();
+        grp4.getChildren().add(image4);
+
         Circle fuelRadius = new Circle(300, 300, player.getFuel());
         fuelRadius.setStroke(Color.YELLOW);
 
-        Circle currRegion = new Circle(300, 300, currentSystem.getSize(), Color.RED);
+        int xShift = 300 - currentSystem.getUniX();
+        int yShift = 300 - currentSystem.getUniY();
+        currentSystem.setSubX(300);
+        currentSystem.setSubY(300);
+
+        Circle currRegion = new Circle(currentSystem.getSubX(), currentSystem.getSubY(), currentSystem.getSize(), Color.RED);
         currRegion.setStroke(Color.BLUE);
 
-
-        int xco = 280 - currentSystem.getSize() / 2;
-        int yco = 310 + currentSystem.getSize() / 2;
+        int xco = currentSystem.getSubX() - currentSystem.getSize() - 10;
+        int yco = currentSystem.getSubY() + currentSystem.getSize();
         Label currRegionLabel = createLabel(currentSystem.getName(), xco, yco, 10, Color.GREEN, 60);
 
-        Group grp4 = new Group();
-        grp4.getChildren().add(image4);
+        ArrayList<Circle> systems = new ArrayList<Circle>();
+        ArrayList<Label> systemLabels = new ArrayList<Label>();
+        ArrayList<Button> systemButtons = new ArrayList<Button>();
+        for (int i = 0; i < regions.length; i++) {
+            if(!regions[i].getName().equals(currentSystem.getName())) {
+                regions[i].setSubX(regions[i].getUniX() + xShift);
+                regions[i].setSubY(regions[i].getUniY() + yShift);
+                systems.add(new Circle(regions[i].getSubX(), regions[i].getSubY(), regions[i].getSize(), Color.GREEN));
+                int xlabel = regions[i].getSubX() - regions[i].getSize() - 10;
+                int ylabel = regions[i].getSubY() + regions[i].getSize();
+                systemLabels.add(createLabel(regions[i].getName(), xlabel, ylabel, 10, Color.YELLOW, 60));
+            }
+        }
         grp4.getChildren().add(fourLabel);
         grp4.getChildren().add(fuelRadius);
         grp4.getChildren().add(currRegion);
         grp4.getChildren().add(currRegionLabel);
+
+        for (int i = 0; i < systems.size(); i++) {
+            grp4.getChildren().add(systems.get(i));
+        }
+        for (int i = 0; i < systemLabels.size(); i++) {
+            System.out.println("hi");
+            grp4.getChildren().add(systemLabels.get(i));
+        }
+
         Scene scene4 = new Scene(grp4, 600, 600);
         return scene4;
     }
