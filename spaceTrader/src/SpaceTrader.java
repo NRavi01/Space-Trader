@@ -9,9 +9,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.media.AudioClip;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -455,7 +452,7 @@ public class SpaceTrader extends Application {
         return newLabel;
     }
     public ImageView createImage(String path, int x, int y, int width, int height) {
-        Image newImage = new Image(path);
+        Image newImage = new Image("\\resources\\" + path);
         ImageView image = new ImageView(newImage);
         image.setFitHeight(height);
         image.setFitWidth(width);
