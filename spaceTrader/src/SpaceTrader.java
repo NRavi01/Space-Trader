@@ -1,5 +1,3 @@
-
-
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -12,6 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -32,15 +31,15 @@ public class SpaceTrader extends Application {
     }
 
     public void start(Stage primaryStage) throws Exception {
+        /*
+        AudioClip music = new AudioClip(this.getClass().getResource("StarWarsMusic.mp3").toString());
+        music.play();
+        */
         Stage window = primaryStage;
 
         //STAGE 1
-        Image image = new Image("\\resources\\SpaceTraderBackground.jpg");
-        ImageView mv = new ImageView(image);
-        mv.setFitHeight(600);
-        mv.setFitWidth(600);
-        mv.setLayoutX(0);
-        mv.setLayoutY(0);
+
+        ImageView mv = createImage("SpaceTraderBackground.jpg", 0, 0, 600, 600);
 
         Text t = new Text(100, 200, "SPACE TRADER");
         //Font transformers_medium = Font.loadFont("\\resources\\transformers_font.ttf", 60);
@@ -70,12 +69,7 @@ public class SpaceTrader extends Application {
 
 
         //STAGE TWO
-        Image image2 = new Image("\\resources\\SpaceTraderBackground.jpg");
-        ImageView mv2 = new ImageView(image2);
-        mv2.setFitHeight(600);
-        mv2.setFitWidth(600);
-        mv2.setLayoutX(0);
-        mv2.setLayoutY(0);
+        ImageView mv2 = createImage("SpaceTraderBackground.jpg", 0, 0, 600, 600);
 
         Text t2 = new Text(100, 100, "SPACE TRADER");
         t2.setFill(Color.YELLOW);
@@ -90,21 +84,11 @@ public class SpaceTrader extends Application {
         name.setLayoutY(150);
 
 
-        Label pointsText = new Label("Skill points left: ");
-        pointsText.setTextFill(Color.YELLOW);
-        pointsText.setLayoutX(400);
-        pointsText.setLayoutY(250);
-        pointsText.setPrefWidth(150);
+        Label pointsText = createLabel("Skill points left: ", 400, 250, 20, Color.YELLOW, 150);
         pointsText.setPrefHeight(50);
-        pointsText.setFont(new Font(12));
-        pointsText.setFont(new Font(20));
 
-        Label numPoints = new Label("16");
-        numPoints.setLayoutX(550);
-        numPoints.setLayoutY(250);
+        Label numPoints = createLabel("16", 550, 250, 20, Color.YELLOW, 50);
         numPoints.setPrefHeight(50);
-        numPoints.setFont(new Font(20));
-        numPoints.setTextFill(Color.YELLOW);
 
         HBox pilotBox = new HBox();
         pilotBox.setLayoutX(50);
@@ -320,19 +304,9 @@ public class SpaceTrader extends Application {
         playButton.setOnAction(e -> window.setScene(scene2));
 
         //STAGE 3
-        Image image3 = new Image("\\resources\\SpaceTraderBackground.jpg");
-        ImageView mv3 = new ImageView(image3);
-        mv3.setFitHeight(600);
-        mv3.setFitWidth(600);
-        mv3.setLayoutX(0);
-        mv3.setLayoutY(0);
+        ImageView mv3 = createImage("SpaceTraderBackground.jpg", 0, 0, 600, 600);
 
-        Image ship = new Image("\\resources\\SpaceTraderShip.png");
-        ImageView shipView = new ImageView(ship);
-        shipView.setFitHeight(325);
-        shipView.setFitWidth(200);
-        shipView.setLayoutX(350);
-        shipView.setLayoutY(125);
+        ImageView ship = createImage("SpaceTraderShip.png", 350, 125, 200, 325);
 
         Text t3 = new Text(100, 50, "SPACE TRADER");
         t3.setFill(Color.YELLOW);
@@ -344,107 +318,52 @@ public class SpaceTrader extends Application {
         //t2.setFont(transformers_medium);
         t4.setFont(new Font(30));
 
-        Label t5 = new Label("Player Name: ");
-        t5.setLayoutX(0);
-        t5.setLayoutY(100);
-        t5.setPrefWidth(125);
-        t5.setTextFill(Color.YELLOW);
-        //t2.setFont(transformers_medium);
-        t5.setFont(new Font(20));
+        Label t5 = createLabel("Player Name: ", 0, 100, 20, Color.YELLOW, 125);
 
-        Label t6 = new Label("Player name");
-        t6.setLayoutX(125);
-        t6.setLayoutY(100);
+        Label t6 = createLabel("Player name", 125, 100, 20, Color.RED, 50);
         t6.textProperty().bind(name.textProperty());
-        System.out.println(t6.textProperty());
-        t6.setTextFill(Color.RED);
-        //t2.setFont(transformers_medium);
-        t6.setFont(new Font(20));
 
-        Label t7 = new Label("Number of Credits: ");
-        t7.setLayoutX(0);
-        t7.setLayoutY(150);
-        t7.setPrefWidth(175);
-        t7.setTextFill(Color.YELLOW);
-        //t2.setFont(transformers_medium);
-        t7.setFont(new Font(20));
+        Label t7 = createLabel("Number of Credits: ", 0, 150, 20, Color.YELLOW, 175);
 
-        Label t8 = new Label("10");
-        t8.setLayoutX(175);
-        t8.setLayoutY(150);
-        t8.setPrefWidth(50);
+        Label t8 = createLabel("10", 175, 150, 20, Color.RED, 50);
         t8.textProperty().bind(Bindings.convert(value));
-        t8.setTextFill(Color.RED);
-        //t2.setFont(transformers_medium);
-        t8.setFont(new Font(20));
 
-        Label t9 = new Label("Pilot Skill Points: ");
-        t9.setLayoutX(0);
-        t9.setLayoutY(200);
-        t9.setPrefWidth(175);
-        t9.setTextFill(Color.YELLOW);
-        //t2.setFont(transformers_medium);
-        t9.setFont(new Font(20));
+        Label t9 = createLabel("Pilot Skill Points: ", 0, 200, 20, Color.YELLOW, 175);
 
-        Label t10 = new Label("10");
-        t10.setLayoutX(200);
-        t10.setLayoutY(200);
-        t10.setPrefWidth(50);
+        Label t10 = createLabel("10", 200, 200, 20, Color.RED, 50);
         t10.textProperty().bind(Bindings.convert(points[0]));
-        t10.setTextFill(Color.RED);
-        //t2.setFont(transformers_medium);
-        t10.setFont(new Font(20));
 
-        Label t11 = new Label("Fighter Skill Points: ");
-        t11.setLayoutX(0);
-        t11.setLayoutY(250);
-        t11.setPrefWidth(175);
-        t11.setTextFill(Color.YELLOW);
-        //t2.setFont(transformers_medium);
-        t11.setFont(new Font(20));
+        Label t11 = createLabel("Fighter Skill Points: ", 0, 250, 20, Color.YELLOW, 175);
 
-        Label t12 = new Label("10");
-        t12.setLayoutX(200);
-        t12.setLayoutY(250);
-        t12.setPrefWidth(50);
+        Label t12 = createLabel("10", 200, 250, 20, Color.RED, 50);
         t12.textProperty().bind(Bindings.convert(points[1]));
-        t12.setTextFill(Color.RED);
-        //t2.setFont(transformers_medium);
-        t12.setFont(new Font(20));
 
-        Label t13 = new Label("Engineer Skill Points: ");
-        t13.setLayoutX(0);
-        t13.setLayoutY(300);
-        t13.setPrefWidth(200);
-        t13.setTextFill(Color.YELLOW);
-        //t2.setFont(transformers_medium);
-        t13.setFont(new Font(20));
+        Label t13 = createLabel("Engineer Skill Points: ", 0, 300, 20, Color.YELLOW, 200);
 
-        Label t14 = new Label("10");
-        t14.setLayoutX(200);
-        t14.setLayoutY(300);
-        t14.setPrefWidth(50);
+        Label t14 = createLabel("10", 200, 300, 20, Color.RED, 50);
         t14.textProperty().bind(Bindings.convert(points[2]));
-        t14.setTextFill(Color.RED);
-        //t2.setFont(transformers_medium);
-        t14.setFont(new Font(20));
 
-        Label t15 = new Label("Trader Skill Points: ");
-        t15.setLayoutX(0);
-        t15.setLayoutY(350);
-        t15.setPrefWidth(175);
-        t15.setTextFill(Color.YELLOW);
-        //t2.setFont(transformers_medium);
-        t15.setFont(new Font(20));
+        Label t15 = createLabel("Trader Skill Points: ", 0, 350, 20, Color.YELLOW, 175);
 
-        Label t16 = new Label("10");
-        t16.setLayoutX(200);
-        t16.setLayoutY(350);
-        t16.setPrefWidth(50);
+        Label t16 = createLabel("10", 200, 350, 20, Color.RED, 50);
         t16.textProperty().bind(Bindings.convert(points[3]));
-        t16.setTextFill(Color.RED);
-        //t2.setFont(transformers_medium);
-        t16.setFont(new Font(20));
+
+        Line tabLine = new Line(0, 500, 600,500);
+        tabLine.setStroke(Color.YELLOW);
+
+        Line vertLine1 = new Line(150, 500, 150,600);
+        vertLine1.setStroke(Color.YELLOW);
+
+        Button travelChart = new Button("Travel Chart");
+        travelChart.setTextFill(Color.YELLOW);
+        //travelChart.setFont(transformers_small);
+        travelChart.setFont(new Font(20));
+        travelChart.setStyle("-fx-background-color: transparent;");
+        travelChart.setOnMouseEntered(e -> travelChart.setTextFill(Color.RED));
+        travelChart.setOnMouseExited(e -> travelChart.setTextFill(Color.YELLOW));
+        travelChart.setPrefWidth(150);
+        travelChart.setLayoutX(0);
+        travelChart.setLayoutY(525);
 
         Group grp3 = new Group();
         grp3.getChildren().add(mv3);
@@ -462,7 +381,10 @@ public class SpaceTrader extends Application {
         grp3.getChildren().add(t14);
         grp3.getChildren().add(t15);
         grp3.getChildren().add(t16);
-        grp3.getChildren().add(shipView);
+        grp3.getChildren().add(ship);
+        grp3.getChildren().add(tabLine);
+        grp3.getChildren().add(travelChart);
+        grp3.getChildren().add(vertLine1);
         Scene scene3 = new Scene(grp3, 600, 600);
         startButton.setOnAction((e) -> {
             getDifficultyChoice(choiceBox);
@@ -479,6 +401,19 @@ public class SpaceTrader extends Application {
             }
             window.setScene(scene3);
         });
+
+        //STAGE FOUR
+        ImageView image4 = createImage("travelChartBackground.jpg", 0, 0, 600, 600);
+
+        Label fourLabel = createLabel("SPACE TRADER", 210, 0, 25, Color.YELLOW, 180);
+
+        Group grp4 = new Group();
+        grp4.getChildren().add(image4);
+        grp4.getChildren().add(fourLabel);
+        Scene scene4 = new Scene(grp4, 600, 600);
+        travelChart.setOnAction(e -> window.setScene(scene4));
+
+
 
         //Starting the demo
         window.setScene(scene1);
@@ -504,6 +439,25 @@ public class SpaceTrader extends Application {
         } else {
             throw new IllegalArgumentException("Difficulty Level must be selected");
         }
+    }
+
+    public Label createLabel(String text, int x, int y, int font, Color c, int width) {
+        Label newLabel = new Label(text);
+        newLabel.setTextFill(c);
+        newLabel.setFont(new Font(font));
+        newLabel.setLayoutX(x);
+        newLabel.setLayoutY(y);
+        newLabel.setPrefWidth(width);
+        return newLabel;
+    }
+    public ImageView createImage(String path, int x, int y, int width, int height) {
+        Image newImage = new Image("\\resources\\" + path);
+        ImageView image = new ImageView(newImage);
+        image.setFitHeight(height);
+        image.setFitWidth(width);
+        image.setLayoutX(x);
+        image.setLayoutY(y);
+        return image;
     }
 
     public int getLevel() {
