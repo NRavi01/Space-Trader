@@ -10,24 +10,34 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import java.io.*;
 
 
 public class SpaceTrader extends Application {
+    //Player properties
+    private Player player;
     private String playerName;
     private SimpleIntegerProperty value = new SimpleIntegerProperty(this, "value");
     private int skillPoints = 16;
     private int difficultyLevel = 0;
     private SimpleIntegerProperty[] points = new SimpleIntegerProperty[4];
 
+    Region currentSystem;
+    private final String[] governments = {"Democratic", "Fascist", "Communist", "Separatist"};
+
     public SpaceTrader() {
         for (int i = 0; i < 4; i++) {
             points[i] = new SimpleIntegerProperty();
         }
+        int regionSize = (int) (Math.random() * 20 + 10);
+        int techLevel = (int) (Math.random() * 3 + 1);
+        String government = governments[(int) (Math.random() * governments.length)];
+        int policePresence = (int) (Math.random() * 3 + 1);
+        currentSystem = new Region("NishSystem", regionSize, techLevel, government, policePresence);
     }
 
     public void start(Stage primaryStage) throws Exception {
@@ -42,7 +52,9 @@ public class SpaceTrader extends Application {
         ImageView mv = createImage("SpaceTraderBackground.jpg", 0, 0, 600, 600);
 
         Text t = new Text(100, 200, "SPACE TRADER");
-        //Font transformers_medium = Font.loadFont("\\resources\\transformers_font.ttf", 60);
+        //Font transformers_medium = Font.loadFont(
+        //new FileInputStream("C:\\Users\\bobby\\Documents\\Year1" +
+        //"\\CS2340\\spaceTrader\\resources\\transformers_font.ttf"), 60);
         t.setFont(new Font(60));
         t.setFill(Color.YELLOW);
         //t.setFont(transformers_medium);
@@ -271,22 +283,6 @@ public class SpaceTrader extends Application {
         startButton.setLayoutX(225);
         startButton.setLayoutY(550);
 
-        startButton.setOnAction((e) -> {
-            getDifficultyChoice(choiceBox);
-            String playerName = name.getText();
-            name.clear();
-
-            try {
-                if (playerName == null || playerName.equals("")) {
-                    throw new IllegalArgumentException("Name cannot be blank");
-                }
-
-                System.out.printf("Game Started! %n%s has entered the game", playerName);
-            } catch (IllegalArgumentException var4) {
-                System.out.println(var4.getMessage());
-            }
-        });
-
         Group grp2 = new Group();
         grp2.getChildren().add(mv2);
         grp2.getChildren().add(name);
@@ -403,15 +399,9 @@ public class SpaceTrader extends Application {
         });
 
         //STAGE FOUR
-        ImageView image4 = createImage("travelChartBackground.jpg", 0, 0, 600, 600);
+        player = new Player(playerName, getDifficultyChoice(choiceBox), points);
 
-        Label fourLabel = createLabel("SPACE TRADER", 210, 0, 25, Color.YELLOW, 180);
-
-        Group grp4 = new Group();
-        grp4.getChildren().add(image4);
-        grp4.getChildren().add(fourLabel);
-        Scene scene4 = new Scene(grp4, 600, 600);
-        travelChart.setOnAction(e -> window.setScene(scene4));
+        travelChart.setOnAction(e -> window.setScene(getTravelChart()));
 
 
 
@@ -421,8 +411,34 @@ public class SpaceTrader extends Application {
         primaryStage.show();
     }
 
+    private Scene getTravelChart() {
+        ImageView image4 = createImage("travelChartBackground.jpg", 0, 0, 600, 600);
+
+        Label fourLabel = createLabel("SPACE TRADER", 210, 0, 25, Color.YELLOW, 180);
+
+        Circle fuelRadius = new Circle(300, 300, player.getFuel());
+        fuelRadius.setStroke(Color.YELLOW);
+
+        Circle currRegion = new Circle(300, 300, currentSystem.getSize(), Color.RED);
+        currRegion.setStroke(Color.BLUE);
+
+
+        int xco = 280 - currentSystem.getSize() / 2;
+        int yco = 310 + currentSystem.getSize() / 2;
+        Label currRegionLabel = createLabel(currentSystem.getName(), xco, yco, 10, Color.GREEN, 60);
+
+        Group grp4 = new Group();
+        grp4.getChildren().add(image4);
+        grp4.getChildren().add(fourLabel);
+        grp4.getChildren().add(fuelRadius);
+        grp4.getChildren().add(currRegion);
+        grp4.getChildren().add(currRegionLabel);
+        Scene scene4 = new Scene(grp4, 600, 600);
+        return scene4;
+    }
+
     //provide different difficulty levels(easy, medium, hard)
-    private void getDifficultyChoice(ChoiceBox<String> choiceBox) {
+    private int getDifficultyChoice(ChoiceBox<String> choiceBox) {
         String level = choiceBox.getValue();
         if (level.equals("Easy")) {
             value.set(1000);
@@ -439,6 +455,7 @@ public class SpaceTrader extends Application {
         } else {
             throw new IllegalArgumentException("Difficulty Level must be selected");
         }
+        return difficultyLevel;
     }
 
     public Label createLabel(String text, int x, int y, int font, Color c, int width) {
