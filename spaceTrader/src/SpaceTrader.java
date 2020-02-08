@@ -70,9 +70,6 @@ public class SpaceTrader extends Application {
             regions[i] = newSystem;
             names.remove(sysName);
         }
-        for (int i = 0; i < regions.length; i++) {
-            System.out.println("Region 0 is " + regions[i].getName() + regions[i].getUniX() + " " + regions[i].getUniY());
-        }
     }
 
     public void start(Stage primaryStage) throws Exception {
@@ -426,7 +423,7 @@ public class SpaceTrader extends Application {
                     throw new IllegalArgumentException("Name cannot be blank");
                 }
 
-                System.out.printf("Game Started! %n%s has entered the game", playerName);
+                //System.out.printf("Game Started! %n%s has entered the game", playerName);
             } catch (IllegalArgumentException var4) {
                 System.out.println(var4.getMessage());
             }
@@ -436,7 +433,9 @@ public class SpaceTrader extends Application {
         //STAGE FOUR
         player = new Player(playerName, getDifficultyChoice(choiceBox), points);
 
-        travelChart.setOnAction(e -> window.setScene(getTravelChart()));
+        Group grp4 = getTravelChart(window, scene3);
+        Scene s4 = new Scene(grp4, 600, 600);
+        travelChart.setOnAction(e -> window.setScene(s4));
 
 
 
@@ -446,7 +445,7 @@ public class SpaceTrader extends Application {
         primaryStage.show();
     }
 
-    private Scene getTravelChart() {
+    private Group getTravelChart(Stage window, Scene homeScene) {
         ImageView image4 = createImage("travelChartBackground.jpg", 0, 0, 600, 600);
 
         Label fourLabel = createLabel("SPACE TRADER", 210, 0, 25, Color.YELLOW, 180);
@@ -464,7 +463,7 @@ public class SpaceTrader extends Application {
 
         Circle currRegion = new Circle(currentSystem.getSubX(), currentSystem.getSubY(), currentSystem.getSize(), Color.RED);
         currRegion.setStroke(Color.BLUE);
-
+        System.out.println(currentSystem.getName());
         int xco = currentSystem.getSubX() - currentSystem.getSize() - 10;
         int yco = currentSystem.getSubY() + currentSystem.getSize();
         Label currRegionLabel = createLabel(currentSystem.getName(), xco, yco, 10, Color.GREEN, 60);
@@ -480,6 +479,7 @@ public class SpaceTrader extends Application {
                 int xlabel = regions[i].getSubX() - regions[i].getSize() - 10;
                 int ylabel = regions[i].getSubY() + regions[i].getSize();
                 systemLabels.add(createLabel(regions[i].getName(), xlabel, ylabel, 10, Color.YELLOW, 60));
+                systemButtons.add(createButton(regions[i].getSubX(), regions[i].getSubY(), regions[i].getName()));
             }
         }
         grp4.getChildren().add(fourLabel);
@@ -491,14 +491,47 @@ public class SpaceTrader extends Application {
             grp4.getChildren().add(systems.get(i));
         }
         for (int i = 0; i < systemLabels.size(); i++) {
-            System.out.println("hi");
             grp4.getChildren().add(systemLabels.get(i));
         }
 
-        Scene scene4 = new Scene(grp4, 600, 600);
-        return scene4;
+        for (int i = 0; i < systemButtons.size(); i++) {
+            int index = i;
+            systemButtons.get(index).setOnAction((e) -> {
+                window.setScene(homeScene);
+                for (int j = 0; j < regions.length; j++) {
+                    if (systemButtons.get(index).getText().equals(regions[j].getName())) {
+                        System.out.println("hi");
+                        setCurrRegion(regions[j]);
+                    }
+                }
+                resetPoints();
+            });
+            grp4.getChildren().add(systemButtons.get(i));
+        }
+
+        return grp4;
     }
 
+    private void resetPoints() {
+        for (int i = 0; i < regions.length; i++) {
+            regions[i].setSubX(regions[i].getUniX());
+            regions[i].setSubY(regions[i].getUniY());
+        }
+    }
+
+    private void setCurrRegion(Region reg) {
+        currentSystem = reg;
+    }
+    private Button createButton(int x, int y, String name) {
+        Button startButton = new Button(name);
+        startButton.setFont(new Font(20));
+        startButton.setTextFill(Color.BLUE);
+        startButton.setStyle("-fx-background-color: transparent;");
+        startButton.setPrefWidth(200);
+        startButton.setLayoutX(x);
+        startButton.setLayoutY(y);
+        return startButton;
+    }
     //provide different difficulty levels(easy, medium, hard)
     private int getDifficultyChoice(ChoiceBox<String> choiceBox) {
         String level = choiceBox.getValue();
