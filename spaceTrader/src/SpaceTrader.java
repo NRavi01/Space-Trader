@@ -14,6 +14,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import java.io.*;
 
 
 public class SpaceTrader extends Application {
@@ -41,9 +42,7 @@ public class SpaceTrader extends Application {
         ImageView mv = createImage("SpaceTraderBackground.jpg", 0, 0, 600, 600);
 
         Text t = new Text(100, 200, "SPACE TRADER");
-        //Font transformers_medium = Font.loadFont(
-        //new FileInputStream("C:\\Users\\bobby\\Documents\\Year1" +
-        //"\\CS2340\\spaceTrader\\resources\\transformers_font.ttf"), 60);
+        //Font transformers_medium = Font.loadFont("\\resources\\transformers_font.ttf", 60);
         t.setFont(new Font(60));
         t.setFill(Color.YELLOW);
         //t.setFont(transformers_medium);
