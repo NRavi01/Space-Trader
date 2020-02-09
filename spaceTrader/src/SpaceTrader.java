@@ -420,11 +420,11 @@ public class SpaceTrader extends Application {
         //STAGE FOUR
         player = new Player(playerName, getDifficultyChoice(choiceBox), points);
 
-        Group grp4 = getTravelChart(window, scene3);
-        Scene s4 = new Scene(grp4, 600, 600);
-        travelChart.setOnAction(e -> window.setScene(s4));
-
-
+        travelChart.setOnAction(e -> {
+            Group grp4 = getTravelChart(window, scene3);
+            Scene s4 = new Scene(grp4, 600, 600);
+            window.setScene(s4);
+        });
 
         //Starting the demo
         window.setScene(scene1);
@@ -466,7 +466,9 @@ public class SpaceTrader extends Application {
                 int xlabel = regions[i].getSubX() - regions[i].getSize() - 10;
                 int ylabel = regions[i].getSubY() + regions[i].getSize();
                 systemLabels.add(createLabel(regions[i].getName(), xlabel, ylabel, 10, Color.YELLOW, 60));
-                systemButtons.add(createButton(regions[i].getSubX(), regions[i].getSubY(), regions[i].getName()));
+                int xbut = regions[i].getSubX() - (int) (regions[i].getSize() * 1.5);
+                int ybut = regions[i].getSubY() - (int) (regions[i].getSize() * 1.5);
+                systemButtons.add(createButton(xbut, ybut, regions[i].getSize(), regions[i].getSize(), regions[i].getName()))
             }
         }
         grp4.getChildren().add(fourLabel);
@@ -484,26 +486,49 @@ public class SpaceTrader extends Application {
         for (int i = 0; i < systemButtons.size(); i++) {
             int index = i;
             systemButtons.get(index).setOnAction((e) -> {
-                window.setScene(homeScene);
                 for (int j = 0; j < regions.length; j++) {
                     if (systemButtons.get(index).getText().equals(regions[j].getName())) {
-                        System.out.println("hi");
-                        setCurrRegion(regions[j]);
+                        if (getDistance(regions[j].getSubX(), regions[j].getSubY(), 300, 300) <= player.getFuel()) {
+                            setCurrRegion(regions[j]);
+                            resetPoints();
+                            window.setScene(homeScene);
+                        }
+                        else {
+                            System.out.println("Outside fuel range!");
+                        }
                     }
                 }
-                resetPoints();
             });
             grp4.getChildren().add(systemButtons.get(i));
         }
 
         return grp4;
     }
-
+  
+    private double getDistance(int x1, int y1, int x2, int y2) {
+        double distance = Math.abs((double) ( (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) ));
+        return Math.sqrt(distance);
+    }
     private void resetPoints() {
         for (int i = 0; i < regions.length; i++) {
             regions[i].setSubX(regions[i].getUniX());
             regions[i].setSubY(regions[i].getUniY());
         }
+    }
+
+    private void setCurrRegion(Region reg) {
+        currentSystem = reg;
+    }
+    private Button createButton(int x, int y, int width, int height, String name) {
+        Button startButton = new Button(name);
+        startButton.setFont(new Font(20));
+        startButton.setTextFill(Color.BLUE);
+        startButton.setStyle("-fx-background-color: transparent;");
+        startButton.setPrefWidth(width);
+        startButton.setPrefHeight(height);
+        startButton.setLayoutX(x);
+        startButton.setLayoutY(y);
+        return startButton;
     }
 
     private void setCurrRegion(Region reg) {
