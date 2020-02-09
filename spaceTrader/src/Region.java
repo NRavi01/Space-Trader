@@ -24,6 +24,7 @@ public class Region {
         this.subY = uniY;
         this.name = name;
         this.size = size;
+        this.techLevel = techLevel;
         this.government = government;
         this.policePresence = policePresence;
     }
