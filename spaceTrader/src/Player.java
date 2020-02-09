@@ -24,11 +24,7 @@ public class Player {
         return fuel;
     }
 
-    public void decreaseFuel(int amount) {
-        fuel = fuel - amount;
-    }
-
-    public void increaseFuel(int amount) {
+    public void changeFuel(int amount) {
         fuel = fuel + amount;
     }
 
