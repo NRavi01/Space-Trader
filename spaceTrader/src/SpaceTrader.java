@@ -70,9 +70,6 @@ public class SpaceTrader extends Application {
             regions[i] = newSystem;
             names.remove(sysName);
         }
-        for (int i = 0; i < regions.length; i++) {
-            System.out.println("Region 0 is " + regions[i].getName() + regions[i].getUniX() + " " + regions[i].getUniY());
-        }
     }
 
     public void start(Stage primaryStage) throws Exception {
@@ -426,7 +423,7 @@ public class SpaceTrader extends Application {
                     throw new IllegalArgumentException("Name cannot be blank");
                 }
 
-                System.out.printf("Game Started! %n%s has entered the game", playerName);
+                //System.out.printf("Game Started! %n%s has entered the game", playerName);
             } catch (IllegalArgumentException var4) {
                 System.out.println(var4.getMessage());
             }
@@ -436,9 +433,11 @@ public class SpaceTrader extends Application {
         //STAGE FOUR
         player = new Player(playerName, getDifficultyChoice(choiceBox), points);
 
-        travelChart.setOnAction(e -> window.setScene(getTravelChart()));
-
-
+        travelChart.setOnAction(e -> {
+            Group grp4 = getTravelChart(window, scene3);
+            Scene s4 = new Scene(grp4, 600, 600);
+            window.setScene(s4);
+        });
 
         //Starting the demo
         window.setScene(scene1);
@@ -446,7 +445,7 @@ public class SpaceTrader extends Application {
         primaryStage.show();
     }
 
-    private Scene getTravelChart() {
+    private Group getTravelChart(Stage window, Scene homeScene) {
         ImageView image4 = createImage("travelChartBackground.jpg", 0, 0, 600, 600);
 
         Label fourLabel = createLabel("SPACE TRADER", 210, 0, 25, Color.YELLOW, 180);
@@ -464,7 +463,7 @@ public class SpaceTrader extends Application {
 
         Circle currRegion = new Circle(currentSystem.getSubX(), currentSystem.getSubY(), currentSystem.getSize(), Color.RED);
         currRegion.setStroke(Color.BLUE);
-
+        System.out.println(currentSystem.getName());
         int xco = currentSystem.getSubX() - currentSystem.getSize() - 10;
         int yco = currentSystem.getSubY() + currentSystem.getSize();
         Label currRegionLabel = createLabel(currentSystem.getName(), xco, yco, 10, Color.GREEN, 60);
@@ -480,6 +479,9 @@ public class SpaceTrader extends Application {
                 int xlabel = regions[i].getSubX() - regions[i].getSize() - 10;
                 int ylabel = regions[i].getSubY() + regions[i].getSize();
                 systemLabels.add(createLabel(regions[i].getName(), xlabel, ylabel, 10, Color.YELLOW, 60));
+                int xbut = regions[i].getSubX() - (int) (regions[i].getSize() * 1.5);
+                int ybut = regions[i].getSubY() - (int) (regions[i].getSize() * 1.5);
+                systemButtons.add(createButton(xbut, ybut, regions[i].getSize(), regions[i].getSize(), regions[i].getName()));
             }
         }
         grp4.getChildren().add(fourLabel);
@@ -491,12 +493,55 @@ public class SpaceTrader extends Application {
             grp4.getChildren().add(systems.get(i));
         }
         for (int i = 0; i < systemLabels.size(); i++) {
-            System.out.println("hi");
             grp4.getChildren().add(systemLabels.get(i));
         }
 
-        Scene scene4 = new Scene(grp4, 600, 600);
-        return scene4;
+        for (int i = 0; i < systemButtons.size(); i++) {
+            int index = i;
+            systemButtons.get(index).setOnAction((e) -> {
+                for (int j = 0; j < regions.length; j++) {
+                    if (systemButtons.get(index).getText().equals(regions[j].getName())) {
+                        if (getDistance(regions[j].getSubX(), regions[j].getSubY(), 300, 300) <= player.getFuel()) {
+                            setCurrRegion(regions[j]);
+                            resetPoints();
+                            window.setScene(homeScene);
+                        }
+                        else {
+                            System.out.println("Outside fuel range!");
+                        }
+                    }
+                }
+            });
+            grp4.getChildren().add(systemButtons.get(i));
+        }
+
+        return grp4;
+    }
+
+    private double getDistance(int x1, int y1, int x2, int y2) {
+        double distance = Math.abs((double) ( (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) ));
+        return Math.sqrt(distance);
+    }
+    private void resetPoints() {
+        for (int i = 0; i < regions.length; i++) {
+            regions[i].setSubX(regions[i].getUniX());
+            regions[i].setSubY(regions[i].getUniY());
+        }
+    }
+
+    private void setCurrRegion(Region reg) {
+        currentSystem = reg;
+    }
+    private Button createButton(int x, int y, int width, int height, String name) {
+        Button startButton = new Button(name);
+        startButton.setFont(new Font(20));
+        startButton.setTextFill(Color.BLUE);
+        startButton.setStyle("-fx-background-color: transparent;");
+        startButton.setPrefWidth(width);
+        startButton.setPrefHeight(height);
+        startButton.setLayoutX(x);
+        startButton.setLayoutY(y);
+        return startButton;
     }
 
     //provide different difficulty levels(easy, medium, hard)
