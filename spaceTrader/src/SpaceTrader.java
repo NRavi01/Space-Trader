@@ -624,7 +624,9 @@ public class SpaceTrader extends Application {
         });
 
         travelButton.setOnAction(e -> {
-            if (getDistance(region.getSubX(), region.getSubY(), 300, 300) <= player.getFuel()) {
+            int distance = (int) (getDistance(region.getSubX(), region.getSubY(), 300, 300));
+            if (distance <= player.getFuel()) {
+                player.changeFuel((-1) * distance);
                 setCurrRegion(region);
                 resetPoints();
             }
