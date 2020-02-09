@@ -64,7 +64,7 @@ public class SpaceTrader extends Application {
             int regionSize2 = (int) (Math.random() * 10 + 10);
             int techLevel2 = (int) (Math.random() * 3 + 1);
             String government2 = governments[(int) (Math.random() * governments.length)];
-            int policePresence2 = (int) (Math.random() * 3 + 1);
+            int policePresence2 = (int) (Math.random() * 3 +  1);
             int sysName = (int) (Math.random() * names.size());
             newSystem = new Region(names.get(sysName), (int) (Math.random() * 600), (int) (Math.random() * 600), regionSize2, techLevel2, government2, policePresence2);
             regions[i] = newSystem;
@@ -84,11 +84,19 @@ public class SpaceTrader extends Application {
         ImageView mv = createImage("SpaceTraderBackground.jpg", 0, 0, 600, 600);
 
         Text t = new Text(100, 200, "SPACE TRADER");
+        //Font transformers_medium = Font.loadFont(
+        //new FileInputStream("C:\\Users\\bobby\\Documents\\Year1" +
+        //"\\CS2340\\spaceTrader\\resources\\transformers_font.ttf"), 60);
         t.setFont(new Font(60));
         t.setFill(Color.YELLOW);
+        //t.setFont(transformers_medium);
 
         Button playButton = new Button("Play");
         playButton.setTextFill(Color.YELLOW);
+        //Font transformers_small = Font.loadFont(
+        //new FileInputStream("C:\\Users\\bobby\\Documents\\Year1" +
+        //"\\CS2340\\spaceTrader\\resources\\transformers_font.ttf"), 20);
+        //playButton.setFont(transformers_small);
         playButton.setFont(new Font(30));
         playButton.setStyle("-fx-background-color: transparent;");
         playButton.setOnMouseEntered(e -> playButton.setTextFill(Color.RED));
@@ -109,6 +117,7 @@ public class SpaceTrader extends Application {
 
         Text t2 = new Text(100, 100, "SPACE TRADER");
         t2.setFill(Color.YELLOW);
+        //t2.setFont(transformers_medium);
         t2.setFont(new Font(60));
 
         TextField name = new TextField();
@@ -297,6 +306,7 @@ public class SpaceTrader extends Application {
 
         Button startButton = new Button("Start Game");
         startButton.setTextFill(Color.YELLOW);
+        //startButton.setFont(transformers_small);
         startButton.setFont(new Font(20));
         startButton.setStyle("-fx-background-color: transparent;");
         startButton.setOnMouseEntered(e -> startButton.setTextFill(Color.RED));
@@ -328,10 +338,12 @@ public class SpaceTrader extends Application {
 
         Text t3 = new Text(100, 50, "SPACE TRADER");
         t3.setFill(Color.YELLOW);
+        //t2.setFont(transformers_medium);
         t3.setFont(new Font(60));
 
         Text t4 = new Text(175, 100, "Commander Status");
         t4.setFill(Color.YELLOW);
+        //t2.setFont(transformers_medium);
         t4.setFont(new Font(30));
 
         Label t5 = createLabel("Player Name: ", 0, 100, 20, Color.YELLOW, 125);
@@ -372,6 +384,7 @@ public class SpaceTrader extends Application {
 
         Button travelChart = new Button("Travel Chart");
         travelChart.setTextFill(Color.YELLOW);
+        //travelChart.setFont(transformers_small);
         travelChart.setFont(new Font(20));
         travelChart.setStyle("-fx-background-color: transparent;");
         travelChart.setOnMouseEntered(e -> travelChart.setTextFill(Color.RED));
@@ -468,7 +481,7 @@ public class SpaceTrader extends Application {
                 systemLabels.add(createLabel(regions[i].getName(), xlabel, ylabel, 10, Color.YELLOW, 60));
                 int xbut = regions[i].getSubX() - (int) (regions[i].getSize() * 1.5);
                 int ybut = regions[i].getSubY() - (int) (regions[i].getSize() * 1.5);
-                systemButtons.add(createButton(xbut, ybut, regions[i].getSize(), regions[i].getSize(), regions[i].getName()))
+                systemButtons.add(createButton(xbut, ybut, regions[i].getSize(), regions[i].getSize(), regions[i].getName()));
             }
         }
         grp4.getChildren().add(fourLabel);
@@ -504,7 +517,10 @@ public class SpaceTrader extends Application {
 
         return grp4;
     }
-  
+
+    private Scene createRegionScene(Stage window, Region region) {
+
+    }
     private double getDistance(int x1, int y1, int x2, int y2) {
         double distance = Math.abs((double) ( (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) ));
         return Math.sqrt(distance);
@@ -531,19 +547,6 @@ public class SpaceTrader extends Application {
         return startButton;
     }
 
-    private void setCurrRegion(Region reg) {
-        currentSystem = reg;
-    }
-    private Button createButton(int x, int y, String name) {
-        Button startButton = new Button(name);
-        startButton.setFont(new Font(20));
-        startButton.setTextFill(Color.BLUE);
-        startButton.setStyle("-fx-background-color: transparent;");
-        startButton.setPrefWidth(200);
-        startButton.setLayoutX(x);
-        startButton.setLayoutY(y);
-        return startButton;
-    }
     //provide different difficulty levels(easy, medium, hard)
     private int getDifficultyChoice(ChoiceBox<String> choiceBox) {
         String level = choiceBox.getValue();
