@@ -545,7 +545,12 @@ public class SpaceTrader extends Application {
         });
 
         shipyardButton.setOnAction(e -> {
-            window.setScene(createShipyard(window, region));
+            if  (region == currentSystem) {
+                window.setScene(createShipyard(window, region));
+            }
+            else {
+                System.out.println("Can't buy from region you are not in!");
+            }
         });
 
         commandButton.setOnAction(e -> {
@@ -581,27 +586,31 @@ public class SpaceTrader extends Application {
         Label planetName = createLabel(region.getName() + " Shipyard", 175, 0, 25, Color.YELLOW, 250);
         planetName.setAlignment(Pos.CENTER);
 
-        Label t1 = createLabel("Current Ship Type: ", 0, 100, 20, Color.YELLOW, 200);
-        Label t2 = createLabel(player.getShip().getType(), 200, 100, 20, Color.RED, 50);
-        Label t3 = createLabel("Current Shield Level: ", 0, 150, 20, Color.YELLOW, 200);
-        Label t4 = createLabel(String.valueOf(player.getShip().getShieldLevel()), 200, 150, 20, Color.RED, 175);
-        Label t5 = createLabel("Current Fuel Level: ", 0, 200, 20, Color.YELLOW, 200);
-        Label t6 = createLabel(String.valueOf(player.getFuel()), 200, 200, 20, Color.RED, 50);
-        Label t7 = createLabel("Current Credits: ", 0, 250, 20, Color.YELLOW, 200);
-        Label t8 = createLabel(String.valueOf(player.getCredits()), 200, 250, 20, Color.RED, 50);
+        Label t1 = createLabel("Current Ship Type: ", 0, 50, 20, Color.YELLOW, 250);
+        Label t2 = createLabel(player.getShip().getType(), 250, 50, 20, Color.RED, 100);
+        Label w1 = createLabel("Current Weapon Level: ", 0, 100, 20, Color.YELLOW, 250);
+        Label w2 = createLabel(String.valueOf(player.getShip().getWeaponLevel()), 250, 100, 20, Color.RED, 100);
+        Label w3 = createLabel("Current Cargo Holds: ", 0, 150, 20, Color.YELLOW, 250);
+        Label w4 = createLabel(String.valueOf(player.getShip().getCargoHolds()), 250, 150, 20, Color.RED, 100);
+        Label t3 = createLabel("Current Shield Level: ", 0, 200, 20, Color.YELLOW, 250);
+        Label t4 = createLabel(String.valueOf(player.getShip().getShieldLevel()), 250, 200, 20, Color.RED, 175);
+        Label t5 = createLabel("Current Fuel Level: ", 0, 250, 20, Color.YELLOW, 250);
+        Label t6 = createLabel(String.valueOf(player.getFuel()), 250, 250, 20, Color.RED, 50);
+        Label t7 = createLabel("Current Credits: ", 0, 300, 20, Color.YELLOW, 250);
+        Label t8 = createLabel(String.valueOf(player.getCredits()), 250, 300, 20, Color.RED, 50);
 
-        Label fuel = createLabel("Increase fuel by: ", 0, 325, 20, Color.BLUE, 150);
+        Label fuel = createLabel("Increase fuel by: ", 0, 350, 20, Color.BLUE, 150);
         Slider fuelSlider = new Slider(0, 300, 0);
         fuelSlider.setLayoutX(150);
-        fuelSlider.setLayoutY(335);
+        fuelSlider.setLayoutY(360);
         fuelSlider.setPrefWidth(200);
         fuelSlider.setShowTickMarks(true);
         fuelSlider.setMajorTickUnit(30);
         fuelSlider.setMinorTickCount(20);
         fuelSlider.setBlockIncrement(100);
         fuelSlider.setSnapToTicks(true);
-        Label fuelLabel = createLabel("0", 350, 325, 20, Color.BLUE, 35);
-        Button addFuel = createButton(385, 315, 215, 50, Color.BLUE , "PURCHASE FOR 0");
+        Label fuelLabel = createLabel("0", 350, 350, 20, Color.BLUE, 35);
+        Button addFuel = createButton(385, 340, 215, 50, Color.BLUE , "PURCHASE FOR 0");
         //addFuel.setAlignment(Pos.BASELINE_LEFT);
         addFuel.setOnMouseEntered(e -> addFuel.setTextFill(Color.RED));
         addFuel.setOnMouseExited(e -> addFuel.setTextFill(Color.BLUE));
@@ -628,18 +637,18 @@ public class SpaceTrader extends Application {
             }
         });
 
-        Label shield = createLabel("Increase shield: ", 0, 375, 20, Color.BLUE, 150);
+        Label shield = createLabel("Increase shield: ", 0, 400, 20, Color.BLUE, 150);
         Slider shieldSlider = new Slider(0, 5, 0);
         shieldSlider.setLayoutX(150);
-        shieldSlider.setLayoutY(385);
+        shieldSlider.setLayoutY(410);
         shieldSlider.setPrefWidth(200);
         shieldSlider.setShowTickMarks(true);
         shieldSlider.setMajorTickUnit(1);
         shieldSlider.setMinorTickCount(0);
         shieldSlider.setBlockIncrement(1);
         shieldSlider.setSnapToTicks(true);
-        Label shieldLabel = createLabel("0", 350, 375, 20, Color.BLUE, 35);
-        Button addShield = createButton(385, 365, 215, 50, Color.BLUE , "PURCHASE FOR 0");
+        Label shieldLabel = createLabel("0", 350, 400, 20, Color.BLUE, 35);
+        Button addShield = createButton(385, 390, 215, 50, Color.BLUE , "PURCHASE FOR 0");
         //addFuel.setAlignment(Pos.BASELINE_LEFT);
         addShield.setOnMouseEntered(e -> addShield.setTextFill(Color.RED));
         addShield.setOnMouseExited(e -> addShield.setTextFill(Color.BLUE));
@@ -695,7 +704,8 @@ public class SpaceTrader extends Application {
         travelChartButton.setOnMouseExited(e -> travelChartButton.setTextFill(Color.YELLOW));
 
         Group grp = new Group();
-        grp.getChildren().addAll(background, planetName, t1, t2, t3, t4, t5, t6, t7, t8, tabLine, fuel, fuelSlider,
+        grp.getChildren().addAll(background, planetName, t1, t2, w1, w2, w3, w4, t3, t4,
+                t5, t6, t7, t8, tabLine, fuel, fuelSlider,
                 fuelLabel, addFuel, shield, shieldSlider, shieldLabel, addShield,
                 vertLine1, vertLine2, vertLine3, backButton, commandButton, buyShipButton, travelChartButton);
 
@@ -804,7 +814,7 @@ public class SpaceTrader extends Application {
 
         Group grp = new Group();
         grp.getChildren().addAll(background, planetName, t1, t2, t3, t4, t5, t6, t7, t8, tabLine,
-                vertLine1, vertLine2, vertLine3, backButton, purchaseButton, cost1, cost2, cost3,
+                vertLine1, vertLine2, vertLine3, backButton, purchaseButton, cost1, cost2, cost3, cost4,
                 shipBox, shipBoxDescription, shipyardButton, travelChartButton);
 
         backButton.setOnAction(e -> {
@@ -817,9 +827,8 @@ public class SpaceTrader extends Application {
 
         purchaseButton.setOnAction(e -> {
             String shipName = shipBox.getValue();
-            System.out.println(shipName);
             for (int i = 0; i < player.getShips().size(); i++) {
-                if (shipName.equals(player.getShips().get(i)) && !shipName.equals(player.getShip().getType())) {
+                if (shipName.equals(player.getShips().get(i).getType()) && !shipName.equals(player.getShip().getType())) {
                     System.out.println("hi");
                     if (player.getCredits() > player.getShips().get(i).getPrice()) {
                         player.setShip(player.getShips().get(i));
