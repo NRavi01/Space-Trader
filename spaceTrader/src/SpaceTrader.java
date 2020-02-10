@@ -553,6 +553,10 @@ public class SpaceTrader extends Application {
         Label planetName = createLabel(region.getName(), 210, 0, 25, Color.YELLOW, 180);
         planetName.setAlignment(Pos.CENTER);
 
+        Label coordinates = createLabel("(" + region.getUniX() + ", " + region.getUniY() + ")",
+            210, 30, 25, Color.YELLOW, 180);
+        coordinates.setAlignment(Pos.CENTER);
+
         Label t1 = createLabel("Tech Level: ", 0, 100, 20, Color.YELLOW, 125);
 
         Label t2 = createLabel(Integer.toString(region.getTechLevel()), 125, 100, 20, Color.RED, 50);
@@ -608,8 +612,8 @@ public class SpaceTrader extends Application {
         travelButton.setLayoutY(525);
 
         Group grp = new Group();
-        grp.getChildren().addAll(background, planetName, t1, t2, t3, t4, t5, t6, tabLine,
-            vertLine1, vertLine2, vertLine3, backButton, commandButton, travelButton);
+        grp.getChildren().addAll(background, planetName, coordinates, t1, t2, t3, t4, t5, t6,
+            tabLine, vertLine1, vertLine2, vertLine3, backButton, commandButton, travelButton);
 
         backButton.setOnAction(e -> {
             Group grp4 = getTravelChart(window);
