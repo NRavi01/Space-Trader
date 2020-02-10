@@ -620,13 +620,13 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 fuelLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                addFuel.setText("PURCHASE FOR " + t1.intValue() * 3);
+                addFuel.setText("PURCHASE FOR " + t1.intValue());
             }
         });
 
         addFuel.setOnAction(e -> {
             int amountFuelAdded = (int) (fuelSlider.getValue());
-            if (player.getCredits() > amountFuelAdded * 3) {
+            if (player.getCredits() > amountFuelAdded) {
                 player.changeFuel(amountFuelAdded);
                 player.setCredits(player.getCredits() - amountFuelAdded * 3);
                 window.setScene(createShipyard(window, region));
@@ -720,10 +720,10 @@ public class SpaceTrader extends Application {
         commandButton.setOnAction(e -> {
             int amountShieldAdded = (int) (shieldSlider.getValue());
             int amountFuelAdded = (int) (fuelSlider.getValue());
-            if (player.getCredits() > (amountShieldAdded * 100 + amountFuelAdded * 3)) {
+            if (player.getCredits() > (amountShieldAdded * 100 + amountFuelAdded)) {
                 player.changeShield(amountShieldAdded);
                 player.changeFuel(amountFuelAdded);
-                player.setCredits(player.getCredits() - amountShieldAdded * 100 - amountFuelAdded * 3);
+                player.setCredits(player.getCredits() - amountShieldAdded * 100 - amountFuelAdded);
                 window.setScene(createShipyard(window, region));
             }
             else {
@@ -759,7 +759,7 @@ public class SpaceTrader extends Application {
         Label cost3 = createLabel("800", 450, 200, 20, Color.BLUE, 100);
         Label t7 = createLabel("Bumblebee: ", 0, 250, 20, Color.YELLOW, 150);
         Label t8 = createLabel("15 Cargo, 2 Weapon, 2 Shield", 150, 250, 20, Color.RED, 300);
-        Label cost4 = createLabel("950", 450, 100, 20, Color.BLUE, 100);
+        Label cost4 = createLabel("950", 450, 250, 20, Color.BLUE, 100);
 
         Label shipBoxDescription = new Label("Type of Ship to Buy: ");
         shipBoxDescription.setLayoutX(50);
