@@ -69,9 +69,20 @@ public class SpaceTrader extends Application {
             int regionSize2 = (int) (Math.random() * 20 + 10);
             int techLevel2 = (int) (Math.random() * 3 + 1);
             String government2 = governments[(int) (Math.random() * governments.length)];
-            int policePresence2 = (int) (Math.random() * 3 +  1);
+            int policePresence2 = (int) (Math.random() * 3 + 1);
             int sysName = (int) (Math.random() * names.size());
-            newSystem = new Region(names.get(sysName), (int) (Math.random() * 600), (int) (Math.random() * 600), regionSize2, techLevel2, government2, policePresence2);
+            
+            int x = (int) (Math.random() * 600);
+            int y = (int) (Math.random() * 600);
+            for (int j = 0; j < i; j++) {
+                while (Math.abs(x - currentSystem.getUniX()) <= 5
+                        || Math.abs(y - currentSystem.getUniY()) <= 5) {
+                    x = (int) (Math.random() * 600);
+                    y = (int) (Math.random() * 600);
+                }
+            }
+
+            newSystem = new Region(names.get(sysName), x, y, regionSize2, techLevel2, government2, policePresence2);
             regions[i] = newSystem;
             names.remove(sysName);
         }
@@ -487,7 +498,7 @@ public class SpaceTrader extends Application {
         planetName.setAlignment(Pos.CENTER);
 
         Label coordinates = createLabel("(" + region.getUniX() + ", " + region.getUniY() + ")",
-            210, 30, 25, Color.YELLOW, 180);
+            210, 30, 15, Color.YELLOW, 180);
         coordinates.setAlignment(Pos.CENTER);
 
         Label t1 = createLabel("Tech Level: ", 0, 100, 20, Color.YELLOW, 125);
