@@ -407,7 +407,7 @@ public class SpaceTrader extends Application {
     private Group getTravelChart(Stage window) {
         ImageView image4 = createImage("travelChartBackground.jpg", 0, 0, 600, 600);
 
-        Label fourLabel = createLabel("SPACE TRADER", 210, 0, 25, Color.YELLOW, 180);
+        //Label fourLabel = createLabel("SPACE TRADER", 210, 0, 25, Color.YELLOW, 180);
 
         Group grp4 = new Group();
         grp4.getChildren().add(image4);
@@ -456,7 +456,7 @@ public class SpaceTrader extends Application {
         currButton.setFont(new Font(0));
         systemButtons.add(currButton);
 
-        grp4.getChildren().addAll(fourLabel, fuelRadius, currRegion, currRegionLabel);
+        grp4.getChildren().addAll(fuelRadius, currRegion, currRegionLabel);
 
         for (int i = 0; i < systems.size(); i++) {
             grp4.getChildren().add(systems.get(i));
@@ -582,9 +582,9 @@ public class SpaceTrader extends Application {
         planetName.setAlignment(Pos.CENTER);
 
         Label t1 = createLabel("Current Ship Type: ", 0, 100, 20, Color.YELLOW, 200);
-        //Label t2 = createLabel(Integer.toString(region.getTechLevel()), 200, 100, 20, Color.RED, 50);
+        Label t2 = createLabel(player.getShip().getType(), 200, 100, 20, Color.RED, 50);
         Label t3 = createLabel("Current Shield Level: ", 0, 150, 20, Color.YELLOW, 200);
-        //t4 = createLabel(region.getGovernment(), 200, 150, 20, Color.RED, 175);
+        Label t4 = createLabel(String.valueOf(player.getShip().getShieldLevel()), 200, 150, 20, Color.RED, 175);
         Label t5 = createLabel("Current Fuel Level: ", 0, 200, 20, Color.YELLOW, 200);
         Label t6 = createLabel(String.valueOf(player.getFuel()), 200, 200, 20, Color.RED, 50);
         Label t7 = createLabel("Current Credits: ", 0, 250, 20, Color.YELLOW, 200);
@@ -628,6 +628,44 @@ public class SpaceTrader extends Application {
             }
         });
 
+        Label shield = createLabel("Increase shield: ", 0, 375, 20, Color.BLUE, 150);
+        Slider shieldSlider = new Slider(0, 5, 0);
+        shieldSlider.setLayoutX(150);
+        shieldSlider.setLayoutY(385);
+        shieldSlider.setPrefWidth(200);
+        shieldSlider.setShowTickMarks(true);
+        shieldSlider.setMajorTickUnit(1);
+        shieldSlider.setMinorTickCount(0);
+        shieldSlider.setBlockIncrement(1);
+        shieldSlider.setSnapToTicks(true);
+        Label shieldLabel = createLabel("0", 350, 375, 20, Color.BLUE, 35);
+        Button addShield = createButton(385, 365, 215, 50, Color.BLUE , "PURCHASE FOR 0");
+        //addFuel.setAlignment(Pos.BASELINE_LEFT);
+        addShield.setOnMouseEntered(e -> addShield.setTextFill(Color.RED));
+        addShield.setOnMouseExited(e -> addShield.setTextFill(Color.BLUE));
+        shieldSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                shieldLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                addShield.setText("PURCHASE FOR " + t1.intValue() * 100);
+            }
+        });
+
+        addShield.setOnAction(e -> {
+            int amountShieldAdded = (int) (shieldSlider.getValue());
+            if (player.getCredits() > amountShieldAdded * 100) {
+                player.changeShield(amountShieldAdded);
+                player.setCredits(player.getCredits() - amountShieldAdded * 100);
+                window.setScene(createShipyard(window, region));
+            }
+            else {
+                System.out.println("Not enough money");
+                shieldSlider.setValue(0);
+            }
+        });
+
         Line tabLine = new Line(0, 500, 600, 500);
         tabLine.setStroke(Color.YELLOW);
 
@@ -644,54 +682,158 @@ public class SpaceTrader extends Application {
         backButton.setOnMouseEntered(e -> backButton.setTextFill(Color.RED));
         backButton.setOnMouseExited(e -> backButton.setTextFill(Color.YELLOW));
 
-        Button commandButton = createButton(150, 525, 150, 50, Color.YELLOW, "Status");
+        Button commandButton = createButton(150, 525, 150, 50, Color.YELLOW, "PURCHASE");
         commandButton.setOnMouseEntered(e -> commandButton.setTextFill(Color.RED));
         commandButton.setOnMouseExited(e -> commandButton.setTextFill(Color.YELLOW));
 
-        Button shipyardButton= createButton(300, 525, 150, 50, Color.YELLOW, "Shipyard");
-        shipyardButton.setOnMouseEntered(e -> shipyardButton.setTextFill(Color.RED));
-        shipyardButton.setOnMouseExited(e -> shipyardButton.setTextFill(Color.YELLOW));
+        Button buyShipButton= createButton(300, 525, 150, 50, Color.YELLOW, "Buy Ship");
+        buyShipButton.setOnMouseEntered(e -> buyShipButton.setTextFill(Color.RED));
+        buyShipButton.setOnMouseExited(e -> buyShipButton.setTextFill(Color.YELLOW));
 
-        Button travelButton = createButton(450, 525, 150, 50, Color.YELLOW, "Travel");
-        travelButton.setOnMouseEntered(e -> travelButton.setTextFill(Color.RED));
-        travelButton.setOnMouseExited(e -> travelButton.setTextFill(Color.YELLOW));
+        Button travelChartButton = createButton(450, 525, 150, 50, Color.YELLOW, "Travel Chart");
+        travelChartButton.setOnMouseEntered(e -> travelChartButton.setTextFill(Color.RED));
+        travelChartButton.setOnMouseExited(e -> travelChartButton.setTextFill(Color.YELLOW));
 
         Group grp = new Group();
-        grp.getChildren().addAll(background, planetName, t1, t3, t5, t6, t7, t8, tabLine, fuel, fuelSlider,
-                fuelLabel, addFuel, vertLine1, vertLine2, vertLine3, backButton, commandButton,
-                shipyardButton, travelButton);
+        grp.getChildren().addAll(background, planetName, t1, t2, t3, t4, t5, t6, t7, t8, tabLine, fuel, fuelSlider,
+                fuelLabel, addFuel, shield, shieldSlider, shieldLabel, addShield,
+                vertLine1, vertLine2, vertLine3, backButton, commandButton, buyShipButton, travelChartButton);
 
         backButton.setOnAction(e -> {
+            window.setScene(createRegionScene(window, region));
+        });
+
+        buyShipButton.setOnAction(e -> {
+            window.setScene(createBuyShip(window, region));
+        });
+
+        commandButton.setOnAction(e -> {
+            int amountShieldAdded = (int) (shieldSlider.getValue());
+            int amountFuelAdded = (int) (fuelSlider.getValue());
+            if (player.getCredits() > (amountShieldAdded * 100 + amountFuelAdded * 3)) {
+                player.changeShield(amountShieldAdded);
+                player.changeFuel(amountFuelAdded);
+                player.setCredits(player.getCredits() - amountShieldAdded * 100 - amountFuelAdded * 3);
+                window.setScene(createShipyard(window, region));
+            }
+            else {
+                System.out.println("Not enough money");
+                shieldSlider.setValue(0);
+                fuelSlider.setValue(0);
+            }
+        });
+
+        travelChartButton.setOnAction(e -> {
             Group grp4 = getTravelChart(window);
             Scene s4 = new Scene(grp4, 600, 600);
             window.setScene(s4);
+        });
+
+        return new Scene(grp, 600, 600);
+    }
+
+    public Scene createBuyShip(Stage window, Region region) {
+        ImageView background = createImage( "regionBackground.jpg", 0, 0, 600, 600);
+
+        Label planetName = createLabel(region.getName() + " Shipyard", 175, 0, 25, Color.YELLOW, 250);
+        planetName.setAlignment(Pos.CENTER);
+
+        Label t1 = createLabel("Gnat: ", 0, 100, 20, Color.YELLOW, 150);
+        Label t2 = createLabel("15 Cargo, 1 Weapon, 1 Shield", 150, 100, 20, Color.RED, 300);
+        Label cost1 = createLabel("500", 450, 100, 20, Color.BLUE, 100);
+        Label t3 = createLabel("Firefly: ", 0, 150, 20, Color.YELLOW, 150);
+        Label t4 = createLabel("20 Cargo, 1 Weapon, 1 Shield", 150, 150, 20, Color.RED, 300);
+        Label cost2 = createLabel("650", 450, 150, 20, Color.BLUE, 100);
+        Label t5 = createLabel("Mosquito: ", 0, 200, 20, Color.YELLOW, 150);
+        Label t6 = createLabel("15 Cargo, 2 Weapon, 1 Shield", 150, 200, 20, Color.RED, 300);
+        Label cost3 = createLabel("800", 450, 200, 20, Color.BLUE, 100);
+        Label t7 = createLabel("Bumblebee: ", 0, 250, 20, Color.YELLOW, 150);
+        Label t8 = createLabel("15 Cargo, 2 Weapon, 2 Shield", 150, 250, 20, Color.RED, 300);
+        Label cost4 = createLabel("950", 450, 100, 20, Color.BLUE, 100);
+
+        Label shipBoxDescription = new Label("Type of Ship to Buy: ");
+        shipBoxDescription.setLayoutX(50);
+        shipBoxDescription.setLayoutY(400);
+        shipBoxDescription.setPrefWidth(200);
+        shipBoxDescription.setPrefHeight(50);
+        shipBoxDescription.setFont(new Font(20));
+        shipBoxDescription.setTextFill(Color.YELLOW);
+
+        ChoiceBox<String> shipBox = new ChoiceBox<>();
+        shipBox.getItems().addAll("Gnat", "Firefly", "Mosquito", "Bumblebee");
+        shipBox.setValue("Gnat");
+        shipBox.setLayoutX(250);
+        shipBox.setPrefHeight(50);
+        shipBox.setPrefWidth(100);
+        shipBox.setLayoutY(400);
+        shipBox.valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue,
+                                String level, String newLevel) {
+
+            }
+        });
+
+        Line tabLine = new Line(0, 500, 600, 500);
+        tabLine.setStroke(Color.YELLOW);
+
+        Line vertLine1 = new Line(150, 500, 150, 600);
+        vertLine1.setStroke(Color.YELLOW);
+
+        Line vertLine2 = new Line(450, 500, 450, 600);
+        vertLine2.setStroke(Color.YELLOW);
+
+        Line vertLine3 = new Line(300, 500, 300, 600);
+        vertLine3.setStroke(Color.YELLOW);
+
+        Button backButton = createButton(0, 525, 150, 50, Color.YELLOW, "Back");
+        backButton.setOnMouseEntered(e -> backButton.setTextFill(Color.RED));
+        backButton.setOnMouseExited(e -> backButton.setTextFill(Color.YELLOW));
+
+        Button purchaseButton = createButton(150, 525, 150, 50, Color.YELLOW, "Purchase");
+        purchaseButton.setOnMouseEntered(e -> purchaseButton.setTextFill(Color.RED));
+        purchaseButton.setOnMouseExited(e -> purchaseButton.setTextFill(Color.YELLOW));
+
+        Button shipyardButton = createButton(300, 525, 150, 50, Color.YELLOW, "Shipyard");
+        shipyardButton.setOnMouseEntered(e -> shipyardButton.setTextFill(Color.RED));
+        shipyardButton.setOnMouseExited(e -> shipyardButton.setTextFill(Color.YELLOW));
+
+        Button travelChartButton = createButton(450, 525, 150, 50, Color.YELLOW, "Travel Chart");
+        travelChartButton.setOnMouseEntered(e -> travelChartButton.setTextFill(Color.RED));
+        travelChartButton.setOnMouseExited(e -> travelChartButton.setTextFill(Color.YELLOW));
+
+        Group grp = new Group();
+        grp.getChildren().addAll(background, planetName, t1, t2, t3, t4, t5, t6, t7, t8, tabLine,
+                vertLine1, vertLine2, vertLine3, backButton, purchaseButton, cost1, cost2, cost3,
+                shipBox, shipBoxDescription, shipyardButton, travelChartButton);
+
+        backButton.setOnAction(e -> {
+            window.setScene(createShipyard(window, region));
         });
 
         shipyardButton.setOnAction(e -> {
             window.setScene(createShipyard(window, region));
         });
 
-        commandButton.setOnAction(e -> {
-            Group grp4 = getCommanderStatus(window);
-            Scene s4 = new Scene(grp4, 600, 600);
-            window.setScene(s4);
+        purchaseButton.setOnAction(e -> {
+            String shipName = shipBox.getValue();
+            System.out.println(shipName);
+            for (int i = 0; i < player.getShips().size(); i++) {
+                if (shipName.equals(player.getShips().get(i)) && !shipName.equals(player.getShip().getType())) {
+                    System.out.println("hi");
+                    if (player.getCredits() > player.getShips().get(i).getPrice()) {
+                        player.setShip(player.getShips().get(i));
+                        player.setCredits(player.getCredits() - player.getShips().get(i).getPrice());
+                        window.setScene(createShipyard(window, region));
+                    }
+                }
+            }
         });
 
-        travelButton.setOnAction(e -> {
-            int distance = (int) (getDistance(region.getSubX(), region.getSubY(), 300, 300));
-            if (distance <= player.getFuel()) {
-                player.changeFuel((-1) * distance);
-                setCurrRegion(region);
-                resetPoints();
-                visitedRegions.add(region);
-            }
-            else {
-                System.out.println("Outside fuel range!");
-            }
-
-            Group grp5 = getTravelChart(window);
-            Scene s5 = new Scene(grp5, 600, 600);
-            window.setScene(s5);
+        travelChartButton.setOnAction(e -> {
+            Group grp4 = getTravelChart(window);
+            Scene s4 = new Scene(grp4, 600, 600);
+            window.setScene(s4);
         });
 
         return new Scene(grp, 600, 600);
