@@ -17,6 +17,9 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import java.io.File;
 
 import java.util.ArrayList;
 
@@ -98,10 +101,12 @@ public class SpaceTrader extends Application {
     }
 
     public void start(Stage primaryStage) throws Exception {
-        /*
-        AudioClip music = new AudioClip(this.getClass().getResource("StarWarsMusic.mp3").toString());
-        music.play();
-        */
+        String musicFile = "music.mp3";
+
+        Media sound = new Media(new File(musicFile).toURI().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
+
         Stage window = primaryStage;
 
         //SCENE 1
