@@ -1,3 +1,5 @@
+import javafx.scene.image.Image;
+
 public class Ship {
     private int fuel;
     private String type;
@@ -5,6 +7,11 @@ public class Ship {
     private int weaponLevel;
     private int shieldLevel;
     private int price;
+    private int health;
+    private String image;
+    private int subX;
+    private int subY;
+    private int size;
 
     public Ship(String type, int cargoHolds, int weaponLevel, int shieldLevel, int price) {
         this.type = type;
@@ -13,6 +20,48 @@ public class Ship {
         this.shieldLevel = shieldLevel;
         this.fuel = 150;
         this.price = price;
+        this.health = 100;
+        this.image = "SpaceTraderShip.png";
+        this.size = 75;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setSubX(int subX) {
+        this.subX = subX;
+    }
+
+    public int getSubX() {
+        return subX;
+    }
+
+    public int getSubY() {
+        return subY;
+    }
+
+    public void setSubY(int subY) {
+        this.subY = subY;
+    }
+
+    public void changeHealth(int amount) {
+        health = health + amount;
+    }
+    public int getWeaponLevel() {
+        return weaponLevel;
+    }
+
+    public int getCargoHolds() {
+        return cargoHolds;
     }
 
     public int getPrice() {
