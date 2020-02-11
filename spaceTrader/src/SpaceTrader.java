@@ -59,11 +59,14 @@ public class SpaceTrader extends Application {
         String government = governments[(int) (Math.random() * governments.length)];
         int policePresence = (int) (Math.random() * 3 + 1);
         int currRegionName = (int) (Math.random() * regionNumber);
-        currentSystem = new Region(names.get(currRegionName), (int) (Math.random() * 600), (int) (Math.random() * 600), regionSize, techLevel, government, policePresence);
+        currentSystem = new Region(names.get(currRegionName), (int) (Math.random() * 300), (int) (Math.random() * 300), regionSize, techLevel, government, policePresence);
         names.remove(currRegionName);
         visitedRegions.add(currentSystem);
 
         regions[0] = currentSystem;
+
+        System.out.println(currentSystem.getName());
+
         for (int i = 1; i < regions.length; i++) {
             Region newSystem;
             int regionSize2 = (int) (Math.random() * 20 + 10);
@@ -72,13 +75,19 @@ public class SpaceTrader extends Application {
             int policePresence2 = (int) (Math.random() * 3 + 1);
             int sysName = (int) (Math.random() * names.size());
             
-            int x = (int) (Math.random() * 600);
-            int y = (int) (Math.random() * 600);
-            for (int j = 0; j < i; j++) {
-                while (Math.abs(x - currentSystem.getUniX()) <= 5
-                        || Math.abs(y - currentSystem.getUniY()) <= 5) {
-                    x = (int) (Math.random() * 600);
-                    y = (int) (Math.random() * 600);
+            int x = (int) (Math.random() * 300);
+            int y = (int) (Math.random() * 300);
+            boolean insideBounds = true;
+            while (insideBounds) {
+                insideBounds = false;
+                for (int j = 0; j < i; j++) {
+                    if (Math.abs(x - regions[j].getUniX()) <= 20
+                            || Math.abs(y - regions[j].getUniY()) <= 20) {
+                        x = (int) (Math.random() * 300);
+                        y = (int) (Math.random() * 300);
+                        insideBounds = true;
+                        break;
+                    }
                 }
             }
 
@@ -497,7 +506,7 @@ public class SpaceTrader extends Application {
         Label planetName = createLabel(region.getName(), 210, 0, 25, Color.YELLOW, 180);
         planetName.setAlignment(Pos.CENTER);
 
-        Label coordinates = createLabel("(" + region.getUniX() + ", " + region.getUniY() + ")",
+        Label coordinates = createLabel("(" + region.getUniX() + ", " + (600 - 600 + region.getUniY()) + ")",
             210, 30, 15, Color.YELLOW, 180);
         coordinates.setAlignment(Pos.CENTER);
 
@@ -551,7 +560,7 @@ public class SpaceTrader extends Application {
 
         Group grp = new Group();
         grp.getChildren().addAll(background, planetName, coordinates, t1, t2, t3, t4, t5, t6,
-            tabLine, vertLine1, vertLine2, vertLine3, backButton, commandButton, travelButton);
+            tabLine, vertLine1, vertLine2, vertLine3, backButton, commandButton, shipyardButton, travelButton);
 
         backButton.setOnAction(e -> {
             Group grp4 = getTravelChart(window);
