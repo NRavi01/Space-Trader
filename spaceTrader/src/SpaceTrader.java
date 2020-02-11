@@ -1,14 +1,20 @@
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -17,6 +23,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 
@@ -39,6 +46,8 @@ public class SpaceTrader extends Application {
     private Region[] regions = new Region[regionNumber];
 
     private ArrayList<Region> visitedRegions = new ArrayList<Region>();
+
+    private ArrayList<Shot> shots = new ArrayList<>();
 
     public SpaceTrader() {
         names.add("NishSystem");
@@ -620,13 +629,13 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 fuelLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                addFuel.setText("PURCHASE FOR " + t1.intValue() * 3);
+                addFuel.setText("PURCHASE FOR " + t1.intValue());
             }
         });
 
         addFuel.setOnAction(e -> {
             int amountFuelAdded = (int) (fuelSlider.getValue());
-            if (player.getCredits() > amountFuelAdded * 3) {
+            if (player.getCredits() > amountFuelAdded) {
                 player.changeFuel(amountFuelAdded);
                 player.setCredits(player.getCredits() - amountFuelAdded * 3);
                 window.setScene(createShipyard(window, region));
@@ -720,10 +729,10 @@ public class SpaceTrader extends Application {
         commandButton.setOnAction(e -> {
             int amountShieldAdded = (int) (shieldSlider.getValue());
             int amountFuelAdded = (int) (fuelSlider.getValue());
-            if (player.getCredits() > (amountShieldAdded * 100 + amountFuelAdded * 3)) {
+            if (player.getCredits() > (amountShieldAdded * 100 + amountFuelAdded)) {
                 player.changeShield(amountShieldAdded);
                 player.changeFuel(amountFuelAdded);
-                player.setCredits(player.getCredits() - amountShieldAdded * 100 - amountFuelAdded * 3);
+                player.setCredits(player.getCredits() - amountShieldAdded * 100 - amountFuelAdded);
                 window.setScene(createShipyard(window, region));
             }
             else {
@@ -759,7 +768,7 @@ public class SpaceTrader extends Application {
         Label cost3 = createLabel("800", 450, 200, 20, Color.BLUE, 100);
         Label t7 = createLabel("Bumblebee: ", 0, 250, 20, Color.YELLOW, 150);
         Label t8 = createLabel("15 Cargo, 2 Weapon, 2 Shield", 150, 250, 20, Color.RED, 300);
-        Label cost4 = createLabel("950", 450, 100, 20, Color.BLUE, 100);
+        Label cost4 = createLabel("950", 450, 250, 20, Color.BLUE, 100);
 
         Label shipBoxDescription = new Label("Type of Ship to Buy: ");
         shipBoxDescription.setLayoutX(50);
@@ -840,12 +849,91 @@ public class SpaceTrader extends Application {
         });
 
         travelChartButton.setOnAction(e -> {
+            /*
             Group grp4 = getTravelChart(window);
             Scene s4 = new Scene(grp4, 600, 600);
             window.setScene(s4);
+             */
+            player.getShip().setSubX(25);
+            player.getShip().setSubY(300);
+            Ship s2 = new Ship("Gnat", 15, 1, 1, 500);
+            s2.setSubX(500);
+            s2.setSubY(300);
+            getFightScene(window, player.getShip(), s2 );
         });
 
         return new Scene(grp, 600, 600);
+    }
+
+    public Ship getFightScene(Stage stage, Ship s1, Ship s2) {
+
+        //while(checkBothHealth(s1, s2)) {
+            ArrayList<ImageView> stageShots = new ArrayList<>();
+            ImageView background = createImage( "regionBackground.jpg", 0, 0, 600, 600);
+            ImageView ship1 = createImage(s1.getImage(), s1.getSubX(), s1.getSubY(), s1.getSize(), s1.getSize());
+            ship1.setRotate(90);
+            ImageView ship2 = createImage(s2.getImage(), s2.getSubX(), s2.getSubY(), s2.getSize(), s2.getSize());
+            ship2.setRotate(270);
+            for (int i = 0; i < shots.size(); i++) {
+                int xc = shots.get(i).getX();
+                int yc = shots.get(i).getY();
+                ImageView shotImage = createImage("spaceBullet.jpg", xc, yc, 50, 30);
+                if (shots.get(i).getDirection() == 1) {
+                    shotImage.setRotate(180);
+                }
+                stageShots.add(shotImage);
+            }
+            Group grp = new Group();
+            grp.getChildren().addAll(background, ship1, ship2);
+            for (int i = 0; i < stageShots.size(); i++) {
+                grp.getChildren().add(stageShots.get(i));
+            }
+            Scene scene = new Scene(grp, 600, 600);
+            scene.setOnKeyPressed(e -> {
+                if (e.getCode() == KeyCode.W) {
+                    s1.setSubY(s1.getSubY() - 8);
+                    getFightScene(stage, s1, s2);
+                }
+                if (e.getCode() == KeyCode.S) {
+                    s1.setSubY(s1.getSubY() + 8);
+                    getFightScene(stage, s1, s2);
+                }
+                if (e.getCode() == KeyCode.SPACE) {
+                    int xc = s1.getSubX() + s1.getSize();
+                    int yc = s1.getSubY() + s1.getSize()/2 - 10;
+                    int speed = 5;
+                    int power = player.getShip().getWeaponLevel();
+                    shots.add(new Shot(xc, yc, speed, 0, power));
+                }
+                getFightScene(stage, s1, s2);
+            });
+
+            stage.setScene(scene);
+            System.out.println("hi");
+        try {
+            Thread.sleep(5000);
+            for (int i = 0; i < shots.size(); i++) {
+                shots.get(i).setX(shots.get(i).getX() + shots.get(i).getSpeed());
+                System.out.println("Hi");
+            }
+            getFightScene(stage, s1, s2);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //}
+        if (s1.getHealth() > 0) {
+            return s1;
+        }
+        return s2;
+    }
+
+    private boolean checkBothHealth(Ship s1, Ship s2) {
+        if (s1.getHealth() > 0 && s2.getHealth()> 0) {
+            return true;
+        }
+        return false;
     }
 
     private double getDistance(int x1, int y1, int x2, int y2) {
