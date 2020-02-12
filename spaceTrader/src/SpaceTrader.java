@@ -1,16 +1,15 @@
+import javafx.animation.Animation;
+import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,9 +23,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.media.*;
 
+
+import java.io.File;
 import java.util.ArrayList;
-
 
 public class SpaceTrader extends Application {
     //Player properties
@@ -38,6 +39,13 @@ public class SpaceTrader extends Application {
     private SimpleIntegerProperty[] points = new SimpleIntegerProperty[4];
 
     private final int regionNumber = 10;
+    private final LongProperty lastUpdateTime = new SimpleLongProperty();
+    private int shipVelocity = 0;
+    private Ship s2;
+    private int timeCount = 0;
+    private Timeline timeline;
+
+    private boolean isShooting = false;
 
     Region currentSystem;
     private final String[] governments = {"Democratic", "Fascist", "Communist", "Separatist"};
@@ -48,6 +56,8 @@ public class SpaceTrader extends Application {
     private ArrayList<Region> visitedRegions = new ArrayList<Region>();
 
     private ArrayList<Shot> shots = new ArrayList<>();
+
+    private Stage window;
 
     public SpaceTrader() {
         names.add("NishSystem");
@@ -88,10 +98,13 @@ public class SpaceTrader extends Application {
 
     public void start(Stage primaryStage) throws Exception {
         /*
-        AudioClip music = new AudioClip(this.getClass().getResource("StarWarsMusic.mp3").toString());
-        music.play();
-        */
-        Stage window = primaryStage;
+        String musicFile = "music.mp3";
+        Media sound = new Media(new File(musicFile).toURI().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
+         */
+
+        window = primaryStage;
 
         //SCENE 1
         ImageView mv = createImage("SpaceTraderBackground.jpg", 0, 0, 600, 600);
@@ -567,10 +580,17 @@ public class SpaceTrader extends Application {
             Scene s4 = new Scene(grp4, 600, 600);
             window.setScene(s4);
         });
-
         travelButton.setOnAction(e -> {
             int distance = (int) (getDistance(region.getSubX(), region.getSubY(), 300, 300));
             if (distance <= player.getFuel()) {
+                s2 = new Ship("Gnat", 15, 1, 1, 500);
+                s2.setSubX(500);
+                s2.setSubY(300);
+                player.getShip().setSubX(25);
+                player.getShip().setSubY(300);
+                shipAnimation.start();
+                shootAnimation.start();
+                window.setScene(createFightChoice(window));
                 player.changeFuel((-1) * distance);
                 setCurrRegion(region);
                 resetPoints();
@@ -579,14 +599,8 @@ public class SpaceTrader extends Application {
             else {
                 System.out.println("Outside fuel range!");
             }
-
-            Group grp5 = getTravelChart(window);
-            Scene s5 = new Scene(grp5, 600, 600);
-            window.setScene(s5);
         });
-
         return new Scene(grp, 600, 600);
-
     }
 
     private Scene createShipyard(Stage window, Region region) {
@@ -838,7 +852,6 @@ public class SpaceTrader extends Application {
             String shipName = shipBox.getValue();
             for (int i = 0; i < player.getShips().size(); i++) {
                 if (shipName.equals(player.getShips().get(i).getType()) && !shipName.equals(player.getShip().getType())) {
-                    System.out.println("hi");
                     if (player.getCredits() > player.getShips().get(i).getPrice()) {
                         player.setShip(player.getShips().get(i));
                         player.setCredits(player.getCredits() - player.getShips().get(i).getPrice());
@@ -849,84 +862,233 @@ public class SpaceTrader extends Application {
         });
 
         travelChartButton.setOnAction(e -> {
-            /*
             Group grp4 = getTravelChart(window);
             Scene s4 = new Scene(grp4, 600, 600);
             window.setScene(s4);
-             */
-            player.getShip().setSubX(25);
-            player.getShip().setSubY(300);
-            Ship s2 = new Ship("Gnat", 15, 1, 1, 500);
-            s2.setSubX(500);
-            s2.setSubY(300);
-            getFightScene(window, player.getShip(), s2 );
         });
 
         return new Scene(grp, 600, 600);
     }
 
-    public Ship getFightScene(Stage stage, Ship s1, Ship s2) {
+    public Scene createFightChoice(Stage window) {
+        ImageView background = createImage("lightSpeed.jpg", 0, 0, 600, 600);
 
-        //while(checkBothHealth(s1, s2)) {
-            ArrayList<ImageView> stageShots = new ArrayList<>();
-            ImageView background = createImage( "regionBackground.jpg", 0, 0, 600, 600);
-            ImageView ship1 = createImage(s1.getImage(), s1.getSubX(), s1.getSubY(), s1.getSize(), s1.getSize());
-            ship1.setRotate(90);
-            ImageView ship2 = createImage(s2.getImage(), s2.getSubX(), s2.getSubY(), s2.getSize(), s2.getSize());
-            ship2.setRotate(270);
-            for (int i = 0; i < shots.size(); i++) {
-                int xc = shots.get(i).getX();
-                int yc = shots.get(i).getY();
-                ImageView shotImage = createImage("spaceBullet.jpg", xc, yc, 50, 30);
-                if (shots.get(i).getDirection() == 1) {
-                    shotImage.setRotate(180);
-                }
-                stageShots.add(shotImage);
+        Label pirateInfo = createLabel("You have run into a pirate!", 50, 250, 40, Color.RED, 500);
+        pirateInfo.setAlignment(Pos.CENTER);
+
+        Button fleeButton = createButton(150, 450, 100, 50, Color.RED, "FLEE");
+        fleeButton.setOnMouseEntered(e -> fleeButton.setTextFill(Color.YELLOW));
+        fleeButton.setOnMouseExited(e -> fleeButton.setTextFill(Color.RED));
+
+        Button fightButton = createButton(350, 450, 100, 50, Color.RED, "FIGHT");
+        fightButton.setOnMouseEntered(e -> fightButton.setTextFill(Color.YELLOW));
+        fightButton.setOnMouseExited(e -> fightButton.setTextFill(Color.RED));
+
+        fleeButton.setOnAction(e -> {
+            Group grp4 = getTravelChart(window);
+            Scene s4 = new Scene(grp4, 600, 600);
+            window.setScene(s4);
+        });
+
+        fightButton.setOnAction(e -> {
+            startFight(window, player.getShip(), s2);
+        });
+
+        Group grp = new Group();
+        grp.getChildren().addAll(background, pirateInfo, fleeButton, fightButton);
+        Scene scene = new Scene(grp, 600, 600);
+        window.setScene(scene);
+        return scene;
+    }
+
+    final AnimationTimer shipAnimation = new AnimationTimer() {
+        @Override
+        public void handle(long timestamp) {
+            if (lastUpdateTime.get() > 0) {
+                final double elapsedSeconds = (timestamp - lastUpdateTime.get()) / 1_000_000_000.0;
+                Ship s1 = SpaceTrader.this.getPlayer().getShip();
+                s1.setSubY(s1.getSubY() + shipVelocity);
             }
-            Group grp = new Group();
-            grp.getChildren().addAll(background, ship1, ship2);
-            for (int i = 0; i < stageShots.size(); i++) {
-                grp.getChildren().add(stageShots.get(i));
-            }
-            Scene scene = new Scene(grp, 600, 600);
-            scene.setOnKeyPressed(e -> {
-                if (e.getCode() == KeyCode.W) {
-                    s1.setSubY(s1.getSubY() - 8);
-                    getFightScene(stage, s1, s2);
-                }
-                if (e.getCode() == KeyCode.S) {
-                    s1.setSubY(s1.getSubY() + 8);
-                    getFightScene(stage, s1, s2);
-                }
-                if (e.getCode() == KeyCode.SPACE) {
+            lastUpdateTime.set(timestamp);
+        }
+    };
+
+    final AnimationTimer shootAnimation = new AnimationTimer() {
+        @Override
+        public void handle(long timestamp) {
+            if (lastUpdateTime.get() > 0) {
+                if (isShooting) {
+                    Ship s1 = SpaceTrader.this.getPlayer().getShip();
                     int xc = s1.getSubX() + s1.getSize();
-                    int yc = s1.getSubY() + s1.getSize()/2 - 10;
-                    int speed = 5;
-                    int power = player.getShip().getWeaponLevel();
+                    int yc = s1.getSubY() + s1.getSize() / 2 - 10;
+                    int speed = 100;
+                    int power = player.getShip().getWeaponLevel() * 3;
                     shots.add(new Shot(xc, yc, speed, 0, power));
                 }
-                getFightScene(stage, s1, s2);
-            });
-
-            stage.setScene(scene);
-            System.out.println("hi");
-        try {
-            Thread.sleep(5000);
-            for (int i = 0; i < shots.size(); i++) {
-                shots.get(i).setX(shots.get(i).getX() + shots.get(i).getSpeed());
-                System.out.println("Hi");
+                final double elapsedSeconds = (timestamp - lastUpdateTime.get()) / 1_000_000_000.0;
             }
-            getFightScene(stage, s1, s2);
+            lastUpdateTime.set(timestamp);
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+    };
 
-        //}
-        if (s1.getHealth() > 0) {
-            return s1;
-        }
-        return s2;
+    public void startFight(Stage stage, Ship s1, Ship s2) {
+        timeline = new Timeline(new KeyFrame(Duration.seconds(0.12), ev -> {
+            if (checkBothHealth(s1, s2)) {
+                boolean hit1 = false;
+                boolean hit2 = false;
+                ImageView explosion = null;
+                ImageView explosion2 = null;
+                ArrayList<ImageView> stageShots = new ArrayList<>();
+                ImageView background = createImage( "plainFightBlack.jpg", 0, 0, 600, 600);
+                ImageView ship1 = createImage(s1.getImage(), s1.getSubX(), s1.getSubY(), s1.getSize(), s1.getSize());
+                ship1.setRotate(90);
+                ImageView ship2 = createImage(s2.getImage(), s2.getSubX(), s2.getSubY(), s2.getSize(), s2.getSize());
+                ship2.setRotate(270);
+                Label t1 = createLabel("Player Health: ", 0, 0, 20, Color.YELLOW, 150);
+                Label t2 = createLabel(String.valueOf(s1.getHealth()), 150, 0, 20, Color.RED, 50);
+                Label t3 = createLabel("Opponent Health: ", 390, 0, 20, Color.YELLOW, 170);
+                Label t4 = createLabel(String.valueOf(s2.getHealth()), 560, 0, 20, Color.RED, 40);
+
+                for (int i = 0; i < shots.size(); i++) {
+                    int xc = shots.get(i).getX();
+                    int yc = shots.get(i).getY();
+                    ImageView shotImage = createImage("spaceBullet.png", xc, yc, 50, 30);
+                    if (shots.get(i).getDirection() == 1) {
+                        shotImage.setRotate(180);
+                    }
+                    stageShots.add(shotImage);
+                    if (shots.get(i).getDirection() == 1) {
+                        if (withinRange(shots.get(i).getX(),s1.getSubX(), s1.getSize())
+                                && withinRange(shots.get(i).getY(),s1.getSubY() + 30,s1.getSize()/2)) {
+                            s1.changeHealth(-(shots.get(i).getPower()));
+                            explosion = createImage("shipExplosion.png", s1.getSubX(), s1.getSubY(), s1.getSize(), 50);
+                            shots.remove(i);
+                            hit1 = true;
+                            System.out.println("s1: " + s1.getHealth());
+                        }
+                    }
+                    else {
+                        if (withinRange(shots.get(i).getX(),s2.getSubX(),s2.getSize())
+                                && withinRange(shots.get(i).getY(),s2.getSubY() + 30,s2.getSize()/2)) {
+                            s2.changeHealth(-(shots.get(i).getPower()));
+                            explosion2 = createImage("shipExplosion.png", s2.getSubX(), s2.getSubY(), s2.getSize(), 50);
+                            shots.remove(i);
+                            hit2 = true;
+                            System.out.println("s2: " + s2.getHealth());
+                        }
+                    }
+                }
+                Group grp = new Group();
+                grp.getChildren().addAll(background, ship1, ship2, t1, t2, t3, t4);
+                for (int i = 0; i < stageShots.size(); i++) {
+                    grp.getChildren().add(stageShots.get(i));
+                }
+                if (hit1) {
+                    grp.getChildren().add(explosion);
+                }
+                if (hit2) {
+                    grp.getChildren().add(explosion2);
+                }
+                Scene scene = new Scene(grp, 600, 600);
+                scene.setOnKeyPressed(e -> {
+                    if (e.getCode() == KeyCode.W) {
+                        shipVelocity = -5;
+                    }
+                    if (e.getCode() == KeyCode.S) {
+                        shipVelocity = 5;
+                    }
+                    if (e.getCode() == KeyCode.SPACE) {
+                        /*
+                        boolean canShoot = true;
+                        for (int i = 0; i < shots.size(); i++) {
+                            if (shots.get(i).getDirection() == 0) {
+                                //canShoot = false;
+                            }
+                        }
+                        if (canShoot) {
+                            int xc = s1.getSubX() + s1.getSize();
+                            int yc = s1.getSubY() + s1.getSize() / 2 - 10;
+                            int speed = 100;
+                            int power = player.getShip().getWeaponLevel() * 3;
+                            shots.add(new Shot(xc, yc, speed, 0, power));
+                        }
+                         */
+                        isShooting = true;
+                    }
+                });
+
+                scene.setOnKeyReleased(e -> {
+                    if (e.getCode() == KeyCode.W) {
+                        shipVelocity = 0;
+                    }
+                    if (e.getCode() == KeyCode.S) {
+                        shipVelocity = 0;
+                    }
+                    if (e.getCode() == KeyCode.SPACE) {
+                        isShooting = false;
+                    }
+                });
+                stage.setScene(scene);
+                //System.out.println("Shot");
+                for (int i = 0; i < shots.size(); i++) {
+                    if (shots.get(i).getX() > 600 || shots.get(i).getX() < 0) {
+                        shots.remove(i);
+                    }
+                    if (shots.size() > i) {
+                        //System.out.println(shots.get(i).getX());
+                        //System.out.println(shots.get(i).getY());
+                        if (shots.get(i).getDirection() == 0) {
+                            shots.get(i).setX(shots.get(i).getX() + shots.get(i).getSpeed());
+                        } else {
+                            shots.get(i).setX(shots.get(i).getX() - shots.get(i).getSpeed());
+                        }
+                    }
+                }
+                if (SpaceTrader.this.getPlayer().getShip().getSubY() < s2.getSubY()) {
+                    s2.setSubY(s2.getSubY() - 5);
+                }
+                if (SpaceTrader.this.getPlayer().getShip().getSubY() > s2.getSubY()) {
+                    s2.setSubY(s2.getSubY() + 5);
+                }
+                if (timeCount % 2 == 0) {
+                    int xc = s2.getSubX() - s2.getSize();
+                    int yc = s2.getSubY() + s2.getSize()/2 - 10;
+                    int speed = 80;
+                    int power = player.getShip().getWeaponLevel() * 3;
+                    shots.add(new Shot(xc, yc, speed, 1, power));
+                }
+                timeCount++;
+            }
+            else {
+                timeline.stop();
+                ImageView background = createImage( "plainFightBlack.jpg", 0, 0, 600, 600);
+                Label won = createLabel( "YOU WON", 175, 0, 25, Color.YELLOW, 250);
+                Label lost = createLabel( "YOU LOST", 175, 0, 25, Color.YELLOW, 250);
+                won.setAlignment(Pos.CENTER);
+                lost.setAlignment(Pos.CENTER);
+
+                Button travelButton = createButton(370, 525, 230, 50, Color.YELLOW, "Continue Traveling!");
+                travelButton.setOnMouseEntered(e -> travelButton.setTextFill(Color.RED));
+                travelButton.setOnMouseExited(e -> travelButton.setTextFill(Color.YELLOW));
+                travelButton.setOnAction(e -> {
+                    Group grp5 = getTravelChart(window);
+                    Scene s5 = new Scene(grp5, 600, 600);
+                    window.setScene(s5);
+                });
+                Group fightFinished = new Group();
+                fightFinished.getChildren().add(background);
+                if (s1.getHealth() > 0) {
+                    fightFinished.getChildren().addAll(won, travelButton);
+                }
+                else {
+                    fightFinished.getChildren().add(lost);
+                }
+                Scene finalScene = new Scene(fightFinished, 600, 600);
+                stage.setScene(finalScene);
+            }
+        }));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
     }
 
     private boolean checkBothHealth(Ship s1, Ship s2) {
@@ -1002,7 +1164,7 @@ public class SpaceTrader extends Application {
         return image;
     }
 
-    public int getLevel() {
+    private int getLevel() {
         return value;
     }
 
@@ -1012,6 +1174,29 @@ public class SpaceTrader extends Application {
 
     private void setSkillPoints(int points) {
         skillPoints = points;
+    }
+
+    private Player getPlayer() {
+        return player;
+    }
+
+    private Stage getStage() {
+        return window;
+    }
+
+    private Ship getS2() {
+        return s2;
+    }
+
+    private boolean withinRange(int n1, int n2, int range) {
+        if (Math.abs(n1 - n2) <= range) {
+            return true;
+        }
+        return false;
+    }
+
+    public ArrayList<Shot> getShots() {
+        return shots;
     }
 
     public static void main(String[] args) {
