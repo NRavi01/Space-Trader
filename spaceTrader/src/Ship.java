@@ -1,5 +1,3 @@
-import javafx.scene.image.Image;
-
 public class Ship {
     private int fuel;
     private String type;
