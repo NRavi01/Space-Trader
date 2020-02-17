@@ -13,6 +13,10 @@ public class Shot {
         this.power = power;
     }
 
+    public int getPower() {
+        return power;
+    }
+
     public int getDirection() {
         return direction;
     }
