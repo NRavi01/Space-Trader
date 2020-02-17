@@ -12,6 +12,7 @@ public class Ship {
     private int subX;
     private int subY;
     private int size;
+    private int ammo;
 
     public Ship(String type, int cargoHolds, int weaponLevel, int shieldLevel, int price) {
         this.type = type;
@@ -23,6 +24,14 @@ public class Ship {
         this.health = 100;
         this.image = "SpaceTraderShip.png";
         this.size = 75;
+        this.ammo = 100;
+    }
+
+    public int getAmmo() {
+        return ammo;
+    }
+    public void changeAmmo(int amount) {
+        ammo = ammo + amount;
     }
 
     public int getSize() {
