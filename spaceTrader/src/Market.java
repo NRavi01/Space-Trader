@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class Market {
     private ArrayList<Product> products = new ArrayList<>();
     private int techLevel;

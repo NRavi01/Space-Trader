@@ -14,9 +14,10 @@ public class Player {
     public Player() {
     }
 
-    public Player(String playerName, int difficultyLevel, SimpleIntegerProperty[] points, int credits) {
+    public Player(String playerName, int difficultyLevel, SimpleIntegerProperty[] points,
+            int credits) {
         ships.add(new Ship("Gnat", 15, 1, 1, 500));
-        ships.add(new Ship("Firefly", 20 , 1, 1, 650));
+        ships.add(new Ship("Firefly", 20, 1, 1, 650));
         ships.add(new Ship("Mosquito", 15, 2, 1, 800));
         ships.add(new Ship("Bumblebee", 15, 3, 2, 950));
         this.playerName = playerName;
