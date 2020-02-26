@@ -81,10 +81,10 @@ public class SpaceTrader extends Application {
         int policePresence = (int) (Math.random() * 3 + 1);
         int currRegionName = (int) (Math.random() * regionNumber);
         currentSystem = new Region(names.get(currRegionName), (int) (Math.random() * 300),
-            (int) (Math.random() * 300), regionSize, techLevel, government, policePresence);
+                (int) (Math.random() * 300), regionSize, techLevel, government, policePresence);
         currentSystem.createMarket();
         currentSystem.getMarket().populateMarket();
-      
+
         names.remove(currRegionName);
         visitedRegions.add(currentSystem);
 
@@ -99,7 +99,7 @@ public class SpaceTrader extends Application {
             String government2 = governments[(int) (Math.random() * governments.length)];
             int policePresence2 = (int) (Math.random() * 3 + 1);
             int sysName = (int) (Math.random() * names.size());
-            
+
             int x = (int) (Math.random() * 300);
             int y = (int) (Math.random() * 300);
             boolean insideBounds = true;
@@ -117,7 +117,7 @@ public class SpaceTrader extends Application {
             }
 
             newSystem = new Region(names.get(sysName), x, y, regionSize2, techLevel2,
-                government2, policePresence2);
+                    government2, policePresence2);
             newSystem.createMarket();
             newSystem.getMarket().populateMarket();
             regions[i] = newSystem;
@@ -143,6 +143,7 @@ public class SpaceTrader extends Application {
         t.setFill(Color.YELLOW);
 
         Button playButton = createButton(250, 350, 100, 100, Color.YELLOW, "Play");
+        playButton.setFont(new Font(30));
         playButton.setOnMouseEntered(e -> playButton.setTextFill(Color.RED));
         playButton.setOnMouseExited(e -> playButton.setTextFill(Color.YELLOW));
 
@@ -288,7 +289,7 @@ public class SpaceTrader extends Application {
         traderBox.getChildren().addAll(trader, traderSlider, traderLabel);
 
         Label choiceBoxDescription = createLabel("Difficulty Level: ", 100, 250, 20,
-            Color.YELLOW, 150);
+                Color.YELLOW, 150);
         choiceBoxDescription.setPrefHeight(50);
 
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
@@ -436,7 +437,7 @@ public class SpaceTrader extends Application {
         currentSystem.setSubY(300);
 
         Circle currRegion = new Circle(currentSystem.getSubX(), currentSystem.getSubY(),
-            currentSystem.getSize(), Color.RED);
+                currentSystem.getSize(), Color.RED);
         currRegion.setFill(new ImagePattern(new Image("\\resources\\planetImage.png")));
         System.out.println(currentSystem.getName());
         int xco = currentSystem.getSubX() - currentSystem.getSize() - 10;
@@ -451,13 +452,13 @@ public class SpaceTrader extends Application {
                 regions[i].setSubX(regions[i].getUniX() + xShift);
                 regions[i].setSubY(regions[i].getUniY() + yShift);
                 Circle c = new Circle(regions[i].getSubX(), regions[i].getSubY(),
-                    regions[i].getSize(), Color.GREEN);
+                        regions[i].getSize(), Color.GREEN);
                 c.setFill(new ImagePattern(new Image("\\resources\\planetImage.png")));
                 systems.add(c);
                 int xlabel = regions[i].getSubX() - regions[i].getSize();
                 int ylabel = regions[i].getSubY() + regions[i].getSize();
                 systemLabels.add(createLabel(regions[i].getName(), xlabel, ylabel, 10,
-                    Color.YELLOW, 60));
+                        Color.YELLOW, 60));
                 int xbut = regions[i].getSubX() - (int) (regions[i].getSize() * 1.5);
                 int ybut = regions[i].getSubY() - (int) (regions[i].getSize() * 1.5);
                 Button b = createButton(xbut, ybut, regions[i].getSize() * 2,
@@ -505,15 +506,15 @@ public class SpaceTrader extends Application {
         planetName.setAlignment(Pos.CENTER);
 
         Label coordinates = createLabel("(" + region.getUniX() + ", "
-            + (600 - region.getUniY()) + ")", 210, 30, 15, Color.YELLOW, 180);
+                + (600 - region.getUniY()) + ")", 210, 30, 15, Color.YELLOW, 180);
         coordinates.setAlignment(Pos.CENTER);
 
         int dist = (int) Math.sqrt((currentSystem.getUniX() - region.getUniX())
                 * (currentSystem.getUniX() - region.getUniX())
-            + (currentSystem.getUniY() - region.getUniY())
+                + (currentSystem.getUniY() - region.getUniY())
                 * (currentSystem.getUniY() - region.getUniY()));
         Label distanceLabel = createLabel("Distance to System: " + Integer.toString(dist),
-            210, 60, 15, Color.YELLOW, 180);
+                210, 60, 15, Color.YELLOW, 180);
         distanceLabel.setAlignment(Pos.CENTER);
 
         Label t1 = createLabel("Tech Level: ", 0, 100, 20, Color.YELLOW, 125);
@@ -529,7 +530,7 @@ public class SpaceTrader extends Application {
             t2 = createLabel(Integer.toString(region.getTechLevel()), 125, 100, 20, Color.RED, 50);
             t4 = createLabel(region.getGovernment(), 175, 150, 20, Color.RED, 175);
             t6 = createLabel(Integer.toString(region.getPolicePresence()),
-                175, 200, 20, Color.RED, 50);
+                    175, 200, 20, Color.RED, 50);
         } else {
             t2 = createLabel("Unknown: Region not visited", 180, 100, 20, Color.RED, 300);
             t4 = createLabel("Unknown: Region not visited", 180, 150, 20, Color.RED, 300);
@@ -574,8 +575,8 @@ public class SpaceTrader extends Application {
 
         Group grp = new Group();
         grp.getChildren().addAll(background, planetName, distanceLabel, coordinates, t1, t2, t3, t4,
-            t5, t6, tabLine, vertLine1, vertLine2, vertLine3, backButton, commandButton,
-            shipyardButton, tm);
+                t5, t6, tabLine, vertLine1, vertLine2, vertLine3, backButton, commandButton,
+                shipyardButton, tm);
 
         backButton.setOnAction(e -> {
             Group grp4 = getTravelChart(window);
@@ -639,20 +640,20 @@ public class SpaceTrader extends Application {
         ImageView background = createImage("regionBackground.jpg", 0, 0, 600, 600);
 
         Label planetName = createLabel(region.getName() + " Shipyard", 175, 0, 25,
-            Color.YELLOW, 250);
+                Color.YELLOW, 250);
         planetName.setAlignment(Pos.CENTER);
 
         Label t1 = createLabel("Current Ship Type: ", 0, 50, 20, Color.YELLOW, 250);
         Label t2 = createLabel(player.getShip().getType(), 250, 50, 20, Color.RED, 100);
         Label w1 = createLabel("Current Weapon Level: ", 0, 100, 20, Color.YELLOW, 250);
         Label w2 = createLabel(String.valueOf(player.getShip().getWeaponLevel()), 250, 100, 20,
-            Color.RED, 100);
+                Color.RED, 100);
         Label w3 = createLabel("Current Cargo Holds: ", 0, 150, 20, Color.YELLOW, 250);
         Label w4 = createLabel(String.valueOf(player.getShip().getCargoHolds()), 250, 150, 20,
-            Color.RED, 100);
+                Color.RED, 100);
         Label t3 = createLabel("Current Shield Level: ", 0, 200, 20, Color.YELLOW, 250);
         Label t4 = createLabel(String.valueOf(player.getShip().getShieldLevel()), 250, 200, 20,
-            Color.RED, 175);
+                Color.RED, 175);
         Label t5 = createLabel("Current Fuel Level: ", 0, 250, 20, Color.YELLOW, 250);
         Label t6 = createLabel(String.valueOf(player.getFuel()), 250, 250, 20, Color.RED, 50);
         Label t7 = createLabel("Current Credits: ", 0, 300, 20, Color.YELLOW, 250);
@@ -788,7 +789,7 @@ public class SpaceTrader extends Application {
         ImageView background = createImage("regionBackground.jpg", 0, 0, 600, 600);
 
         Label planetName = createLabel(region.getName() + " Shipyard", 175, 0, 25,
-            Color.YELLOW, 250);
+                Color.YELLOW, 250);
         planetName.setAlignment(Pos.CENTER);
 
         Label t1 = createLabel("Gnat: ", 0, 100, 20, Color.YELLOW, 150);
@@ -876,7 +877,7 @@ public class SpaceTrader extends Application {
                     if (player.getCredits() > player.getShips().get(i).getPrice()) {
                         player.setShip(player.getShips().get(i));
                         player.setCredits(player.getCredits()
-                            - player.getShips().get(i).getPrice());
+                                - player.getShips().get(i).getPrice());
                         window.setScene(createShipyard(window, region));
                     }
                 }
@@ -1237,7 +1238,7 @@ public class SpaceTrader extends Application {
         Label w1 = createLabel("Water", 20, 100, 20, Color.YELLOW, 100);
         Label w2 = createLabel(String.valueOf(market.getQuantity("Water"))
                 , 160, 100, 20, Color.RED, 100);
-        Label w3 = createLabel(String.valueOf(market.getPrice("Water")),
+        Label w3 = createLabel(String.valueOf((int) market.getPrice("Water")),
                 280, 100, 20, Color.RED, 100);
         Slider waterSlider = new Slider(0, market.getQuantity("Water"), 0);
         waterSlider.setLayoutX(350);
@@ -1260,7 +1261,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 waterLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Water");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Water");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
@@ -1270,7 +1271,7 @@ public class SpaceTrader extends Application {
         Label fur1 = createLabel("Furs", 20, 150, 20, Color.YELLOW, 100);
         Label fur2 = createLabel(String.valueOf(market.getQuantity("Furs"))
                 , 160, 150, 20, Color.RED, 100);
-        Label fur3 = createLabel(String.valueOf(market.getPrice("Furs")),
+        Label fur3 = createLabel(String.valueOf((int) market.getPrice("Furs")),
                 280, 150, 20, Color.RED, 100);
         Slider furSlider = new Slider(0, market.getQuantity("Furs"), 0);
         furSlider.setLayoutX(350);
@@ -1293,7 +1294,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 furLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Furs");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Furs");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
@@ -1302,7 +1303,7 @@ public class SpaceTrader extends Application {
         Label food1 = createLabel("Food", 20, 200, 20, Color.YELLOW, 100);
         Label food2 = createLabel(String.valueOf(market.getQuantity("Food"))
                 , 160, 200, 20, Color.RED, 100);
-        Label food3 = createLabel(String.valueOf(market.getPrice("Food")),
+        Label food3 = createLabel(String.valueOf((int) market.getPrice("Food")),
                 280, 200, 20, Color.RED, 100);
         Slider foodSlider = new Slider(0, market.getQuantity("Food"), 0);
         foodSlider.setLayoutX(350);
@@ -1325,7 +1326,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 foodLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Food");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Food");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
@@ -1334,7 +1335,7 @@ public class SpaceTrader extends Application {
         Label o1 = createLabel("Ore", 20, 250, 20, Color.YELLOW, 100);
         Label o2 = createLabel(String.valueOf(market.getQuantity("Ore"))
                 , 160, 250, 20, Color.RED, 100);
-        Label o3 = createLabel(String.valueOf(market.getPrice("Ore")),
+        Label o3 = createLabel(String.valueOf((int) market.getPrice("Ore")),
                 280, 250, 20, Color.RED, 100);
         Slider oreSlider = new Slider(0, market.getQuantity("Ore"), 0);
         oreSlider.setLayoutX(350);
@@ -1357,7 +1358,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 oreLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Ore");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Ore");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
@@ -1366,7 +1367,7 @@ public class SpaceTrader extends Application {
         Label g1 = createLabel("Games", 20, 300, 20, Color.YELLOW, 100);
         Label g2 = createLabel(String.valueOf(market.getQuantity("Games"))
                 , 160, 300, 20, Color.RED, 100);
-        Label g3 = createLabel(String.valueOf(market.getPrice("Games")),
+        Label g3 = createLabel(String.valueOf((int) market.getPrice("Games")),
                 280, 300, 20, Color.RED, 100);
         Slider gameSlider = new Slider(0, market.getQuantity("Games"), 0);
         gameSlider.setLayoutX(350);
@@ -1389,7 +1390,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 gameLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Games");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Games");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
@@ -1398,7 +1399,7 @@ public class SpaceTrader extends Application {
         Label fire1 = createLabel("Firearms", 20, 350, 20, Color.YELLOW, 100);
         Label fire2 = createLabel(String.valueOf(market.getQuantity("Firearms"))
                 , 160, 350, 20, Color.RED, 100);
-        Label fire3 = createLabel(String.valueOf(market.getPrice("Firearms")),
+        Label fire3 = createLabel(String.valueOf((int) market.getPrice("Firearms")),
                 280, 350, 20, Color.RED, 100);
         Slider fireSlider = new Slider(0, market.getQuantity("Firearms"), 0);
         fireSlider.setLayoutX(350);
@@ -1421,7 +1422,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 fireLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Firearms");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Firearms");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
@@ -1430,7 +1431,7 @@ public class SpaceTrader extends Application {
         Label drug1 = createLabel("Narcotics", 20, 400, 20, Color.YELLOW, 100);
         Label drug2 = createLabel(String.valueOf(market.getQuantity("Narcotics"))
                 , 160, 400, 20, Color.RED, 100);
-        Label drug3 = createLabel(String.valueOf(market.getPrice("Narcotics")),
+        Label drug3 = createLabel(String.valueOf((int) market.getPrice("Narcotics")),
                 280, 400, 20, Color.RED, 100);
         Slider drugSlider = new Slider(0, market.getQuantity("Narcotics"), 0);
         drugSlider.setLayoutX(350);
@@ -1453,7 +1454,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 drugLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Narcotics");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Narcotics");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
@@ -1462,7 +1463,7 @@ public class SpaceTrader extends Application {
         Label r1 = createLabel("Robots", 20, 450, 20, Color.YELLOW, 100);
         Label r2 = createLabel(String.valueOf(market.getQuantity("Robots"))
                 , 160, 450, 20, Color.RED, 100);
-        Label r3 = createLabel(String.valueOf(market.getPrice("Robots")),
+        Label r3 = createLabel(String.valueOf((int) market.getPrice("Robots")),
                 280, 450, 20, Color.RED, 100);
         Slider robotSlider = new Slider(0, market.getQuantity("Robots"), 0);
         robotSlider.setLayoutX(350);
@@ -1485,7 +1486,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 robotLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Robots");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Robots");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
@@ -1629,7 +1630,7 @@ public class SpaceTrader extends Application {
         Label w1 = createLabel("Water", 20, 100, 20, Color.YELLOW, 100);
         Label w2 = createLabel(String.valueOf(player.getShip().getQuantity("Water"))
                 , 160, 100, 20, Color.RED, 100);
-        Label w3 = createLabel(String.valueOf(market.getPrice("Water")),
+        Label w3 = createLabel(String.valueOf((int) market.getPrice("Water")),
                 280, 100, 20, Color.RED, 100);
         Slider waterSlider = new Slider(0, player.getShip().getQuantity("Water"), 0);
         waterSlider.setLayoutX(350);
@@ -1652,7 +1653,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 waterLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Water");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Water");
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1661,7 +1662,7 @@ public class SpaceTrader extends Application {
         Label fur1 = createLabel("Furs", 20, 150, 20, Color.YELLOW, 100);
         Label fur2 = createLabel(String.valueOf(player.getShip().getQuantity("Furs"))
                 , 160, 150, 20, Color.RED, 100);
-        Label fur3 = createLabel(String.valueOf(market.getPrice("Furs")),
+        Label fur3 = createLabel(String.valueOf((int) market.getPrice("Furs")),
                 280, 150, 20, Color.RED, 100);
         Slider furSlider = new Slider(0, player.getShip().getQuantity("Furs"), 0);
         furSlider.setLayoutX(350);
@@ -1684,7 +1685,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 furLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Furs");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Furs");
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1692,7 +1693,7 @@ public class SpaceTrader extends Application {
         Label food1 = createLabel("Food", 20, 200, 20, Color.YELLOW, 100);
         Label food2 = createLabel(String.valueOf(player.getShip().getQuantity("Food"))
                 , 160, 200, 20, Color.RED, 100);
-        Label food3 = createLabel(String.valueOf(market.getPrice("Food")),
+        Label food3 = createLabel(String.valueOf((int) market.getPrice("Food")),
                 280, 200, 20, Color.RED, 100);
         Slider foodSlider = new Slider(0, player.getShip().getQuantity("Food"), 0);
         foodSlider.setLayoutX(350);
@@ -1715,7 +1716,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 foodLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Food");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Food");
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1723,7 +1724,7 @@ public class SpaceTrader extends Application {
         Label o1 = createLabel("Ore", 20, 250, 20, Color.YELLOW, 100);
         Label o2 = createLabel(String.valueOf(player.getShip().getQuantity("Ore"))
                 , 160, 250, 20, Color.RED, 100);
-        Label o3 = createLabel(String.valueOf(market.getPrice("Ore")),
+        Label o3 = createLabel(String.valueOf((int) market.getPrice("Ore")),
                 280, 250, 20, Color.RED, 100);
         Slider oreSlider = new Slider(0, player.getShip().getQuantity("Ore"), 0);
         oreSlider.setLayoutX(350);
@@ -1746,7 +1747,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 oreLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Ore");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Ore");
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1754,7 +1755,7 @@ public class SpaceTrader extends Application {
         Label g1 = createLabel("Games", 20, 300, 20, Color.YELLOW, 100);
         Label g2 = createLabel(String.valueOf(player.getShip().getQuantity("Games"))
                 , 160, 300, 20, Color.RED, 100);
-        Label g3 = createLabel(String.valueOf(player.getShip().getPrice("Games")),
+        Label g3 = createLabel(String.valueOf((int) player.getShip().getPrice("Games")),
                 280, 300, 20, Color.RED, 100);
         Slider gameSlider = new Slider(0, player.getShip().getQuantity("Games"), 0);
         gameSlider.setLayoutX(350);
@@ -1777,7 +1778,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 gameLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Games");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Games");
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1785,7 +1786,7 @@ public class SpaceTrader extends Application {
         Label fire1 = createLabel("Firearms", 20, 350, 20, Color.YELLOW, 100);
         Label fire2 = createLabel(String.valueOf(player.getShip().getQuantity("Firearms"))
                 , 160, 350, 20, Color.RED, 100);
-        Label fire3 = createLabel(String.valueOf(market.getPrice("Firearms")),
+        Label fire3 = createLabel(String.valueOf((int) market.getPrice("Firearms")),
                 280, 350, 20, Color.RED, 100);
         Slider fireSlider = new Slider(0, player.getShip().getQuantity("Firearms"), 0);
         fireSlider.setLayoutX(350);
@@ -1808,7 +1809,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 fireLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Firearms");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Firearms");
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1816,7 +1817,7 @@ public class SpaceTrader extends Application {
         Label drug1 = createLabel("Narcotics", 20, 400, 20, Color.YELLOW, 100);
         Label drug2 = createLabel(String.valueOf(player.getShip().getQuantity("Narcotics"))
                 , 160, 400, 20, Color.RED, 100);
-        Label drug3 = createLabel(String.valueOf(market.getPrice("Narcotics")),
+        Label drug3 = createLabel(String.valueOf((int) market.getPrice("Narcotics")),
                 280, 400, 20, Color.RED, 100);
         Slider drugSlider = new Slider(0, player.getShip().getQuantity("Narcotics"), 0);
         drugSlider.setLayoutX(350);
@@ -1839,7 +1840,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 drugLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Narcotics");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Narcotics");
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1847,7 +1848,7 @@ public class SpaceTrader extends Application {
         Label r1 = createLabel("Robots", 20, 450, 20, Color.YELLOW, 100);
         Label r2 = createLabel(String.valueOf(player.getShip().getQuantity("Robots"))
                 , 160, 450, 20, Color.RED, 100);
-        Label r3 = createLabel(String.valueOf(market.getPrice("Robots")),
+        Label r3 = createLabel(String.valueOf((int) market.getPrice("Robots")),
                 280, 450, 20, Color.RED, 100);
         Slider robotSlider = new Slider(0, player.getShip().getQuantity("Robots"), 0);
         robotSlider.setLayoutX(350);
@@ -1870,7 +1871,7 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 robotLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Robots");
+                int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Robots");
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1974,7 +1975,7 @@ public class SpaceTrader extends Application {
     }
 
     public Slider createSlider(int min, int max, int val, int width, boolean ticks, int majorTick,
-            int minorTick) {
+                               int minorTick) {
         Slider slider = new Slider(min, max, val);
         slider.setPrefWidth(width);
         slider.setShowTickMarks(ticks);
