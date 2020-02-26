@@ -73,4 +73,12 @@ public class Region {
         return policePresence;
     }
 
+    public void createMarket() {
+        this.market = new Market(techLevel);
+    }
+
+    public Market getMarket() {
+        return market;
+    }
+
 }
