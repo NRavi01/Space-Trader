@@ -83,4 +83,16 @@ public class Market {
         }
         return 0;
     }
+
+    public void makeSell() {
+        for (int i = 0; i < products.size(); i++) {
+            products.get(i).changePrice(-(int) (products.get(i).getPrice() * .1));
+        }
+    }
+
+    public void resetBuy() {
+        for (int i = 0; i < products.size(); i++) {
+            products.get(i).changePrice((int) (products.get(i).getPrice() * (double) (10) / (double) 9));
+        }
+    }
 }
