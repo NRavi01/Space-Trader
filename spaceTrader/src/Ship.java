@@ -3,6 +3,7 @@ import javafx.scene.image.Image;
 import java.util.ArrayList;
 
 public class Ship {
+    private final int fuelCapacity = 450;
     private int fuel;
     private String type;
     private int cargoHolds;
@@ -158,7 +159,12 @@ public class Ship {
     }
 
     public void setFuel(int fuel) {
-        this.fuel = fuel;
+        if (fuel <= fuelCapacity) {
+            this.fuel = fuel;
+        }
+        else {
+            this.fuel = fuelCapacity;
+        }
     }
 
     public int getShieldLevel() {
