@@ -56,7 +56,7 @@ public class Ship {
         return 0;
     }
 
-    public int getPrice(String name) {
+    public double getPrice(String name) {
         for (int i = 0; i < products.size(); i++) {
             if (products.get(i).getName().equals(name)) {
                 return products.get(i).getPrice();
