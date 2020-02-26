@@ -1266,6 +1266,7 @@ public class SpaceTrader extends Application {
                 //System.out.println("hi");
                 waterLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 int difference = (t1.intValue() - number.intValue()) * market.getPrice("Water");
+                difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1298,6 +1299,7 @@ public class SpaceTrader extends Application {
                 //System.out.println("hi");
                 furLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 int difference = (t1.intValue() - number.intValue()) * market.getPrice("Furs");
+                difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1329,6 +1331,7 @@ public class SpaceTrader extends Application {
                 //System.out.println("hi");
                 foodLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 int difference = (t1.intValue() - number.intValue()) * market.getPrice("Food");
+                difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1360,6 +1363,7 @@ public class SpaceTrader extends Application {
                 //System.out.println("hi");
                 oreLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 int difference = (t1.intValue() - number.intValue()) * market.getPrice("Ore");
+                difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1391,6 +1395,7 @@ public class SpaceTrader extends Application {
                 //System.out.println("hi");
                 gameLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 int difference = (t1.intValue() - number.intValue()) * market.getPrice("Games");
+                difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1422,6 +1427,7 @@ public class SpaceTrader extends Application {
                 //System.out.println("hi");
                 fireLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 int difference = (t1.intValue() - number.intValue()) * market.getPrice("Firearms");
+                difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1453,6 +1459,7 @@ public class SpaceTrader extends Application {
                 //System.out.println("hi");
                 drugLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 int difference = (t1.intValue() - number.intValue()) * market.getPrice("Narcotics");
+                difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1484,6 +1491,7 @@ public class SpaceTrader extends Application {
                 //System.out.println("hi");
                 robotLabel.textProperty().setValue(String.valueOf(t1.intValue()));
                 int difference = (t1.intValue() - number.intValue()) * market.getPrice("Robots");
+                difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
             }
         });
@@ -1536,6 +1544,7 @@ public class SpaceTrader extends Application {
         commandButton.setOnAction(e -> {
             int amountWaterAdded = (int) (waterSlider.getValue());
             int amountFurAdded = (int) (furSlider.getValue());
+            System.out.println(amountFurAdded);
             int amountOreAdded = (int) (oreSlider.getValue());
             int amountFoodAdded = (int) (foodSlider.getValue());
             int amountGameAdded = (int) (gameSlider.getValue());
@@ -1548,8 +1557,8 @@ public class SpaceTrader extends Application {
             if (player.getCredits() > removeQuote(purchase.getText()) && currentCapacity >= totalAdd) {
                 player.getShip().changeProductQuantity("Water", amountWaterAdded);
                 market.changeProductQuantity("Water", -amountWaterAdded);
-                player.getShip().changeProductQuantity("Fur", amountFurAdded);
-                market.changeProductQuantity("Fur", -amountFurAdded);
+                player.getShip().changeProductQuantity("Furs", amountFurAdded);
+                market.changeProductQuantity("Furs", -amountFurAdded);
                 player.getShip().changeProductQuantity("Ore", amountOreAdded);
                 market.changeProductQuantity("Ore", -amountOreAdded);
                 player.getShip().changeProductQuantity("Food", amountFoodAdded);
@@ -1608,6 +1617,8 @@ public class SpaceTrader extends Application {
         Label credits = createLabel("Credits: " + player.getCredits(), 450, 5, 20, Color.GREEN, 250);
 
         Market market = region.getMarket();
+        market.makeSell();
+
         int tickUnit;
         Label purchase = createLabel("(0)", 355, 560, 20, Color.YELLOW, 150);
 
@@ -1907,6 +1918,7 @@ public class SpaceTrader extends Application {
                 sellButton, travelChartButton);
 
         backButton.setOnAction(e -> {
+            market.resetBuy();
             window.setScene(createRegionScene(window, region));
         });
 
@@ -1921,8 +1933,8 @@ public class SpaceTrader extends Application {
             int amountRobotSold = (int) (robotSlider.getValue());
             player.getShip().changeProductQuantity("Water", -amountWaterSold);
             market.changeProductQuantity("Water", amountWaterSold);
-            player.getShip().changeProductQuantity("Fur", -amountFurSold);
-            market.changeProductQuantity("Fur",amountFurSold);
+            player.getShip().changeProductQuantity("Furs", -amountFurSold);
+            market.changeProductQuantity("Furs",amountFurSold);
             player.getShip().changeProductQuantity("Ore", -amountOreSold);
             market.changeProductQuantity("Ore", amountOreSold);
             player.getShip().changeProductQuantity("Food", -amountFoodSold);
@@ -1936,15 +1948,18 @@ public class SpaceTrader extends Application {
             player.getShip().changeProductQuantity("Robots", -amountRobotSold);
             market.changeProductQuantity("Robots", amountRobotSold);
             player.changeCredits(removeQuote(purchase.getText()));
+            market.resetBuy();
             window.setScene(createSellMarket(window, region));
         });
 
         commandButton.setOnAction(e -> {
+            market.resetBuy();
             window.setScene(createMarket(window, region));
         });
 
 
         travelChartButton.setOnAction(e -> {
+            market.resetBuy();
             Group grp4 = getTravelChart(window);
             Scene s4 = new Scene(grp4, 600, 600);
             window.setScene(s4);
