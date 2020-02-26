@@ -688,7 +688,7 @@ public class SpaceTrader extends Application {
             }
         });
 
-        Label shield = createLabel("Increase shield: ", 0, 400, 20, Color.BLUE, 150);
+        Label shield = createLabel("Increase fighter: ", 0, 400, 20, Color.BLUE, 150);
         Slider shieldSlider = new Slider(0, 5, 0);
         shieldSlider.setLayoutX(150);
         shieldSlider.setLayoutY(410);
@@ -709,6 +709,8 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 shieldLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = t1.intValue() - number.intValue();
+                points[1].setValue(points[1].getValue() + difference);
                 addShield.setText("PURCHASE FOR " + t1.intValue() * 100);
             }
         });
