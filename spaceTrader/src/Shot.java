@@ -1,0 +1,43 @@
+public class Shot {
+    private int x;
+    private int y;
+    private int speed;
+    private int direction; //0 for right, 1 for left
+    private int power;
+
+    public Shot(int x, int y, int speed, int direction, int power) {
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+        this.direction = direction;
+        this.power = power;
+    }
+
+    public int getPower() {
+        return power;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+}
