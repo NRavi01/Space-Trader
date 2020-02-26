@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Market {
     private ArrayList<Product> products = new ArrayList<>();
     private int techLevel;
@@ -73,7 +75,7 @@ public class Market {
         return 0;
     }
 
-    public int getPrice(String name) {
+    public double getPrice(String name) {
         for (int i = 0; i < products.size(); i++) {
             if (products.get(i).getName().equals(name)) {
                 return products.get(i).getPrice();
@@ -90,7 +92,7 @@ public class Market {
 
     public void resetBuy() {
         for (int i = 0; i < products.size(); i++) {
-            products.get(i).changePrice((int) (products.get(i).getPrice() * (double) (10) / (double) 9));
+            products.get(i).setPrice((int) (products.get(i).getPrice() * (double) (10) / (double) 9));
         }
     }
 }
