@@ -81,6 +81,8 @@ public class SpaceTrader extends Application {
         int policePresence = (int) (Math.random() * 3 + 1);
         int currRegionName = (int) (Math.random() * regionNumber);
         currentSystem = new Region(names.get(currRegionName), (int) (Math.random() * 600), (int) (Math.random() * 600), regionSize, techLevel, government, policePresence);
+        currentSystem.createMarket();
+        currentSystem.getMarket().populateMarket();
         names.remove(currRegionName);
         visitedRegions.add(currentSystem);
 
@@ -93,6 +95,8 @@ public class SpaceTrader extends Application {
             int policePresence2 = (int) (Math.random() * 3 +  1);
             int sysName = (int) (Math.random() * names.size());
             newSystem = new Region(names.get(sysName), (int) (Math.random() * 600), (int) (Math.random() * 600), regionSize2, techLevel2, government2, policePresence2);
+            newSystem.createMarket();
+            newSystem.getMarket().populateMarket();
             regions[i] = newSystem;
             names.remove(sysName);
         }
@@ -110,7 +114,7 @@ public class SpaceTrader extends Application {
 
         //SCENE 1
         ImageView mv = createImage("SpaceTraderBackground.jpg", 0, 0, 600, 600);
-
+        mv.setStyle("-fx-background-color:transparent");
         Text t = new Text(100, 200, "SPACE TRADER");
         t.setFont(new Font(60));
         t.setFill(Color.YELLOW);
@@ -132,7 +136,7 @@ public class SpaceTrader extends Application {
 
         //SCENE TWO
         ImageView mv2 = createImage("SpaceTraderBackground.jpg", 0, 0, 600, 600);
-
+        mv2.setStyle("-fx-background-color:transparent");
         Text t2 = new Text(100, 100, "SPACE TRADER");
         t2.setFill(Color.YELLOW);
         t2.setFont(new Font(60));
@@ -553,13 +557,21 @@ public class SpaceTrader extends Application {
         shipyardButton.setOnMouseEntered(e -> shipyardButton.setTextFill(Color.RED));
         shipyardButton.setOnMouseExited(e -> shipyardButton.setTextFill(Color.YELLOW));
 
-        Button travelButton = createButton(450, 525, 150, 50, Color.YELLOW, "Travel");
-        travelButton.setOnMouseEntered(e -> travelButton.setTextFill(Color.RED));
-        travelButton.setOnMouseExited(e -> travelButton.setTextFill(Color.YELLOW));
+        Button tm;
+        if (currentSystem == region) {
+            tm = createButton(450, 525, 150, 50, Color.YELLOW, "Market");
+            tm.setOnMouseEntered(e -> tm.setTextFill(Color.RED));
+            tm.setOnMouseExited(e -> tm.setTextFill(Color.YELLOW));
+        }
+        else {
+            tm = createButton(450, 525, 150, 50, Color.YELLOW, "Travel");
+            tm.setOnMouseEntered(e -> tm.setTextFill(Color.RED));
+            tm.setOnMouseExited(e -> tm.setTextFill(Color.YELLOW));
+        }
 
         Group grp = new Group();
         grp.getChildren().addAll(background, planetName, t1, t2, t3, t4, t5, t6, tabLine,
-                vertLine1, vertLine2, vertLine3, backButton, commandButton, shipyardButton, travelButton);
+                vertLine1, vertLine2, vertLine3, backButton, commandButton, shipyardButton, tm);
 
         backButton.setOnAction(e -> {
             Group grp4 = getTravelChart(window);
@@ -581,35 +593,39 @@ public class SpaceTrader extends Application {
             Scene s4 = new Scene(grp4, 600, 600);
             window.setScene(s4);
         });
-        travelButton.setOnAction(e -> {
-            int distance = (int) (getDistance(region.getSubX(), region.getSubY(), 300, 300));
-            if (distance <= player.getFuel()) {
-                if ((int) (Math.random() * 3) == 2) {
-                    s2 = new Ship("Gnat", 15, 1, 1, 500);
-                    s2.setSubX(500);
-                    s2.setSubY(300);
-                    player.getShip().setSubX(25);
-                    player.getShip().setSubY(300);
-                    shipAnimation.start();
-                    shootAnimation.start();
-                    window.setScene(createFightChoice(window));
-                    player.changeFuel((-1) * distance);
-                    setCurrRegion(region);
-                    resetPoints();
-                    visitedRegions.add(region);
-                }
-                else {
-                    player.changeFuel((-1) * distance);
-                    setCurrRegion(region);
-                    resetPoints();
-                    visitedRegions.add(region);
-                    Group grp5 = getTravelChart(window);
-                    Scene s5 = new Scene(grp5, 600, 600);
-                    window.setScene(s5);
+        tm.setOnAction(e -> {
+            if (currentSystem != region) {
+                int distance = (int) (getDistance(region.getSubX(), region.getSubY(), 300, 300));
+                if (distance <= player.getFuel()) {
+                    if ((int) (Math.random() * 3) == 2) {
+                        s2 = new Ship("Gnat", 15, 1, 1, 500);
+                        s2.setSubX(500);
+                        s2.setSubY(300);
+                        player.getShip().setSubX(25);
+                        player.getShip().setSubY(300);
+                        shipAnimation.start();
+                        shootAnimation.start();
+                        window.setScene(createFightChoice(window));
+                        player.changeFuel((-1) * distance);
+                        setCurrRegion(region);
+                        resetPoints();
+                        visitedRegions.add(region);
+                    } else {
+                        player.changeFuel((-1) * distance);
+                        setCurrRegion(region);
+                        resetPoints();
+                        visitedRegions.add(region);
+                        Group grp5 = getTravelChart(window);
+                        Scene s5 = new Scene(grp5, 600, 600);
+                        window.setScene(s5);
+                    }
+                } else {
+                    System.out.println("Outside fuel range!");
                 }
             }
             else {
-                System.out.println("Outside fuel range!");
+                Scene s4 = createMarket(window, region);
+                window.setScene(s4);
             }
         });
         return new Scene(grp, 600, 600);
@@ -1202,6 +1218,741 @@ public class SpaceTrader extends Application {
         return difficultyLevel;
     }
 
+    private Scene createMarket(Stage window, Region region) {
+        ImageView background = createImage( "regionBackground.jpg", 0, 0, 600, 600);
+
+        Label planetName = createLabel(region.getName() + " Buy Market", 150, 0, 25, Color.YELLOW, 250);
+        planetName.setAlignment(Pos.CENTER);
+
+        Label credits = createLabel("Credits: " + player.getCredits(), 450, 5, 20, Color.GREEN, 250);
+
+        Market market = region.getMarket();
+        int tickUnit;
+        Label purchase = createLabel("(0)", 205, 560, 20, Color.YELLOW, 150);
+
+        Label t1 = createLabel("Products", 20, 50, 20, Color.BLUE, 100);
+        t1.setStyle("-fx-underline: true");
+        Label t2 = createLabel("Available", 150, 50, 20, Color.BLUE, 100);
+        t2.setStyle("-fx-underline: true");
+        Label z1 = createLabel("Price", 270, 50, 20, Color.BLUE, 50);
+        z1.setStyle("-fx-underline: true");
+        Label z2 = createLabel("Select Amount to Purchase", 350, 50, 20, Color.BLUE, 270);
+        z2.setStyle("-fx-underline: true");
+
+        Label w1 = createLabel("Water", 20, 100, 20, Color.YELLOW, 100);
+        Label w2 = createLabel(String.valueOf(market.getQuantity("Water"))
+                , 160, 100, 20, Color.RED, 100);
+        Label w3 = createLabel(String.valueOf(market.getPrice("Water")),
+                280, 100, 20, Color.RED, 100);
+        Slider waterSlider = new Slider(0, market.getQuantity("Water"), 0);
+        waterSlider.setLayoutX(350);
+        waterSlider.setLayoutY(110);
+        waterSlider.setPrefWidth(200);
+        waterSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Water") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        waterSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        waterSlider.setSnapToTicks(true);
+        waterSlider.setStyle("-fx-control-inner-background: red;");
+        Label waterLabel = createLabel("0", 550,    100, 20, Color.RED, 35);
+        waterSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                waterLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Water");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+
+        Label fur1 = createLabel("Furs", 20, 150, 20, Color.YELLOW, 100);
+        Label fur2 = createLabel(String.valueOf(market.getQuantity("Furs"))
+                , 160, 150, 20, Color.RED, 100);
+        Label fur3 = createLabel(String.valueOf(market.getPrice("Furs")),
+                280, 150, 20, Color.RED, 100);
+        Slider furSlider = new Slider(0, market.getQuantity("Furs"), 0);
+        furSlider.setLayoutX(350);
+        furSlider.setLayoutY(160);
+        furSlider.setPrefWidth(200);
+        furSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Furs") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        furSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        furSlider.setSnapToTicks(true);
+        furSlider.setStyle("-fx-control-inner-background: red;");
+        Label furLabel = createLabel("0", 550,    150, 20, Color.RED, 35);
+        furSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                furLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Furs");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Label food1 = createLabel("Food", 20, 200, 20, Color.YELLOW, 100);
+        Label food2 = createLabel(String.valueOf(market.getQuantity("Food"))
+                , 160, 200, 20, Color.RED, 100);
+        Label food3 = createLabel(String.valueOf(market.getPrice("Food")),
+                280, 200, 20, Color.RED, 100);
+        Slider foodSlider = new Slider(0, market.getQuantity("Food"), 0);
+        foodSlider.setLayoutX(350);
+        foodSlider.setLayoutY(210);
+        foodSlider.setPrefWidth(200);
+        foodSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Food") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        foodSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        foodSlider.setSnapToTicks(true);
+        foodSlider.setStyle("-fx-control-inner-background: red;");
+        Label foodLabel = createLabel("0", 550,    200, 20, Color.RED, 35);
+        foodSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                foodLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Food");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Label o1 = createLabel("Ore", 20, 250, 20, Color.YELLOW, 100);
+        Label o2 = createLabel(String.valueOf(market.getQuantity("Ore"))
+                , 160, 250, 20, Color.RED, 100);
+        Label o3 = createLabel(String.valueOf(market.getPrice("Ore")),
+                280, 250, 20, Color.RED, 100);
+        Slider oreSlider = new Slider(0, market.getQuantity("Ore"), 0);
+        oreSlider.setLayoutX(350);
+        oreSlider.setLayoutY(260);
+        oreSlider.setPrefWidth(200);
+        oreSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Ore") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        oreSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        oreSlider.setSnapToTicks(true);
+        oreSlider.setStyle("-fx-control-inner-background: red;");
+        Label oreLabel = createLabel("0", 550,    250, 20, Color.RED, 35);
+        oreSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                oreLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Ore");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Label g1 = createLabel("Games", 20, 300, 20, Color.YELLOW, 100);
+        Label g2 = createLabel(String.valueOf(market.getQuantity("Games"))
+                , 160, 300, 20, Color.RED, 100);
+        Label g3 = createLabel(String.valueOf(market.getPrice("Games")),
+                280, 300, 20, Color.RED, 100);
+        Slider gameSlider = new Slider(0, market.getQuantity("Games"), 0);
+        gameSlider.setLayoutX(350);
+        gameSlider.setLayoutY(310);
+        gameSlider.setPrefWidth(200);
+        gameSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Games") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        gameSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        gameSlider.setSnapToTicks(true);
+        gameSlider.setStyle("-fx-control-inner-background: red;");
+        Label gameLabel = createLabel("0", 550,    300, 20, Color.RED, 35);
+        gameSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                gameLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Games");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Label fire1 = createLabel("Firearms", 20, 350, 20, Color.YELLOW, 100);
+        Label fire2 = createLabel(String.valueOf(market.getQuantity("Firearms"))
+                , 160, 350, 20, Color.RED, 100);
+        Label fire3 = createLabel(String.valueOf(market.getPrice("Firearms")),
+                280, 350, 20, Color.RED, 100);
+        Slider fireSlider = new Slider(0, market.getQuantity("Firearms"), 0);
+        fireSlider.setLayoutX(350);
+        fireSlider.setLayoutY(360);
+        fireSlider.setPrefWidth(200);
+        fireSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Firearms") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        fireSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        fireSlider.setSnapToTicks(true);
+        fireSlider.setStyle("-fx-control-inner-background: red;");
+        Label fireLabel = createLabel("0", 550,    350, 20, Color.RED, 35);
+        fireSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                fireLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Firearms");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Label drug1 = createLabel("Narcotics", 20, 400, 20, Color.YELLOW, 100);
+        Label drug2 = createLabel(String.valueOf(market.getQuantity("Narcotics"))
+                , 160, 400, 20, Color.RED, 100);
+        Label drug3 = createLabel(String.valueOf(market.getPrice("Narcotics")),
+                280, 400, 20, Color.RED, 100);
+        Slider drugSlider = new Slider(0, market.getQuantity("Narcotics"), 0);
+        drugSlider.setLayoutX(350);
+        drugSlider.setLayoutY(410);
+        drugSlider.setPrefWidth(200);
+        drugSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Narcotics") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        drugSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        drugSlider.setSnapToTicks(true);
+        drugSlider.setStyle("-fx-control-inner-background: red;");
+        Label drugLabel = createLabel("0", 550,    400, 20, Color.RED, 35);
+        drugSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                drugLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Narcotics");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Label r1 = createLabel("Robots", 20, 450, 20, Color.YELLOW, 100);
+        Label r2 = createLabel(String.valueOf(market.getQuantity("Robots"))
+                , 160, 450, 20, Color.RED, 100);
+        Label r3 = createLabel(String.valueOf(market.getPrice("Robots")),
+                280, 450, 20, Color.RED, 100);
+        Slider robotSlider = new Slider(0, market.getQuantity("Robots"), 0);
+        robotSlider.setLayoutX(350);
+        robotSlider.setLayoutY(460);
+        robotSlider.setPrefWidth(200);
+        robotSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Robots") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        robotSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        robotSlider.setSnapToTicks(true);
+        robotSlider.setStyle("-fx-control-inner-background: red;");
+        Label robotLabel = createLabel("0", 550,    450, 20, Color.RED, 35);
+        robotSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                robotLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Robots");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Line tabLine = new Line(0, 500, 600, 500);
+        tabLine.setStroke(Color.YELLOW);
+
+        Line vertLine1 = new Line(150, 500, 150, 600);
+        vertLine1.setStroke(Color.YELLOW);
+
+        Line vertLine2 = new Line(450, 500, 450, 600);
+        vertLine2.setStroke(Color.YELLOW);
+
+        Line vertLine3 = new Line(300, 500, 300, 600);
+        vertLine3.setStroke(Color.YELLOW);
+
+        Button backButton = createButton(0, 525, 150, 50, Color.YELLOW, "Back");
+        backButton.setOnMouseEntered(e -> backButton.setTextFill(Color.RED));
+        backButton.setOnMouseExited(e -> backButton.setTextFill(Color.YELLOW));
+
+        Button commandButton = createButton(150, 525, 150, 50, Color.YELLOW, "PURCHASE");
+        commandButton.setOnMouseEntered(e -> commandButton.setTextFill(Color.RED));
+        commandButton.setOnMouseExited(e -> commandButton.setTextFill(Color.YELLOW));
+
+        Button sellButton = createButton(300, 525, 150, 50, Color.YELLOW, "Sell Market");
+        sellButton.setOnMouseEntered(e -> sellButton.setTextFill(Color.RED));
+        sellButton.setOnMouseExited(e -> sellButton.setTextFill(Color.YELLOW));
+
+        Button travelChartButton = createButton(450, 525, 150, 50, Color.YELLOW, "Travel Chart");
+        travelChartButton.setOnMouseEntered(e -> travelChartButton.setTextFill(Color.RED));
+        travelChartButton.setOnMouseExited(e -> travelChartButton.setTextFill(Color.YELLOW));
+
+        Group grp = new Group();
+        grp.getChildren().addAll(background, planetName, t1, t2, w1, w2, w3, waterSlider, waterLabel,
+                z1, z2, fur1, fur2, fur3, furSlider, furLabel,
+                food1, food2, food3, foodSlider, foodLabel, o1, o2, o3, oreSlider, oreLabel,
+                g1, g2, g3, gameSlider, gameLabel, fire1, fire2, fire3, fireSlider, fireLabel,
+                drug1, drug2, drug3, drugSlider, drugLabel, r1, r2, r3, robotSlider, robotLabel,
+                tabLine, vertLine1, vertLine2, vertLine3, purchase, credits, backButton, commandButton,
+                sellButton, travelChartButton);
+
+        backButton.setOnAction(e -> {
+            window.setScene(createRegionScene(window, region));
+        });
+
+        sellButton.setOnAction(e -> {
+            window.setScene(createSellMarket(window, region));
+        });
+
+        commandButton.setOnAction(e -> {
+            int amountWaterAdded = (int) (waterSlider.getValue());
+            int amountFurAdded = (int) (furSlider.getValue());
+            int amountOreAdded = (int) (oreSlider.getValue());
+            int amountFoodAdded = (int) (foodSlider.getValue());
+            int amountGameAdded = (int) (gameSlider.getValue());
+            int amountFireAdded = (int) (fireSlider.getValue());
+            int amountDrugAdded = (int) (drugSlider.getValue());
+            int amountRobotAdded = (int) (robotSlider.getValue());
+            int totalAdd = amountWaterAdded + amountFurAdded + amountOreAdded + amountFoodAdded +
+                    amountGameAdded + amountFireAdded + amountDrugAdded + amountRobotAdded;
+            int currentCapacity = player.getShip().getCurrentCapacity();
+            if (player.getCredits() > removeQuote(purchase.getText()) && currentCapacity >= totalAdd) {
+                player.getShip().changeProductQuantity("Water", amountWaterAdded);
+                market.changeProductQuantity("Water", -amountWaterAdded);
+                player.getShip().changeProductQuantity("Fur", amountFurAdded);
+                market.changeProductQuantity("Fur", -amountFurAdded);
+                player.getShip().changeProductQuantity("Ore", amountOreAdded);
+                market.changeProductQuantity("Ore", -amountOreAdded);
+                player.getShip().changeProductQuantity("Food", amountFoodAdded);
+                market.changeProductQuantity("Food", -amountFoodAdded);
+                player.getShip().changeProductQuantity("Game", amountGameAdded);
+                market.changeProductQuantity("Game", -amountGameAdded);
+                player.getShip().changeProductQuantity("Firearms", amountFireAdded);
+                market.changeProductQuantity("Firearms", -amountFireAdded);
+                player.getShip().changeProductQuantity("Narcotics", amountDrugAdded);
+                market.changeProductQuantity("Narcotics", -amountDrugAdded);
+                player.getShip().changeProductQuantity("Robots", amountRobotAdded);
+                market.changeProductQuantity("Robots", -amountRobotAdded);
+                player.changeCredits(-removeQuote(purchase.getText()));
+                window.setScene(createMarket(window, region));
+            }
+            else if (player.getCredits() < removeQuote(purchase.getText())){
+                System.out.println("Not enough money");
+                waterSlider.setValue(0);
+                furSlider.setValue(0);
+                oreSlider.setValue(0);
+                foodSlider.setValue(0);
+                gameSlider.setValue(0);
+                fireSlider.setValue(0);
+                drugSlider.setValue(0);
+                robotSlider.setValue(0);
+            }
+            else {
+                System.out.println("Not enough space in cargo holds, you can only add: " + player.getShip().getCurrentCapacity());
+                waterSlider.setValue(0);
+                furSlider.setValue(0);
+                oreSlider.setValue(0);
+                foodSlider.setValue(0);
+                gameSlider.setValue(0);
+                fireSlider.setValue(0);
+                drugSlider.setValue(0);
+                robotSlider.setValue(0);
+            }
+        });
+
+
+        travelChartButton.setOnAction(e -> {
+            Group grp4 = getTravelChart(window);
+            Scene s4 = new Scene(grp4, 600, 600);
+            window.setScene(s4);
+        });
+
+        return new Scene(grp, 600, 600);
+    }
+
+    private Scene createSellMarket(Stage window, Region region) {
+        ImageView background = createImage( "regionBackground.jpg", 0, 0, 600, 600);
+
+        Label planetName = createLabel(region.getName() + " Sell Market", 150, 0, 25, Color.YELLOW, 250);
+        planetName.setAlignment(Pos.CENTER);
+
+        Label credits = createLabel("Credits: " + player.getCredits(), 450, 5, 20, Color.GREEN, 250);
+
+        Market market = region.getMarket();
+        int tickUnit;
+        Label purchase = createLabel("(0)", 355, 560, 20, Color.YELLOW, 150);
+
+        Label t1 = createLabel("Products", 20, 50, 20, Color.BLUE, 100);
+        t1.setStyle("-fx-underline: true");
+        Label t2 = createLabel("Cargo", 140, 50, 20, Color.BLUE, 60);
+        t2.setStyle("-fx-underline: true");
+        Label z1 = createLabel("Sell Price", 250, 50, 20, Color.BLUE, 100);
+        z1.setStyle("-fx-underline: true");
+        Label z2 = createLabel("Select Amount to Sell", 350, 50, 20, Color.BLUE, 270);
+        z2.setStyle("-fx-underline: true");
+
+        Label w1 = createLabel("Water", 20, 100, 20, Color.YELLOW, 100);
+        Label w2 = createLabel(String.valueOf(player.getShip().getQuantity("Water"))
+                , 160, 100, 20, Color.RED, 100);
+        Label w3 = createLabel(String.valueOf(market.getPrice("Water")),
+                280, 100, 20, Color.RED, 100);
+        Slider waterSlider = new Slider(0, player.getShip().getQuantity("Water"), 0);
+        waterSlider.setLayoutX(350);
+        waterSlider.setLayoutY(110);
+        waterSlider.setPrefWidth(200);
+        waterSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Water") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        waterSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        waterSlider.setSnapToTicks(true);
+        waterSlider.setStyle("-fx-control-inner-background: red;");
+        Label waterLabel = createLabel("0", 550,    100, 20, Color.RED, 35);
+        waterSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                waterLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Water");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+
+        Label fur1 = createLabel("Furs", 20, 150, 20, Color.YELLOW, 100);
+        Label fur2 = createLabel(String.valueOf(player.getShip().getQuantity("Furs"))
+                , 160, 150, 20, Color.RED, 100);
+        Label fur3 = createLabel(String.valueOf(market.getPrice("Furs")),
+                280, 150, 20, Color.RED, 100);
+        Slider furSlider = new Slider(0, player.getShip().getQuantity("Furs"), 0);
+        furSlider.setLayoutX(350);
+        furSlider.setLayoutY(160);
+        furSlider.setPrefWidth(200);
+        furSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Furs") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        furSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        furSlider.setSnapToTicks(true);
+        furSlider.setStyle("-fx-control-inner-background: red;");
+        Label furLabel = createLabel("0", 550,    150, 20, Color.RED, 35);
+        furSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                furLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Furs");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Label food1 = createLabel("Food", 20, 200, 20, Color.YELLOW, 100);
+        Label food2 = createLabel(String.valueOf(player.getShip().getQuantity("Food"))
+                , 160, 200, 20, Color.RED, 100);
+        Label food3 = createLabel(String.valueOf(market.getPrice("Food")),
+                280, 200, 20, Color.RED, 100);
+        Slider foodSlider = new Slider(0, player.getShip().getQuantity("Food"), 0);
+        foodSlider.setLayoutX(350);
+        foodSlider.setLayoutY(210);
+        foodSlider.setPrefWidth(200);
+        foodSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Food") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        foodSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        foodSlider.setSnapToTicks(true);
+        foodSlider.setStyle("-fx-control-inner-background: red;");
+        Label foodLabel = createLabel("0", 550,    200, 20, Color.RED, 35);
+        foodSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                foodLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Food");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Label o1 = createLabel("Ore", 20, 250, 20, Color.YELLOW, 100);
+        Label o2 = createLabel(String.valueOf(player.getShip().getQuantity("Ore"))
+                , 160, 250, 20, Color.RED, 100);
+        Label o3 = createLabel(String.valueOf(market.getPrice("Ore")),
+                280, 250, 20, Color.RED, 100);
+        Slider oreSlider = new Slider(0, player.getShip().getQuantity("Ore"), 0);
+        oreSlider.setLayoutX(350);
+        oreSlider.setLayoutY(260);
+        oreSlider.setPrefWidth(200);
+        oreSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Ore") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        oreSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        oreSlider.setSnapToTicks(true);
+        oreSlider.setStyle("-fx-control-inner-background: red;");
+        Label oreLabel = createLabel("0", 550,    250, 20, Color.RED, 35);
+        oreSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                oreLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Ore");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Label g1 = createLabel("Games", 20, 300, 20, Color.YELLOW, 100);
+        Label g2 = createLabel(String.valueOf(player.getShip().getQuantity("Games"))
+                , 160, 300, 20, Color.RED, 100);
+        Label g3 = createLabel(String.valueOf(player.getShip().getPrice("Games")),
+                280, 300, 20, Color.RED, 100);
+        Slider gameSlider = new Slider(0, player.getShip().getQuantity("Games"), 0);
+        gameSlider.setLayoutX(350);
+        gameSlider.setLayoutY(310);
+        gameSlider.setPrefWidth(200);
+        gameSlider.setShowTickMarks(false);
+        tickUnit = player.getShip().getQuantity("Games") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        gameSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        gameSlider.setSnapToTicks(true);
+        gameSlider.setStyle("-fx-control-inner-background: red;");
+        Label gameLabel = createLabel("0", 550,    300, 20, Color.RED, 35);
+        gameSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                gameLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Games");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Label fire1 = createLabel("Firearms", 20, 350, 20, Color.YELLOW, 100);
+        Label fire2 = createLabel(String.valueOf(player.getShip().getQuantity("Firearms"))
+                , 160, 350, 20, Color.RED, 100);
+        Label fire3 = createLabel(String.valueOf(market.getPrice("Firearms")),
+                280, 350, 20, Color.RED, 100);
+        Slider fireSlider = new Slider(0, player.getShip().getQuantity("Firearms"), 0);
+        fireSlider.setLayoutX(350);
+        fireSlider.setLayoutY(360);
+        fireSlider.setPrefWidth(200);
+        fireSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Firearms") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        fireSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        fireSlider.setSnapToTicks(true);
+        fireSlider.setStyle("-fx-control-inner-background: red;");
+        Label fireLabel = createLabel("0", 550,    350, 20, Color.RED, 35);
+        fireSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                fireLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Firearms");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Label drug1 = createLabel("Narcotics", 20, 400, 20, Color.YELLOW, 100);
+        Label drug2 = createLabel(String.valueOf(player.getShip().getQuantity("Narcotics"))
+                , 160, 400, 20, Color.RED, 100);
+        Label drug3 = createLabel(String.valueOf(market.getPrice("Narcotics")),
+                280, 400, 20, Color.RED, 100);
+        Slider drugSlider = new Slider(0, player.getShip().getQuantity("Narcotics"), 0);
+        drugSlider.setLayoutX(350);
+        drugSlider.setLayoutY(410);
+        drugSlider.setPrefWidth(200);
+        drugSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Narcotics") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        drugSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        drugSlider.setSnapToTicks(true);
+        drugSlider.setStyle("-fx-control-inner-background: red;");
+        Label drugLabel = createLabel("0", 550,    400, 20, Color.RED, 35);
+        drugSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                drugLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Narcotics");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Label r1 = createLabel("Robots", 20, 450, 20, Color.YELLOW, 100);
+        Label r2 = createLabel(String.valueOf(player.getShip().getQuantity("Robots"))
+                , 160, 450, 20, Color.RED, 100);
+        Label r3 = createLabel(String.valueOf(market.getPrice("Robots")),
+                280, 450, 20, Color.RED, 100);
+        Slider robotSlider = new Slider(0, player.getShip().getQuantity("Robots"), 0);
+        robotSlider.setLayoutX(350);
+        robotSlider.setLayoutY(460);
+        robotSlider.setPrefWidth(200);
+        robotSlider.setShowTickMarks(false);
+        tickUnit = market.getQuantity("Robots") / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        robotSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        robotSlider.setSnapToTicks(true);
+        robotSlider.setStyle("-fx-control-inner-background: red;");
+        Label robotLabel = createLabel("0", 550,    450, 20, Color.RED, 35);
+        robotSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                robotLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue()) * market.getPrice("Robots");
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+            }
+        });
+
+        Line tabLine = new Line(0, 500, 600, 500);
+        tabLine.setStroke(Color.YELLOW);
+
+        Line vertLine1 = new Line(150, 500, 150, 600);
+        vertLine1.setStroke(Color.YELLOW);
+
+        Line vertLine2 = new Line(450, 500, 450, 600);
+        vertLine2.setStroke(Color.YELLOW);
+
+        Line vertLine3 = new Line(300, 500, 300, 600);
+        vertLine3.setStroke(Color.YELLOW);
+
+        Button backButton = createButton(0, 525, 150, 50, Color.YELLOW, "Back");
+        backButton.setOnMouseEntered(e -> backButton.setTextFill(Color.RED));
+        backButton.setOnMouseExited(e -> backButton.setTextFill(Color.YELLOW));
+
+        Button commandButton = createButton(150, 525, 150, 50, Color.YELLOW, "Buy Market");
+        commandButton.setOnMouseEntered(e -> commandButton.setTextFill(Color.RED));
+        commandButton.setOnMouseExited(e -> commandButton.setTextFill(Color.YELLOW));
+
+        Button sellButton = createButton(300, 525, 150, 50, Color.YELLOW, "SELL");
+        sellButton.setOnMouseEntered(e -> sellButton.setTextFill(Color.RED));
+        sellButton.setOnMouseExited(e -> sellButton.setTextFill(Color.YELLOW));
+
+        Button travelChartButton = createButton(450, 525, 150, 50, Color.YELLOW, "Travel Chart");
+        travelChartButton.setOnMouseEntered(e -> travelChartButton.setTextFill(Color.RED));
+        travelChartButton.setOnMouseExited(e -> travelChartButton.setTextFill(Color.YELLOW));
+
+        Group grp = new Group();
+        grp.getChildren().addAll(background, planetName, t1, t2, w1, w2, w3, waterSlider, waterLabel,
+                z1, z2, fur1, fur2, fur3, furSlider, furLabel,
+                food1, food2, food3, foodSlider, foodLabel, o1, o2, o3, oreSlider, oreLabel,
+                g1, g2, g3, gameSlider, gameLabel, fire1, fire2, fire3, fireSlider, fireLabel,
+                drug1, drug2, drug3, drugSlider, drugLabel, r1, r2, r3, robotSlider, robotLabel,
+                tabLine, vertLine1, vertLine2, vertLine3, purchase, credits, backButton, commandButton,
+                sellButton, travelChartButton);
+
+        backButton.setOnAction(e -> {
+            window.setScene(createRegionScene(window, region));
+        });
+
+        sellButton.setOnAction(e -> {
+            int amountWaterSold = (int) (waterSlider.getValue());
+            int amountFurSold = (int) (furSlider.getValue());
+            int amountOreSold = (int) (oreSlider.getValue());
+            int amountFoodSold = (int) (foodSlider.getValue());
+            int amountGameSold = (int) (gameSlider.getValue());
+            int amountFireSold = (int) (fireSlider.getValue());
+            int amountDrugSold = (int) (drugSlider.getValue());
+            int amountRobotSold = (int) (robotSlider.getValue());
+            player.getShip().changeProductQuantity("Water", -amountWaterSold);
+            market.changeProductQuantity("Water", amountWaterSold);
+            player.getShip().changeProductQuantity("Fur", -amountFurSold);
+            market.changeProductQuantity("Fur",amountFurSold);
+            player.getShip().changeProductQuantity("Ore", -amountOreSold);
+            market.changeProductQuantity("Ore", amountOreSold);
+            player.getShip().changeProductQuantity("Food", -amountFoodSold);
+            market.changeProductQuantity("Food", amountFoodSold);
+            player.getShip().changeProductQuantity("Game", -amountGameSold);
+            market.changeProductQuantity("Game", amountGameSold);
+            player.getShip().changeProductQuantity("Firearms", -amountFireSold);
+            market.changeProductQuantity("Firearms", amountFireSold);
+            player.getShip().changeProductQuantity("Narcotics", -amountDrugSold);
+            market.changeProductQuantity("Narcotics", amountDrugSold);
+            player.getShip().changeProductQuantity("Robots", -amountRobotSold);
+            market.changeProductQuantity("Robots", amountRobotSold);
+            player.changeCredits(removeQuote(purchase.getText()));
+            window.setScene(createSellMarket(window, region));
+        });
+
+        commandButton.setOnAction(e -> {
+            window.setScene(createMarket(window, region));
+        });
+
+
+        travelChartButton.setOnAction(e -> {
+            Group grp4 = getTravelChart(window);
+            Scene s4 = new Scene(grp4, 600, 600);
+            window.setScene(s4);
+        });
+
+        return new Scene(grp, 600, 600);
+    }
+
     public Label createLabel(String text, int x, int y, int font, Color c, int width) {
         Label newLabel = new Label(text);
         newLabel.setTextFill(c);
@@ -1242,6 +1993,11 @@ public class SpaceTrader extends Application {
             return true;
         }
         return false;
+    }
+
+    private int removeQuote(String s) {
+        String newString = s.substring(1, s.length() - 1);
+        return Integer.parseInt(newString);
     }
 
     public static void main(String[] args) {
