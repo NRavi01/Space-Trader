@@ -1264,6 +1264,9 @@ public class SpaceTrader extends Application {
                 int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Water");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+                if (removeQuote(purchase.getText()) < 20) {
+                    purchase.textProperty().setValue("(0)");
+                }
             }
         });
 
@@ -1297,6 +1300,9 @@ public class SpaceTrader extends Application {
                 int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Furs");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+                if (removeQuote(purchase.getText()) < 20) {
+                    purchase.textProperty().setValue("(0)");
+                }
             }
         });
 
@@ -1329,6 +1335,9 @@ public class SpaceTrader extends Application {
                 int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Food");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+                if (removeQuote(purchase.getText()) < 20) {
+                    purchase.textProperty().setValue("(0)");
+                }
             }
         });
 
@@ -1361,6 +1370,9 @@ public class SpaceTrader extends Application {
                 int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Ore");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+                if (removeQuote(purchase.getText()) < 20) {
+                    purchase.textProperty().setValue("(0)");
+                }
             }
         });
 
@@ -1393,6 +1405,9 @@ public class SpaceTrader extends Application {
                 int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Games");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+                if (removeQuote(purchase.getText()) < 20) {
+                    purchase.textProperty().setValue("(0)");
+                }
             }
         });
 
@@ -1425,6 +1440,9 @@ public class SpaceTrader extends Application {
                 int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Firearms");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+                if (removeQuote(purchase.getText()) < 20) {
+                    purchase.textProperty().setValue("(0)");
+                }
             }
         });
 
@@ -1457,6 +1475,9 @@ public class SpaceTrader extends Application {
                 int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Narcotics");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+                if (removeQuote(purchase.getText()) < 20) {
+                    purchase.textProperty().setValue("(0)");
+                }
             }
         });
 
@@ -1489,6 +1510,9 @@ public class SpaceTrader extends Application {
                 int difference = (t1.intValue() - number.intValue()) * (int) market.getPrice("Robots");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+                if (removeQuote(purchase.getText()) < 20) {
+                    purchase.textProperty().setValue("(0)");
+                }
             }
         });
 
