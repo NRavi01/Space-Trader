@@ -1583,8 +1583,8 @@ public class SpaceTrader extends Application {
                 market.changeProductQuantity("Ore", -amountOreAdded);
                 player.getShip().changeProductQuantity("Food", amountFoodAdded);
                 market.changeProductQuantity("Food", -amountFoodAdded);
-                player.getShip().changeProductQuantity("Game", amountGameAdded);
-                market.changeProductQuantity("Game", -amountGameAdded);
+                player.getShip().changeProductQuantity("Games", amountGameAdded);
+                market.changeProductQuantity("Games", -amountGameAdded);
                 player.getShip().changeProductQuantity("Firearms", amountFireAdded);
                 market.changeProductQuantity("Firearms", -amountFireAdded);
                 player.getShip().changeProductQuantity("Narcotics", amountDrugAdded);
@@ -1779,6 +1779,7 @@ public class SpaceTrader extends Application {
         Label g1 = createLabel("Games", 20, 300, 20, Color.YELLOW, 100);
         Label g2 = createLabel(String.valueOf(player.getShip().getQuantity("Games"))
                 , 160, 300, 20, Color.RED, 100);
+        System.out.println(player.getShip().getQuantity("Games"));
         Label g3 = createLabel(String.valueOf((int) player.getShip().getPrice("Games")),
                 280, 300, 20, Color.RED, 100);
         Slider gameSlider = new Slider(0, player.getShip().getQuantity("Games"), 0);
@@ -1959,8 +1960,8 @@ public class SpaceTrader extends Application {
             market.changeProductQuantity("Ore", amountOreSold);
             player.getShip().changeProductQuantity("Food", -amountFoodSold);
             market.changeProductQuantity("Food", amountFoodSold);
-            player.getShip().changeProductQuantity("Game", -amountGameSold);
-            market.changeProductQuantity("Game", amountGameSold);
+            player.getShip().changeProductQuantity("Games", -amountGameSold);
+            market.changeProductQuantity("Games", amountGameSold);
             player.getShip().changeProductQuantity("Firearms", -amountFireSold);
             market.changeProductQuantity("Firearms", amountFireSold);
             player.getShip().changeProductQuantity("Narcotics", -amountDrugSold);
