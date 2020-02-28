@@ -50,6 +50,9 @@ public class Market {
         products.add(new Product("Games", (int) (Math.random() * 5), 300 + (int) (Math.random() * 60)));
         products.add(new Product("Firearms", (int) (Math.random() * 5), 900 + (int) (Math.random() * 200)));
         products.add(new Product("Machines", (int) (Math.random() * 5), 800 + (int) (Math.random() * 100)));
+        products.add(new Product("Narcotics", 0, 0));
+        products.add(new Product("Robots", 0, 0));
+
         if (techLevel >= 1) {
             changeProductQuantity("Games", 50 + (int) (Math.random() * 50));
             changeProductPrice("Games", -100 - (int) (Math.random() * 50));
@@ -61,8 +64,10 @@ public class Market {
             changeProductPrice("Firearms", -100 - (int) (Math.random() * 50));
         }
         if (techLevel == 3) {
-            products.add(new Product("Narcotics", (int) (Math.random() * 25), 2500 + (int) (Math.random() * 300)));
-            products.add(new Product("Robots", (int) (Math.random() * 25), 1500 + (int) (Math.random() * 300)));
+            changeProductPrice("Narcotics", 2500 + (int) (Math.random() * 300));
+            changeProductQuantity("Narcotics", (int) (Math.random() * 25));
+            changeProductQuantity("Robots", (int) (Math.random() * 25));
+            changeProductPrice("Robots", (int) (Math.random() * 300));
         }
     }
 
