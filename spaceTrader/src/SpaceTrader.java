@@ -23,7 +23,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.scene.media.*;
 
 
 import java.io.File;
@@ -126,13 +125,6 @@ public class SpaceTrader extends Application {
     }
 
     public void start(Stage primaryStage) throws Exception {
-        /*
-        String musicFile = "music.mp3";
-        Media sound = new Media(new File(musicFile).toURI().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(sound);
-        mediaPlayer.play();
-         */
-
         window = primaryStage;
 
         //SCENE 1
