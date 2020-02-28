@@ -23,6 +23,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.media.*;
 
 
 import java.io.File;
@@ -1660,7 +1661,7 @@ public class SpaceTrader extends Application {
         waterSlider.setLayoutY(110);
         waterSlider.setPrefWidth(200);
         waterSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Water") / 10;
+        tickUnit = player.getShip().getQuantity("Water") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
@@ -1692,7 +1693,7 @@ public class SpaceTrader extends Application {
         furSlider.setLayoutY(160);
         furSlider.setPrefWidth(200);
         furSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Furs") / 10;
+        tickUnit = player.getShip().getQuantity("Furs") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
@@ -1723,7 +1724,7 @@ public class SpaceTrader extends Application {
         foodSlider.setLayoutY(210);
         foodSlider.setPrefWidth(200);
         foodSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Food") / 10;
+        tickUnit = player.getShip().getQuantity("Food") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
@@ -1754,7 +1755,7 @@ public class SpaceTrader extends Application {
         oreSlider.setLayoutY(260);
         oreSlider.setPrefWidth(200);
         oreSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Ore") / 10;
+        tickUnit = player.getShip().getQuantity("Ore") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
@@ -1817,7 +1818,7 @@ public class SpaceTrader extends Application {
         fireSlider.setLayoutY(360);
         fireSlider.setPrefWidth(200);
         fireSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Firearms") / 10;
+        tickUnit = player.getShip().getQuantity("Firearms") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
@@ -1848,7 +1849,7 @@ public class SpaceTrader extends Application {
         drugSlider.setLayoutY(410);
         drugSlider.setPrefWidth(200);
         drugSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Narcotics") / 10;
+        tickUnit = player.getShip().getQuantity("Narcotics") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
@@ -1879,7 +1880,7 @@ public class SpaceTrader extends Application {
         robotSlider.setLayoutY(460);
         robotSlider.setPrefWidth(200);
         robotSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Robots") / 10;
+        tickUnit = player.getShip().getQuantity("Robots") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
