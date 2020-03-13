@@ -17,6 +17,7 @@
 
 ## Summary of Progress
 * Creates a start screen and provides options for users to set their initial character state and allocate skill points
+* Consists of a universe with ten regions provided for the user to explore
 
 ## LICENSE
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
