@@ -131,7 +131,7 @@ public class Ship {
 
     public int getCurrentCapacity() {
         int total = 0;
-        for(int i = 0; i < products.size(); i++) {
+        for (int i = 0; i < products.size(); i++) {
             total = total + products.get(i).getQuantity();
         }
         return getTotalCapacity() - total;
@@ -191,8 +191,7 @@ public class Ship {
     public void setFuel(int fuel) {
         if (fuel <= fuelCapacity) {
             this.fuel = fuel;
-        }
-        else {
+        } else {
             this.fuel = fuelCapacity;
         }
     }
