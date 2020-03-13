@@ -986,7 +986,8 @@ public class SpaceTrader extends Application {
             else {
                 System.out.println("Pilot skill not high enough to flee");
                 System.out.println("Credits will be lost and health lowered");
-                player.changeCredits(-player.getCredits());
+                player.setCredits(0);
+                player.getShip().changeHealth(-10);
                 player.changeFuel((-1) * distance);
                 setCurrRegion(region);
                 resetPoints();
