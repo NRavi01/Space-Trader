@@ -334,15 +334,12 @@ public class SpaceTrader extends Application {
 
         startButton.setOnAction((e) -> {
             getDifficultyChoice(choiceBox);
-            System.out.println(name.getText());
             playerName = name.getText();
             player = new Player(playerName, getDifficultyChoice(choiceBox), points, value);
             try {
                 if (playerName == null || playerName.equals("")) {
                     throw new IllegalArgumentException("Name cannot be blank");
                 }
-
-                System.out.printf("Game Started! %n%s has entered the game", playerName);
             } catch (IllegalArgumentException var4) {
                 System.out.println(var4.getMessage());
             }
@@ -718,9 +715,14 @@ public class SpaceTrader extends Application {
         addFuel.setOnAction(e -> {
             int amountFuelAdded = (int) (fuelSlider.getValue());
             if (player.getCredits() > amountFuelAdded) {
-                player.changeFuel(amountFuelAdded);
-                player.setCredits(player.getCredits() - amountFuelAdded);
-                window.setScene(createShipyard(window, region));
+                if (amountFuelAdded <= (player.getShip().getFuelCapacity() - player.getShip().getFuel())) {
+                    player.changeFuel(amountFuelAdded);
+                    player.setCredits(player.getCredits() - amountFuelAdded);
+                    window.setScene(createShipyard(window, region));
+                }
+                else {
+                    System.out.println("Not enough fuel capacity");
+                }
             } else {
                 System.out.println("Not enough money");
                 fuelSlider.setValue(0);
@@ -800,10 +802,18 @@ public class SpaceTrader extends Application {
             int amountShieldAdded = (int) (shieldSlider.getValue());
             int amountFuelAdded = (int) (fuelSlider.getValue());
             if (player.getCredits() > (amountShieldAdded * 100 + amountFuelAdded)) {
-                player.changeShield(amountShieldAdded);
-                player.changeFuel(amountFuelAdded);
-                player.setCredits(player.getCredits() - amountShieldAdded * 100 - amountFuelAdded);
-                window.setScene(createShipyard(window, region));
+                if (amountFuelAdded <= (player.getShip().getFuelCapacity() - player.getShip().getFuel())) {
+                    player.changeShield(amountShieldAdded);
+                    player.changeFuel(amountFuelAdded);
+                    player.setCredits(player.getCredits() - amountShieldAdded * 100 - amountFuelAdded);
+                    window.setScene(createShipyard(window, region));
+                }
+                else {
+                    System.out.println("Not enough fuel capacity");
+                    shieldSlider.setValue(0);
+                    fuelSlider.setValue(0);
+                }
+
             } else {
                 System.out.println("Not enough money");
                 shieldSlider.setValue(0);
