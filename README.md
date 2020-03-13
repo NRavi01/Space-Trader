@@ -19,6 +19,9 @@
 * Creates a start screen and provides options for users to set their initial character state and allocate skill points
 * Consists of a universe with ten regions provided for the user to explore
   * Each region has a technology level, descriptive name, and marketplace for users to buy/sell items
+  * Marketplaces have a set of goods based on the region's technology level
+  * Player's merchant skill has the ability to lower prices at marketplaces
+* Player has the ability to travel in a ship with realistic fuel usage
 
 ## LICENSE
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
