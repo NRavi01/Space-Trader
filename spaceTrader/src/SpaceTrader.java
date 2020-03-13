@@ -719,7 +719,7 @@ public class SpaceTrader extends Application {
             int amountFuelAdded = (int) (fuelSlider.getValue());
             if (player.getCredits() > amountFuelAdded) {
                 player.changeFuel(amountFuelAdded);
-                player.setCredits(player.getCredits() - amountFuelAdded * 3);
+                player.setCredits(player.getCredits() - amountFuelAdded);
                 window.setScene(createShipyard(window, region));
             } else {
                 System.out.println("Not enough money");
