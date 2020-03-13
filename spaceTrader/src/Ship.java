@@ -1,5 +1,3 @@
-import javafx.scene.image.Image;
-
 import java.util.ArrayList;
 
 public class Ship {
@@ -8,6 +6,7 @@ public class Ship {
     private String type;
     private int cargoHolds;
     private ArrayList<Product> products = new ArrayList<>();
+    private Product specialProduct;
     private int weaponLevel;
     private int shieldLevel;
     private int price;
@@ -35,16 +34,33 @@ public class Ship {
     }
 
     public void populateProducts() {
-        products.add(new Product("Water", 0, 0));
-        products.add(new Product("Furs", 0, 0));
-        products.add(new Product("Ore", 0, 0));
-        products.add(new Product("Food", 0, 0));
-        products.add(new Product("Games", 0, 0));
-        products.add(new Product("Firearms", 0, 0));
-        products.add(new Product("Medicine", 0, 0));
-        products.add(new Product("Robots", 0, 0));
-        products.add(new Product("Water", 0, 0));
-        products.add(new Product("Narcotics", 0, 0));
+        products.add(new Product("Water", 0, 30));
+        products.add(new Product("Furs", 0, 250));
+        products.add(new Product("Ore", 0, 105));
+        products.add(new Product("Food", 0, 390));
+        products.add(new Product("Games", 0, 200));
+        products.add(new Product("Firearms", 0, 300));
+        products.add(new Product("Medicine", 0, 400));
+        products.add(new Product("Robots", 0, 600));
+        products.add(new Product("Narcotics", 0, 600));
+    }
+
+    public Product getSpecialProduct() {
+        return specialProduct;
+    }
+
+    public void setSpecialProduct(Product p) {
+        specialProduct = p;
+    }
+
+    public Product getRandomProductQuantity() {
+        int rand = (int) (Math.random() * products.size());
+        int randNum = (int) (Math.random() * 5);
+        return new Product(products.get(rand).getName(), randNum, products.get(rand).getPrice());
+    }
+
+    public void setHealth(int amount) {
+        health = amount;
     }
 
     public int getQuantity(String name) {
@@ -56,6 +72,20 @@ public class Ship {
         return 0;
     }
 
+    public void clearInventory() {
+        for (int i = 0; i < products.size(); i++) {
+            products.get(i).changeQuantity(-(products.get(i).getQuantity()));
+        }
+    }
+
+    public Product getRandomDemand() {
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getQuantity() > 0) {
+                return products.get(i);
+            }
+        }
+        return new Product("Water", 1, 0);
+    }
     public double getPrice(String name) {
         for (int i = 0; i < products.size(); i++) {
             if (products.get(i).getName().equals(name)) {
