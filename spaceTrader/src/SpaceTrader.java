@@ -1466,7 +1466,7 @@ public class SpaceTrader extends Application {
                 if (s2.getType().equals("Gnat")) {
                     p = s2.getSpecialProduct();
                     wonTrader2 = createLabel("You Have Captured " +
-                            p.getQuantity() + " " + p.getName(), 175, 100, 20, Color.YELLOW, 250);
+                            p.getQuantity() + " " + p.getName(), 175, 100, 20, Color.YELLOW, 350);
                     wonTrader2.setAlignment(Pos.CENTER);
                 }
 
