@@ -616,7 +616,18 @@ public class SpaceTrader extends Application {
                             window.setScene(createPirateFightChoice(window, region, distance));
                         }
                         else if (s2.getType().equals("Police")) {
-                            window.setScene(createPoliceFightChoice(window, region, distance));
+                            if (player.getShip().getCurrentCapacity() != 0) {
+                                window.setScene(createPoliceFightChoice(window, region, distance));
+                            }
+                            else {
+                                player.changeFuel((-1) * distance);
+                                setCurrRegion(region);
+                                resetPoints();
+                                visitedRegions.add(region);
+                                Group grp5 = getTravelChart(window);
+                                Scene s5 = new Scene(grp5, 600, 600);
+                                window.setScene(s5);
+                            }
                         }
                         else {
                             window.setScene(createTraderFightChoice(window, region, distance));
@@ -998,7 +1009,6 @@ public class SpaceTrader extends Application {
     }
 
     public Scene createPoliceFightChoice(Stage window, Region region, int distance) {
-        System.out.println("what");
         ImageView background = createImage("lightSpeed.jpg", 0, 0, 600, 600);
 
         Label policeInfo = createLabel("You have run into a police!", 50, 250, 40, Color.RED, 500);
@@ -1023,19 +1033,14 @@ public class SpaceTrader extends Application {
         fightButton.setFocusTraversable(false);
 
         submit.setOnAction(e -> {
-            if (p.getQuantity() == 1 && p.getName().equals("Water")) {
-                System.out.println("Cannot pay the fee");
-            }
-            else {
-                player.getShip().changeProductQuantity(p.getName(), -p.getQuantity());
-                player.changeFuel((-1) * distance);
-                setCurrRegion(region);
-                resetPoints();
-                visitedRegions.add(region);
-                Group grp5 = getTravelChart(window);
-                Scene s5 = new Scene(grp5, 600, 600);
-                window.setScene(s5);
-            }
+            player.getShip().changeProductQuantity(p.getName(), -p.getQuantity());
+            player.changeFuel((-1) * distance);
+            setCurrRegion(region);
+            resetPoints();
+            visitedRegions.add(region);
+            Group grp5 = getTravelChart(window);
+            Scene s5 = new Scene(grp5, 600, 600);
+            window.setScene(s5);
         });
 
         fleeButton.setOnAction(e -> {
@@ -1486,7 +1491,7 @@ public class SpaceTrader extends Application {
                     window.setScene(s5);
                 });
 
-                Button travelBack = createButton(370, 525, 230, 50, Color.YELLOW, "Return to Original Region");
+                Button travelBack = createButton(300, 525, 300, 50, Color.YELLOW, "Return to Original Region");
                 travelBack.setOnMouseEntered(e -> travelBack.setTextFill(Color.RED));
                 travelBack.setOnMouseExited(e -> travelBack.setTextFill(Color.YELLOW));
                 travelBack.setOnAction(e -> {
@@ -1522,6 +1527,7 @@ public class SpaceTrader extends Application {
                     fightFinished.getChildren().add(lostCredits);
                     player.setCredits(0);
                     player.getShip().setHealth(10);
+                    fightFinished.getChildren().add(travelBack);
                 }
                 Scene finalScene = new Scene(fightFinished, 600, 600);
                 stage.setScene(finalScene);
