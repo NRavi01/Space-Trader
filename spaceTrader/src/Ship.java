@@ -141,6 +141,14 @@ public class Ship {
         return getTotalCapacity() - total;
     }
 
+    public int getCurrentCargo() {
+        int total = 0;
+        for(int i = 0; i < products.size(); i++) {
+            total = total + products.get(i).getQuantity();
+        }
+        return total;
+    }
+
     public int getSize() {
         return size;
     }
