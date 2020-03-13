@@ -1053,12 +1053,13 @@ public class SpaceTrader extends Application {
             }
             else {
                 System.out.println("Pilot skill not high enough to flee, items will be lost");
-                if (p.getQuantity() != 1 && !p.getName().equals("Water")) {
-                    System.out.println("Fine of " + p.getQuantity() + " " + p.getName());
-                    player.getShip().changeProductQuantity(p.getName(), -p.getQuantity());
-                }
+                System.out.println("Fine of " + p.getQuantity() + " " + p.getName());
+                player.getShip().changeProductQuantity(p.getName(), -p.getQuantity());
                 System.out.println("Fine of 100 Credits");
                 player.changeCredits(-100);
+                if(player.getCredits() < 0) {
+                    player.setCredits(0);
+                }
                 System.out.println("Health lowered by 10");
                 player.getShip().changeHealth(-10);
                 System.out.println("Now returning to original region");
@@ -1630,7 +1631,7 @@ public class SpaceTrader extends Application {
         waterSlider.setMajorTickUnit(tickUnit);
         //waterSlider.setMinorTickCount(tickUnitd);
         //waterSlider.setBlockIncremenst(100);
-        waterSlider.setSnapToTicks(true);
+
         waterSlider.setStyle("-fx-control-inner-background: red;");
         Label waterLabel = createLabel("0", 550,    100, 20, Color.RED, 35);
         waterSlider.valueProperty().addListener(new ChangeListener<Number>() {
