@@ -613,7 +613,7 @@ public class SpaceTrader extends Application {
                             window.setScene(createPirateFightChoice(window, region, distance));
                         }
                         else if (s2.getType().equals("Police")) {
-                            if (player.getShip().getCurrentCapacity() != 0) {
+                            if (player.getShip().getCurrentCargo() != 0) {
                                 window.setScene(createPoliceFightChoice(window, region, distance));
                             }
                             else {
