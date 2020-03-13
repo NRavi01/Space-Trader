@@ -4,7 +4,9 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
@@ -14,7 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
@@ -23,10 +25,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.scene.media.*;
 
-
-import java.io.File;
 import java.util.ArrayList;
 
 public class SpaceTrader extends Application {
@@ -37,6 +36,8 @@ public class SpaceTrader extends Application {
     private int skillPoints = 16;
     private int difficultyLevel = 0;
     private SimpleIntegerProperty[] points = new SimpleIntegerProperty[4];
+
+    private boolean alreadyNegotiated = false;
 
     private boolean singleFire = true;
 
@@ -90,7 +91,6 @@ public class SpaceTrader extends Application {
 
         regions[0] = currentSystem;
 
-        System.out.println(currentSystem.getName());
 
         for (int i = 1; i < regions.length; i++) {
             Region newSystem;
@@ -303,6 +303,7 @@ public class SpaceTrader extends Application {
             @Override
             public void changed(ObservableValue<? extends String> observableValue,
                                 String level, String newLevel) {
+                difficultyLevel = getDifficultyChoice(choiceBox);
                 pilotSlider.setValue(0);
                 fighterSlider.setValue(0);
                 engineerSlider.setValue(0);
@@ -439,7 +440,7 @@ public class SpaceTrader extends Application {
         Circle currRegion = new Circle(currentSystem.getSubX(), currentSystem.getSubY(),
                 currentSystem.getSize(), Color.RED);
         currRegion.setFill(new ImagePattern(new Image("\\resources\\planetImage.png")));
-        System.out.println(currentSystem.getName());
+
         int xco = currentSystem.getSubX() - currentSystem.getSize() - 10;
         int yco = currentSystem.getSubY() + currentSystem.getSize();
         Label currRegionLabel = createLabel(currentSystem.getName(), xco, yco, 10, Color.BLUE, 60);
@@ -602,19 +603,26 @@ public class SpaceTrader extends Application {
             if (currentSystem != region) {
                 int distance = (int) (getDistance(region.getSubX(), region.getSubY(), 300, 300));
                 if (distance <= player.getFuel()) {
-                    if ((int) (Math.random() * 3) == 2) {
-                        s2 = new Ship("Gnat", 15, 1, 1, 500);
-                        s2.setSubX(500);
-                        s2.setSubY(300);
+                    int encounter = (int) (Math.random() * (3 - difficultyLevel));
+                    System.out.println(difficultyLevel);
+                    System.out.println(encounter);
+                    if (encounter == 0) {
+                        s2 = chooseFightShip();
+                        alreadyNegotiated = false;
                         player.getShip().setSubX(25);
                         player.getShip().setSubY(300);
                         shipAnimation.start();
                         shootAnimation.start();
-                        window.setScene(createFightChoice(window));
-                        player.changeFuel((-1) * distance);
-                        setCurrRegion(region);
-                        resetPoints();
-                        visitedRegions.add(region);
+                        System.out.println(s2.getType());
+                        if (s2.getType().equals("Mosquito")) {
+                            window.setScene(createPirateFightChoice(window, region, distance));
+                        }
+                        else if (s2.getType().equals("Police")) {
+                            window.setScene(createPoliceFightChoice(window, region, distance));
+                        }
+                        else {
+                            window.setScene(createTraderFightChoice(window, region, distance));
+                        }
                     } else {
                         player.changeFuel((-1) * distance);
                         setCurrRegion(region);
@@ -636,6 +644,23 @@ public class SpaceTrader extends Application {
         return new Scene(grp, 600, 600);
     }
 
+    private Ship chooseFightShip() {
+        int random = (int) (Math.random() * 3);
+        Ship s2;
+        if (random == 0) {
+            s2 = new Ship("Gnat", 15, 1, 1, 500);
+        }
+        else if (random == 1) {
+            s2 = new Ship("Mosquito", 15, 2, 1, 800);
+        }
+        else {
+            s2 = new Ship("Police", 0, 4, 2, 0);
+        }
+        s2.setSubX(500);
+        s2.setSubY(300);
+        return s2;
+    }
+
     private Scene createShipyard(Stage window, Region region) {
         ImageView background = createImage("regionBackground.jpg", 0, 0, 600, 600);
 
@@ -648,8 +673,8 @@ public class SpaceTrader extends Application {
         Label w1 = createLabel("Current Weapon Level: ", 0, 100, 20, Color.YELLOW, 250);
         Label w2 = createLabel(String.valueOf(player.getShip().getWeaponLevel()), 250, 100, 20,
                 Color.RED, 100);
-        Label w3 = createLabel("Current Cargo Holds: ", 0, 150, 20, Color.YELLOW, 250);
-        Label w4 = createLabel(String.valueOf(player.getShip().getCargoHolds()), 250, 150, 20,
+        Label w3 = createLabel("Current Health Level: ", 0, 150, 20, Color.YELLOW, 250);
+        Label w4 = createLabel(String.valueOf(player.getShip().getHealth()), 250, 150, 20,
                 Color.RED, 100);
         Label t3 = createLabel("Current Shield Level: ", 0, 200, 20, Color.YELLOW, 250);
         Label t4 = createLabel(String.valueOf(player.getShip().getShieldLevel()), 250, 200, 20,
@@ -893,37 +918,354 @@ public class SpaceTrader extends Application {
         return new Scene(grp, 600, 600);
     }
 
-    public Scene createFightChoice(Stage window) {
+    public Scene createPirateFightChoice(Stage window, Region region, int distance) {
         ImageView background = createImage("lightSpeed.jpg", 0, 0, 600, 600);
 
         Label pirateInfo = createLabel("You have run into a pirate!", 50, 250, 40, Color.RED, 500);
         pirateInfo.setAlignment(Pos.CENTER);
 
-        Button fleeButton = createButton(150, 450, 100, 50, Color.RED, "FLEE");
+        int demand = 400 + (int) Math.random() * 100;
+        Label pirateDemand = createLabel("The pirate demands " + demand + " credits!", 50, 300, 20, Color.RED, 500);
+        pirateDemand.setAlignment(Pos.CENTER);
+
+        Button submit = createButton(100, 450, 100, 50, Color.RED, "PAY FEE");
+        submit.setOnMouseEntered(e -> submit.setTextFill(Color.YELLOW));
+        submit.setOnMouseExited(e -> submit.setTextFill(Color.RED));
+
+        Button fleeButton = createButton(250, 450, 100, 50, Color.RED, "FLEE");
         fleeButton.setOnMouseEntered(e -> fleeButton.setTextFill(Color.YELLOW));
         fleeButton.setOnMouseExited(e -> fleeButton.setTextFill(Color.RED));
 
-        Button fightButton = createButton(350, 450, 100, 50, Color.RED, "FIGHT");
+        Button fightButton = createButton(400, 450, 100, 50, Color.RED, "FIGHT");
         fightButton.setOnMouseEntered(e -> fightButton.setTextFill(Color.YELLOW));
         fightButton.setOnMouseExited(e -> fightButton.setTextFill(Color.RED));
         fightButton.setFocusTraversable(false);
 
+        submit.setOnAction(e -> {
+            if (demand > player.getCredits()) {
+                System.out.println("Cannot pay the fee, inventory will now be cleared");
+                player.getShip().clearInventory();
+                player.changeFuel((-1) * distance);
+                setCurrRegion(region);
+                resetPoints();
+                visitedRegions.add(region);
+                Group grp5 = getTravelChart(window);
+                Scene s5 = new Scene(grp5, 600, 600);
+                window.setScene(s5);
+            }
+            else {
+                player.changeCredits(-demand);
+                System.out.println("Fee paid");
+                player.changeFuel((-1) * distance);
+                setCurrRegion(region);
+                resetPoints();
+                visitedRegions.add(region);
+                Group grp5 = getTravelChart(window);
+                Scene s5 = new Scene(grp5, 600, 600);
+                window.setScene(s5);
+            }
+        });
+
         fleeButton.setOnAction(e -> {
-            Group grp4 = getTravelChart(window);
-            Scene s4 = new Scene(grp4, 600, 600);
-            window.setScene(s4);
+            if (points[0].getValue() > 4) {
+                System.out.println("Flee successful, only fuel lost, going back to region");
+                player.changeFuel((-1) * distance);
+                Group grp5 = getTravelChart(window);
+                Scene s5 = new Scene(grp5, 600, 600);
+                window.setScene(s5);
+            }
+            else {
+                System.out.println("Pilot skill not high enough to flee");
+                System.out.println("Credits will be lost and health lowered");
+                player.changeCredits(-player.getCredits());
+                player.changeFuel((-1) * distance);
+                setCurrRegion(region);
+                resetPoints();
+                visitedRegions.add(region);
+                Group grp5 = getTravelChart(window);
+                Scene s5 = new Scene(grp5, 600, 600);
+                window.setScene(s5);
+            }
         });
 
         fightButton.setOnAction(e -> {
-            System.out.println("x" + player.getShip().getSubY());
-            startFight(window, player.getShip(), s2);
+            startFight(window, player.getShip(), s2, region, distance);
         });
 
         Group grp = new Group();
-        grp.getChildren().addAll(background, pirateInfo, fleeButton, fightButton);
+        grp.getChildren().addAll(background, submit, pirateDemand, pirateInfo, fleeButton, fightButton);
         Scene scene = new Scene(grp, 600, 600);
         window.setScene(scene);
         return scene;
+    }
+
+    public Scene createPoliceFightChoice(Stage window, Region region, int distance) {
+        System.out.println("what");
+        ImageView background = createImage("lightSpeed.jpg", 0, 0, 600, 600);
+
+        Label policeInfo = createLabel("You have run into a police!", 50, 250, 40, Color.RED, 500);
+        policeInfo.setAlignment(Pos.CENTER);
+
+        Product p = player.getShip().getRandomDemand();
+
+        Label policeDemand = createLabel("The police demands " + p.getQuantity() + " " + p.getName(), 50, 300, 20, Color.RED, 500);
+        policeDemand.setAlignment(Pos.CENTER);
+
+        Button submit = createButton(100, 450, 100, 50, Color.RED, "PAY FEE");
+        submit.setOnMouseEntered(e -> submit.setTextFill(Color.YELLOW));
+        submit.setOnMouseExited(e -> submit.setTextFill(Color.RED));
+
+        Button fleeButton = createButton(250, 450, 100, 50, Color.RED, "FLEE");
+        fleeButton.setOnMouseEntered(e -> fleeButton.setTextFill(Color.YELLOW));
+        fleeButton.setOnMouseExited(e -> fleeButton.setTextFill(Color.RED));
+
+        Button fightButton = createButton(400, 450, 100, 50, Color.RED, "FIGHT");
+        fightButton.setOnMouseEntered(e -> fightButton.setTextFill(Color.YELLOW));
+        fightButton.setOnMouseExited(e -> fightButton.setTextFill(Color.RED));
+        fightButton.setFocusTraversable(false);
+
+        submit.setOnAction(e -> {
+            if (p.getQuantity() == 1 && p.getName().equals("Water")) {
+                System.out.println("Cannot pay the fee");
+            }
+            else {
+                player.getShip().changeProductQuantity(p.getName(), -p.getQuantity());
+                player.changeFuel((-1) * distance);
+                setCurrRegion(region);
+                resetPoints();
+                visitedRegions.add(region);
+                Group grp5 = getTravelChart(window);
+                Scene s5 = new Scene(grp5, 600, 600);
+                window.setScene(s5);
+            }
+        });
+
+        fleeButton.setOnAction(e -> {
+            if (points[0].getValue() > 4) {
+                System.out.println("Flee successful, only fuel lost, going back to region");
+                player.changeFuel((-1) * distance);
+                Group grp5 = getTravelChart(window);
+                Scene s5 = new Scene(grp5, 600, 600);
+                window.setScene(s5);
+            }
+            else {
+                System.out.println("Pilot skill not high enough to flee, items will be lost");
+                if (p.getQuantity() != 1 && !p.getName().equals("Water")) {
+                    System.out.println("Fine of " + p.getQuantity() + " " + p.getName());
+                    player.getShip().changeProductQuantity(p.getName(), -p.getQuantity());
+                }
+                System.out.println("Fine of 100 Credits");
+                player.changeCredits(-100);
+                System.out.println("Health lowered by 10");
+                player.getShip().changeHealth(-10);
+                System.out.println("Now returning to original region");
+                player.changeFuel((-1) * distance);
+                Group grp5 = getTravelChart(window);
+                Scene s5 = new Scene(grp5, 600, 600);
+                window.setScene(s5);
+            }
+        });
+
+        fightButton.setOnAction(e -> {
+            startFight(window, player.getShip(), s2, region, distance);
+        });
+
+        Group grp = new Group();
+        grp.getChildren().addAll(background, submit, policeDemand, policeInfo, fleeButton, fightButton);
+        Scene scene = new Scene(grp, 600, 600);
+        window.setScene(scene);
+        return scene;
+    }
+
+    public Scene createTraderFightChoice(Stage window, Region region, int distance) {
+        ImageView background = createImage("lightSpeed.jpg", 0, 0, 600, 600);
+
+        Label traderInfo = createLabel("You have run into a trader!",
+                50, 250, 40, Color.RED, 500);
+        traderInfo.setAlignment(Pos.CENTER);
+
+        Product p = player.getShip().getRandomProductQuantity();
+        s2.setSpecialProduct(p);
+
+        Label traderDemand = createLabel("The trader is selling " + p.getQuantity() +
+                " " + p.getName() + " for " + p.getPrice() + " each", 50, 300, 20, Color.RED, 500);
+        traderDemand.setAlignment(Pos.CENTER);
+
+        Button buy = createButton(100, 450, 100, 50, Color.RED, "BUY");
+        buy.setOnMouseEntered(e -> buy.setTextFill(Color.YELLOW));
+        buy.setOnMouseExited(e -> buy.setTextFill(Color.RED));
+
+        Button fleeButton = createButton(250, 450, 100, 50, Color.RED, "IGNORE");
+        fleeButton.setOnMouseEntered(e -> fleeButton.setTextFill(Color.YELLOW));
+        fleeButton.setOnMouseExited(e -> fleeButton.setTextFill(Color.RED));
+
+        Button fightButton = createButton(400, 450, 100, 50, Color.RED, "ROB");
+        fightButton.setOnMouseEntered(e -> fightButton.setTextFill(Color.YELLOW));
+        fightButton.setOnMouseExited(e -> fightButton.setTextFill(Color.RED));
+        fightButton.setFocusTraversable(false);
+
+        buy.setOnAction(e -> {
+            window.setScene(createNegotiation(window, region, p, distance));
+        });
+
+        fleeButton.setOnAction(e -> {
+            player.changeFuel((-1) * distance);
+            setCurrRegion(region);
+            resetPoints();
+            visitedRegions.add(region);
+            Group grp5 = getTravelChart(window);
+            Scene s5 = new Scene(grp5, 600, 600);
+            window.setScene(s5);
+        });
+
+        fightButton.setOnAction(e -> {
+            startFight(window, player.getShip(), s2, region, distance);
+        });
+
+        Group grp = new Group();
+        grp.getChildren().addAll(background, buy, traderDemand, traderInfo, fleeButton, fightButton);
+        Scene scene = new Scene(grp, 600, 600);
+        window.setScene(scene);
+        return scene;
+    }
+
+    private Scene createNegotiation(Stage window, Region region, Product p, int distance) {
+        ImageView background = createImage("regionBackground.jpg", 0, 0, 600, 600);
+
+        Label planetName = createLabel("Buy Items", 150, 0, 25, Color.YELLOW, 250);
+        planetName.setAlignment(Pos.CENTER);
+
+        Label credits = createLabel("Credits: " + player.getCredits(), 450, 5, 20, Color.GREEN, 250);
+
+        Label purchase = createLabel("(0)", 205, 560, 20, Color.YELLOW, 150);
+
+        Label t1 = createLabel("Products", 20, 50, 20, Color.BLUE, 100);
+        t1.setStyle("-fx-underline: true");
+        Label t2 = createLabel("Available", 150, 50, 20, Color.BLUE, 100);
+        t2.setStyle("-fx-underline: true");
+        Label z1 = createLabel("Price", 270, 50, 20, Color.BLUE, 50);
+        z1.setStyle("-fx-underline: true");
+        Label z2 = createLabel("Select Amount to Purchase", 350, 50, 20, Color.BLUE, 270);
+        z2.setStyle("-fx-underline: true");
+
+        Label w1 = createLabel(p.getName(), 20, 100, 20, Color.YELLOW, 100);
+        Label w2 = createLabel(String.valueOf(p.getQuantity()),
+                160, 100, 20, Color.RED, 100);
+        Label w3 = createLabel(String.valueOf(p.getPrice()),
+                280, 100, 20, Color.RED, 100);
+        Slider waterSlider = new Slider(0, p.getQuantity(), 0);
+        waterSlider.setLayoutX(350);
+        waterSlider.setLayoutY(110);
+        waterSlider.setPrefWidth(200);
+        waterSlider.setShowTickMarks(false);
+        int tickUnit = p.getQuantity() / 10;
+        if (tickUnit <= 0) {
+            tickUnit = 1;
+        }
+        waterSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        waterSlider.setSnapToTicks(true);
+        waterSlider.setStyle("-fx-control-inner-background: red;");
+        Label waterLabel = createLabel("0", 550, 100, 20, Color.RED, 35);
+        waterSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                waterLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (int) ((t1.intValue() - number.intValue()) * p.getPrice());
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText()) + difference) + ")");
+                if (removeQuote(purchase.getText()) < 20) {
+                    purchase.textProperty().setValue("(0)");
+                }
+            }
+        });
+
+        Line tabLine = new Line(0, 500, 600, 500);
+        tabLine.setStroke(Color.YELLOW);
+
+        Line vertLine1 = new Line(150, 500, 150, 600);
+        vertLine1.setStroke(Color.YELLOW);
+
+        Line vertLine2 = new Line(450, 500, 450, 600);
+        vertLine2.setStroke(Color.YELLOW);
+
+        Line vertLine3 = new Line(300, 500, 300, 600);
+        vertLine3.setStroke(Color.YELLOW);
+
+        Button negotiate = createButton(0, 525, 150, 50, Color.YELLOW, "NEGOTIATE");
+        negotiate.setOnMouseEntered(e -> negotiate.setTextFill(Color.RED));
+        negotiate.setOnMouseExited(e -> negotiate.setTextFill(Color.YELLOW));
+
+        Button commandButton = createButton(150, 525, 150, 50, Color.YELLOW, "PURCHASE");
+        commandButton.setOnMouseEntered(e -> commandButton.setTextFill(Color.RED));
+        commandButton.setOnMouseExited(e -> commandButton.setTextFill(Color.YELLOW));
+
+        Button rob = createButton(300, 525, 150, 50, Color.YELLOW, "ROB");
+        rob.setOnMouseEntered(e -> rob.setTextFill(Color.RED));
+        rob.setOnMouseExited(e -> rob.setTextFill(Color.YELLOW));
+
+        Button travelChartButton = createButton(450, 525, 150, 50, Color.YELLOW, "IGNORE");
+        travelChartButton.setOnMouseEntered(e -> travelChartButton.setTextFill(Color.RED));
+        travelChartButton.setOnMouseExited(e -> travelChartButton.setTextFill(Color.YELLOW));
+
+        Group grp = new Group();
+        grp.getChildren().addAll(background, planetName, t1, t2, w1, w2, w3, waterSlider, waterLabel,
+                z1, z2, tabLine, vertLine1, vertLine2, vertLine3, purchase, credits, negotiate,
+                commandButton, rob, travelChartButton);
+
+        negotiate.setOnAction(e -> {
+            if (!alreadyNegotiated) {
+                if (points[3].getValue() > 3) {
+                    System.out.println("Negotiation successful");
+                    p.changePrice(-(int) (p.getPrice() * 0.5));
+
+                } else {
+                    System.out.println("Negotiation failed");
+                    p.changePrice((int) (p.getPrice() * 0.5));
+                }
+                alreadyNegotiated = true;
+            }
+            window.setScene(createNegotiation(window, region, p, distance));
+        });
+
+        rob.setOnAction(e -> {
+            startFight(window, player.getShip(), s2, region, distance);
+        });
+
+        commandButton.setOnAction(e -> {
+            int amountAdded = (int) (waterSlider.getValue());
+            int totalAdd = amountAdded;
+            int currentCapacity = player.getShip().getCurrentCapacity();
+            if (player.getCredits() > removeQuote(purchase.getText()) && currentCapacity >= totalAdd) {
+                player.getShip().changeProductQuantity(p.getName(), amountAdded);
+                p.changeQuantity(-amountAdded);
+                player.changeCredits(-removeQuote(purchase.getText()));
+                window.setScene(createNegotiation(window, region, p, distance));
+            }
+            else if (player.getCredits() < removeQuote(purchase.getText())){
+                System.out.println("Not enough money");
+                waterSlider.setValue(0);
+            }
+            else {
+                System.out.println("Not enough space in cargo holds, you can only add: " + player.getShip().getCurrentCapacity());
+                waterSlider.setValue(0);
+            }
+        });
+
+
+        travelChartButton.setOnAction(e -> {
+            player.changeFuel((-1) * distance);
+            setCurrRegion(region);
+            resetPoints();
+            visitedRegions.add(region);
+            Group grp5 = getTravelChart(window);
+            Scene s5 = new Scene(grp5, 600, 600);
+            window.setScene(s5);
+        });
+
+        return new Scene(grp, 600, 600);
     }
 
     final AnimationTimer shipAnimation = new AnimationTimer() {
@@ -957,7 +1299,7 @@ public class SpaceTrader extends Application {
         }
     };
 
-    public void startFight(Stage stage, Ship s1, Ship s2) {
+    public void startFight(Stage stage, Ship s1, Ship s2, Region region, int distance) {
         timeline = new Timeline(new KeyFrame(Duration.seconds(0.12), ev -> {
             if (checkBothHealth(s1, s2)) {
                 boolean hit1 = false;
@@ -987,20 +1329,6 @@ public class SpaceTrader extends Application {
                 Label t5 = createLabel("Player Ammo: ", 0, 50, 20, Color.YELLOW, 150);
                 Label t6 = createLabel(String.valueOf(s1.getAmmo()), 150, 50, 20, Color.RED, 50);
 
-                Button fleeButton = createButton(250, 550, 100, 50, Color.RED, "FLEE");
-                fleeButton.setOnMouseEntered(e -> fleeButton.setTextFill(Color.YELLOW));
-                fleeButton.setOnMouseExited(e -> fleeButton.setTextFill(Color.RED));
-                fleeButton.setFocusTraversable(false);
-
-                fleeButton.setOnAction(e -> {
-                    System.out.println("hi");
-                    Group grp4 = getTravelChart(window);
-                    Scene s4 = new Scene(grp4, 600, 600);
-                    shootAnimation.stop();
-                    shipAnimation.stop();
-                    timeline.stop();
-                    window.setScene(s4);
-                });
 
                 for (int i = 0; i < shots.size(); i++) {
                     int xc = shots.get(i).getX();
@@ -1017,7 +1345,6 @@ public class SpaceTrader extends Application {
                             explosion = createImage("shipExplosion.png", s1.getSubX(), s1.getSubY(), s1.getSize(), 50);
                             shots.remove(i);
                             hit1 = true;
-                            System.out.println("s1: " + s1.getHealth());
                         }
                     }
                     else {
@@ -1027,13 +1354,12 @@ public class SpaceTrader extends Application {
                             explosion2 = createImage("shipExplosion.png", s2.getSubX(), s2.getSubY(), s2.getSize(), 50);
                             shots.remove(i);
                             hit2 = true;
-                            System.out.println("s2: " + s2.getHealth());
                         }
                     }
                 }
                 Group grp = new Group();
                 grp.getChildren().addAll(background, ship1, ship2, fight, toggle,
-                        fleeButton, t1, t2, t3, t4, t5, t6);
+                        t1, t2, t3, t4, t5, t6);
                 for (int i = 0; i < stageShots.size(); i++) {
                     grp.getChildren().add(stageShots.get(i));
                 }
@@ -1063,6 +1389,7 @@ public class SpaceTrader extends Application {
                                     int yc = s1.getSubY() + s1.getSize() / 2 - 10;
                                     int speed = 40;
                                     int power = player.getShip().getWeaponLevel() * 3;
+                                    power = points[1].getValue() * 3 + power;
                                     shots.add(new Shot(xc, yc, speed, 0, power));
                                     s1.changeAmmo(-1);
                                 }
@@ -1087,14 +1414,12 @@ public class SpaceTrader extends Application {
                     }
                 });
                 stage.setScene(scene);
-                //System.out.println("Shot");
+
                 for (int i = 0; i < shots.size(); i++) {
                     if (shots.get(i).getX() > 600 || shots.get(i).getX() < 0) {
                         shots.remove(i);
                     }
                     if (shots.size() > i) {
-                        //System.out.println(shots.get(i).getX());
-                        //System.out.println(shots.get(i).getY());
                         if (shots.get(i).getDirection() == 0) {
                             shots.get(i).setX(shots.get(i).getX() + shots.get(i).getSpeed());
                         } else {
@@ -1129,14 +1454,49 @@ public class SpaceTrader extends Application {
                 won.setAlignment(Pos.CENTER);
                 lost.setAlignment(Pos.CENTER);
 
+                Label wonPirate = createLabel( "Gain 100 Credits for Beating Pirate!", 175, 50, 20, Color.YELLOW, 350);
+                wonPirate.setAlignment(Pos.CENTER);
+
+                Label wonPolice = createLabel( "Police Ship Destroyed!", 175, 50, 20, Color.YELLOW, 250);
+                wonPolice.setAlignment(Pos.CENTER);
+
+                Label wonTrader = createLabel( "Trader Ship Destroyed!", 175, 50, 20, Color.YELLOW, 250);
+                wonTrader.setAlignment(Pos.CENTER);
+
+                Product p = null;
+                Label wonTrader2 = null;
+                if (s2.getType().equals("Gnat")) {
+                    p = s2.getSpecialProduct();
+                    wonTrader2 = createLabel("You Have Captured " +
+                            p.getQuantity() + " " + p.getName(), 175, 100, 20, Color.YELLOW, 250);
+                    wonTrader2.setAlignment(Pos.CENTER);
+                }
+
+                Label lostCredits = createLabel( "All Credits Lost and Health Lowered to 10", 175, 50, 20, Color.YELLOW, 250);
+                lostCredits.setAlignment(Pos.CENTER);
+
                 Button travelButton = createButton(370, 525, 230, 50, Color.YELLOW, "Continue Traveling!");
                 travelButton.setOnMouseEntered(e -> travelButton.setTextFill(Color.RED));
                 travelButton.setOnMouseExited(e -> travelButton.setTextFill(Color.YELLOW));
                 travelButton.setOnAction(e -> {
+                    player.changeFuel((-1) * distance);
+                    setCurrRegion(region);
+                    resetPoints();
+                    visitedRegions.add(region);
                     Group grp5 = getTravelChart(window);
                     Scene s5 = new Scene(grp5, 600, 600);
                     window.setScene(s5);
                 });
+
+                Button travelBack = createButton(370, 525, 230, 50, Color.YELLOW, "Return to Original Region");
+                travelBack.setOnMouseEntered(e -> travelBack.setTextFill(Color.RED));
+                travelBack.setOnMouseExited(e -> travelBack.setTextFill(Color.YELLOW));
+                travelBack.setOnAction(e -> {
+                    Group grp5 = getTravelChart(window);
+                    Scene s5 = new Scene(grp5, 600, 600);
+                    window.setScene(s5);
+                });
+
                 Group fightFinished = new Group();
                 fightFinished.getChildren().add(background);
                 if (s1.getHealth() > 0) {
@@ -1147,9 +1507,23 @@ public class SpaceTrader extends Application {
                     shootAnimation.stop();
                     timeline.stop();
                     fightFinished.getChildren().addAll(won, travelButton);
+                    if (s2.getType().equals("Mosquito")) {
+                        fightFinished.getChildren().add(wonPirate);
+                        player.changeCredits(100);
+                    }
+                    else if (s2.getType().equals("Police")) {
+                        fightFinished.getChildren().add(wonPolice);
+                    }
+                    else {
+                        fightFinished.getChildren().addAll(wonTrader, wonTrader2);
+                        player.getShip().changeProductQuantity(p.getName(), p.getQuantity());
+                    }
                 }
                 else {
                     fightFinished.getChildren().add(lost);
+                    fightFinished.getChildren().add(lostCredits);
+                    player.setCredits(0);
+                    player.getShip().setHealth(10);
                 }
                 Scene finalScene = new Scene(fightFinished, 600, 600);
                 stage.setScene(finalScene);
@@ -1661,7 +2035,7 @@ public class SpaceTrader extends Application {
         waterSlider.setLayoutY(110);
         waterSlider.setPrefWidth(200);
         waterSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Water") / 10;
+        tickUnit = player.getShip().getQuantity("Water") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
@@ -1693,7 +2067,7 @@ public class SpaceTrader extends Application {
         furSlider.setLayoutY(160);
         furSlider.setPrefWidth(200);
         furSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Furs") / 10;
+        tickUnit = player.getShip().getQuantity("Furs") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
@@ -1724,7 +2098,7 @@ public class SpaceTrader extends Application {
         foodSlider.setLayoutY(210);
         foodSlider.setPrefWidth(200);
         foodSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Food") / 10;
+        tickUnit = player.getShip().getQuantity("Food") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
@@ -1755,7 +2129,7 @@ public class SpaceTrader extends Application {
         oreSlider.setLayoutY(260);
         oreSlider.setPrefWidth(200);
         oreSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Ore") / 10;
+        tickUnit = player.getShip().getQuantity("Ore") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
@@ -1818,7 +2192,7 @@ public class SpaceTrader extends Application {
         fireSlider.setLayoutY(360);
         fireSlider.setPrefWidth(200);
         fireSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Firearms") / 10;
+        tickUnit = player.getShip().getQuantity("Firearms") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
@@ -1849,7 +2223,7 @@ public class SpaceTrader extends Application {
         drugSlider.setLayoutY(410);
         drugSlider.setPrefWidth(200);
         drugSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Narcotics") / 10;
+        tickUnit = player.getShip().getQuantity("Narcotics") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
@@ -1880,7 +2254,7 @@ public class SpaceTrader extends Application {
         robotSlider.setLayoutY(460);
         robotSlider.setPrefWidth(200);
         robotSlider.setShowTickMarks(false);
-        tickUnit = market.getQuantity("Robots") / 10;
+        tickUnit = player.getShip().getQuantity("Robots") / 10;
         if (tickUnit <= 0) {
             tickUnit = 1;
         }
