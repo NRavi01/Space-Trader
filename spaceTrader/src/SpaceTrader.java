@@ -706,12 +706,12 @@ public class SpaceTrader extends Application {
         addFuel.setOnAction(e -> {
             int amountFuelAdded = (int) (fuelSlider.getValue());
             if (player.getCredits() > amountFuelAdded) {
-                if (amountFuelAdded <= (player.getShip().getFuelCapacity() - player.getShip().getFuel())) {
+                if (amountFuelAdded <= (player.getShip().getFuelCapacity()
+                        - player.getShip().getFuel())) {
                     player.changeFuel(amountFuelAdded);
                     player.setCredits(player.getCredits() - amountFuelAdded);
                     window.setScene(createShipyard(window, region));
-                }
-                else {
+                } else {
                     System.out.println("Not enough fuel capacity");
                 }
             } else {
@@ -793,13 +793,14 @@ public class SpaceTrader extends Application {
             int amountShieldAdded = (int) (shieldSlider.getValue());
             int amountFuelAdded = (int) (fuelSlider.getValue());
             if (player.getCredits() > (amountShieldAdded * 100 + amountFuelAdded)) {
-                if (amountFuelAdded <= (player.getShip().getFuelCapacity() - player.getShip().getFuel())) {
+                if (amountFuelAdded <= (player.getShip().getFuelCapacity()
+                        - player.getShip().getFuel())) {
                     player.changeShield(amountShieldAdded);
                     player.changeFuel(amountFuelAdded);
-                    player.setCredits(player.getCredits() - amountShieldAdded * 100 - amountFuelAdded);
+                    player.setCredits(player.getCredits() - amountShieldAdded * 100
+                            - amountFuelAdded);
                     window.setScene(createShipyard(window, region));
-                }
-                else {
+                } else {
                     System.out.println("Not enough fuel capacity");
                     shieldSlider.setValue(0);
                     fuelSlider.setValue(0);
