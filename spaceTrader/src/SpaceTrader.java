@@ -9,13 +9,18 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -25,7 +30,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.Cursor;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class SpaceTrader extends Application {
@@ -36,6 +43,8 @@ public class SpaceTrader extends Application {
     private int skillPoints = 16;
     private int difficultyLevel = 0;
     private SimpleIntegerProperty[] points = new SimpleIntegerProperty[4];
+
+    private final int winPrice = 3000;
 
     private boolean alreadyNegotiated = false;
 
@@ -48,6 +57,10 @@ public class SpaceTrader extends Application {
     private int timeCount = 0;
     private Timeline timeline;
 
+    private boolean wonGame = false;
+
+    private final int globalXLeft = 340;
+    private final int globalYLeft = 55;
     private boolean isShooting = false;
 
     private Region currentSystem;
@@ -91,6 +104,13 @@ public class SpaceTrader extends Application {
 
         regions[0] = currentSystem;
 
+        int winningIngredient = (int) (Math.random() * 10);
+        //System.out.println(winningIngredient);
+        if (winningIngredient == 0) {
+            currentSystem.makeSpecialMarket();
+            System.out.println(currentSystem.getName());
+        }
+
 
         for (int i = 1; i < regions.length; i++) {
             Region newSystem;
@@ -120,6 +140,10 @@ public class SpaceTrader extends Application {
                     government2, policePresence2);
             newSystem.createMarket();
             newSystem.getMarket().populateMarket();
+            if (winningIngredient == i) {
+                newSystem.makeSpecialMarket();
+                System.out.println(newSystem.getName());
+            }
             regions[i] = newSystem;
             names.remove(sysName);
         }
@@ -605,11 +629,13 @@ public class SpaceTrader extends Application {
                         player.getShip().setSubY(300);
                         shipAnimation.start();
                         shootAnimation.start();
-                        System.out.println(s2.getType());
+                        //System.out.println(s2.getType());
                         if (s2.getType().equals("Mosquito")) {
+                            s2.setImage("pirateShip.png");
                             window.setScene(createPirateFightChoice(window, region, distance));
                         } else if (s2.getType().equals("Police")) {
                             if (player.getShip().getCurrentCargo() != 0) {
+                                s2.setImage("policeShip.png");
                                 window.setScene(createPoliceFightChoice(window, region, distance));
                             } else {
                                 player.changeFuel((-1) * distance);
@@ -720,8 +746,8 @@ public class SpaceTrader extends Application {
             }
         });
 
-        Label shield = createLabel("Increase shield: ", 0, 400, 20, Color.BLUE, 150);
-        Slider shieldSlider = createSlider(0, 5, 0, 200, true, 1, 0);
+        Label shield = createLabel("Increase health: ", 0, 400, 20, Color.BLUE, 150);
+        Slider shieldSlider = createSlider(0, 100 - player.getShip().getHealth(), 0, 200, true, 1, 0);
         shieldSlider.setLayoutX(150);
         shieldSlider.setLayoutY(410);
         shieldSlider.setBlockIncrement(1);
@@ -737,16 +763,23 @@ public class SpaceTrader extends Application {
                                 Number number, Number t1) {
                 //System.out.println("hi");
                 shieldLabel.textProperty().setValue(String.valueOf(t1.intValue()));
-                int difference = t1.intValue() - number.intValue();
-                points[1].setValue(points[1].getValue() + difference);
-                addShield.setText("PURCHASE FOR " + t1.intValue() * 100);
+                double discount = (double) 1 / (double) points[2].getValue();
+                if (points[2].getValue() == 0) {
+                    discount = 1;
+                }
+                int costPerHealth = (int) (20 * discount);
+                addShield.setText("PURCHASE FOR " + t1.intValue() * costPerHealth);
             }
         });
         addShield.setOnAction(e -> {
             int amountShieldAdded = (int) (shieldSlider.getValue());
-            if (player.getCredits() > amountShieldAdded * 100) {
-                player.changeShield(amountShieldAdded);
-                player.setCredits(player.getCredits() - amountShieldAdded * 100);
+            int costAdded = (int) (amountShieldAdded * 20 * ((double) 1 / (double) points[2].getValue()));
+            if (points[2].getValue() == 0) {
+                costAdded = amountShieldAdded * 20;
+            }
+            if (player.getCredits() > costAdded) {
+                player.getShip().changeHealth(amountShieldAdded);
+                player.setCredits(player.getCredits() - costAdded);
                 window.setScene(createShipyard(window, region));
             } else {
                 System.out.println("Not enough money");
@@ -1096,7 +1129,7 @@ public class SpaceTrader extends Application {
         s2.setSpecialProduct(p);
 
         Label traderDemand = createLabel("The trader is selling " + p.getQuantity()
-            + " " + p.getName() + " for " + p.getPrice() + " each", 50, 300, 20, Color.RED, 500);
+                + " " + p.getName() + " for " + p.getPrice() + " each", 50, 300, 20, Color.RED, 500);
         traderDemand.setAlignment(Pos.CENTER);
 
         Button buy = createButton(100, 450, 100, 50, Color.RED, "BUY");
@@ -1332,6 +1365,7 @@ public class SpaceTrader extends Application {
                 ImageView ship1 = createImage(s1.getImage(), s1.getSubX(), s1.getSubY(),
                         s1.getSize(), s1.getSize());
                 ship1.setRotate(90);
+
                 ImageView ship2 = createImage(s2.getImage(), s2.getSubX(), s2.getSubY(),
                         s2.getSize(), s2.getSize());
                 ship2.setRotate(270);
@@ -1342,19 +1376,29 @@ public class SpaceTrader extends Application {
                 Label t5 = createLabel("Player Ammo: ", 0, 50, 20, Color.YELLOW, 150);
                 Label t6 = createLabel(String.valueOf(s1.getAmmo()), 150, 50, 20, Color.RED, 50);
 
+                Point p = MouseInfo.getPointerInfo().getLocation();
+                int aimx = p.x - globalXLeft;
+                int aimy = p.y - globalYLeft;
+                ImageView targetLock = createImage("targetIcon.png",
+                        aimx - 25, aimy - 25, 60, 50);
 
                 for (int i = 0; i < shots.size(); i++) {
                     int xc = shots.get(i).getX();
                     int yc = shots.get(i).getY();
-                    ImageView shotImage = createImage("spaceBullet.png", xc, yc, 50, 30);
+                    ImageView shotImage;
                     if (shots.get(i).getDirection() == 1) {
+                        shotImage = createImage("spaceBullet.png", xc, yc, 50, 30);
                         shotImage.setRotate(180);
                     }
+                    else {
+                        shotImage = createImage("spaceBulletGood.png", xc, yc, 50, 30);
+                    }
+                    shotImage.setRotate(Math.toDegrees(shots.get(i).getAngle()));
                     stageShots.add(shotImage);
                     if (shots.get(i).getDirection() == 1) {
                         if (withinRange(shots.get(i).getX(), s1.getSubX(), s1.getSize())
                                 && withinRange(shots.get(i).getY(), s1.getSubY() + 30,
-                                    s1.getSize() / 2)) {
+                                s1.getSize() / 2)) {
                             s1.changeHealth(-(shots.get(i).getPower()));
                             explosion = createImage("shipExplosion.png", s1.getSubX(), s1.getSubY(),
                                     s1.getSize(), 50);
@@ -1364,7 +1408,7 @@ public class SpaceTrader extends Application {
                     } else {
                         if (withinRange(shots.get(i).getX(), s2.getSubX(), s2.getSize())
                                 && withinRange(shots.get(i).getY(), s2.getSubY() + 30,
-                                    s2.getSize() / 2)) {
+                                s2.getSize() / 2)) {
                             s2.changeHealth(-(shots.get(i).getPower()));
                             explosion2 = createImage("shipExplosion.png", s2.getSubX(),
                                     s2.getSubY(), s2.getSize(), 50);
@@ -1376,6 +1420,8 @@ public class SpaceTrader extends Application {
                 Group grp = new Group();
                 grp.getChildren().addAll(background, ship1, ship2, fight, toggle,
                         t1, t2, t3, t4, t5, t6);
+                grp.getChildren().add(targetLock);
+
                 for (int i = 0; i < stageShots.size(); i++) {
                     grp.getChildren().add(stageShots.get(i));
                 }
@@ -1386,6 +1432,25 @@ public class SpaceTrader extends Application {
                     grp.getChildren().add(explosion2);
                 }
                 Scene scene = new Scene(grp, 600, 600);
+                scene.setCursor(Cursor.NONE);
+                scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent mouseEvent) {
+                        int xc = s1.getSubX() + s1.getSize();
+                        int yc = s1.getSubY() + s1.getSize() / 2 - 10;
+                        double diffx = aimx - xc;
+                        double diffy = aimy - yc;
+                        double shootingAngle = Math.atan(diffy / diffx);
+                        int speed = 40;
+                        int power = player.getShip().getWeaponLevel() * 3;
+                        power = points[1].getValue() * 3 + power;
+                        Shot s = new Shot(xc, yc, speed, 0, power);
+                        s.setAngle(shootingAngle);
+                        shots.add(s);
+                        s1.changeAmmo(-1);
+                    }
+                });
+
                 scene.setOnKeyPressed(e -> {
                     if (e.getCode() == KeyCode.W) {
                         shipVelocity = -5;
@@ -1399,7 +1464,6 @@ public class SpaceTrader extends Application {
                     if (e.getCode() == KeyCode.SPACE) {
                         if (singleFire) {
                             if (timeCount % 2 == 0) {
-                                System.out.println(s1.getAmmo());
                                 if (s1.getAmmo() > 0) {
                                     int xc = s1.getSubX() + s1.getSize();
                                     int yc = s1.getSubY() + s1.getSize() / 2 - 10;
@@ -1437,7 +1501,8 @@ public class SpaceTrader extends Application {
                     }
                     if (shots.size() > i) {
                         if (shots.get(i).getDirection() == 0) {
-                            shots.get(i).setX(shots.get(i).getX() + shots.get(i).getSpeed());
+                            shots.get(i).setX((int) (shots.get(i).getX() + shots.get(i).getSpeedX()));
+                            shots.get(i).setY((int) (shots.get(i).getY() + shots.get(i).getSpeedY()));
                         } else {
                             shots.get(i).setX(shots.get(i).getX() - shots.get(i).getSpeed());
                         }
@@ -1450,11 +1515,34 @@ public class SpaceTrader extends Application {
                     s2.setSubY(s2.getSubY() + 5);
                 }
                 if (timeCount % 5 == 0) {
-                    int xc = s2.getSubX() - s2.getSize();
-                    int yc = s2.getSubY() + s2.getSize() / 2 - 10;
-                    int speed = 40;
-                    int power = player.getShip().getWeaponLevel() * 3;
-                    shots.add(new Shot(xc, yc, speed, 1, power));
+                    if (s2.getType().equals("Police")) {
+                        int xc = s2.getSubX() - s2.getSize();
+                        int yc = s2.getSubY() + s2.getSize() / 2 - 10;
+                        int speed = 40;
+                        int power = player.getShip().getWeaponLevel() * 3;
+                        shots.add(new Shot(xc, yc, speed, 1, power));
+                        yc = s2.getSubY() + s2.getSize() - 10;
+                        shots.add(new Shot(xc, yc, speed, 1, power));
+                        yc = s2.getSubY() - 10;
+                        shots.add(new Shot(xc, yc, speed, 1, power));
+                    }
+                    else if (s2.getType().equals("Mosquito")){
+                        int xc = s2.getSubX() - s2.getSize();
+                        int yc = s2.getSubY() - 10;
+                        int speed = 40;
+                        int power = player.getShip().getWeaponLevel() * 3;
+                        shots.add(new Shot(xc, yc, speed, 1, power));
+                        yc = s2.getSubY() + s2.getSize() - 10;
+                        shots.add(new Shot(xc, yc, speed, 1, power));
+                    }
+                    else {
+                        int xc = s2.getSubX() - s2.getSize();
+                        int yc = s2.getSubY() + s2.getSize() / 2 - 10;
+                        int speed = 40;
+                        int power = player.getShip().getWeaponLevel() * 3;
+                        shots.add(new Shot(xc, yc, speed, 1, power));
+                    }
+
                 }
                 timeCount++;
             } else {
@@ -1486,12 +1574,13 @@ public class SpaceTrader extends Application {
                 if (s2.getType().equals("Gnat")) {
                     p = s2.getSpecialProduct();
                     wonTrader2 = createLabel("You Have Captured "
-                            + p.getQuantity() + " " + p.getName(), 175, 100, 20, Color.YELLOW, 350);
+                            + p.getQuantity() + " " + p.getName(), 175, 100, 20, Color.YELLOW, 250);
                     wonTrader2.setAlignment(Pos.CENTER);
                 }
 
+                
                 Label lostCredits = createLabel("All Credits Lost and Health Lowered to 10", 175,
-                        50, 20, Color.YELLOW, 250);
+                        50, 20, Color.YELLOW, 400);
                 lostCredits.setAlignment(Pos.CENTER);
 
                 Button travelButton = createButton(370, 525, 230, 50,
@@ -1537,20 +1626,26 @@ public class SpaceTrader extends Application {
                         fightFinished.getChildren().addAll(wonTrader, wonTrader2);
                         player.getShip().changeProductQuantity(p.getName(), p.getQuantity());
                     }
+                    Scene finalScene = new Scene(fightFinished, 600, 600);
+                    stage.setScene(finalScene);
                 } else {
+                    /*
                     fightFinished.getChildren().add(lost);
                     fightFinished.getChildren().add(lostCredits);
                     player.setCredits(0);
                     player.getShip().setHealth(10);
                     fightFinished.getChildren().add(travelBack);
+                     */
+                    shipAnimation.stop();
+                    shootAnimation.stop();
+                    window.setScene(makeEndCreditScene(window));
                 }
-                Scene finalScene = new Scene(fightFinished, 600, 600);
-                stage.setScene(finalScene);
             }
         }));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
     }
+
 
     private boolean checkBothHealth(Ship s1, Ship s2) {
         if (s1.getHealth() > 0 && s2.getHealth() > 0) {
@@ -1909,7 +2004,7 @@ public class SpaceTrader extends Application {
         //waterSlider.setBlockIncremenst(100);
         robotSlider.setSnapToTicks(true);
         robotSlider.setStyle("-fx-control-inner-background: red;");
-        Label robotLabel = createLabel("0", 550,    450, 20, Color.RED, 35);
+        Label robotLabel = createLabel("0", 550, 450, 20, Color.RED, 35);
         robotSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue,
@@ -1919,6 +2014,35 @@ public class SpaceTrader extends Application {
                 int difference = (t1.intValue() - number.intValue())
                         * (int) market.getPrice("Robots");
                 difference = (int) (difference * (1 - (.02 * points[3].getValue())));
+                purchase.textProperty().setValue("(" + (removeQuote(purchase.getText())
+                        + difference) + ")");
+                if (removeQuote(purchase.getText()) < 20) {
+                    purchase.textProperty().setValue("(0)");
+                }
+            }
+        });
+        Label win1 = createLabel("MAGIC INGREDIENT", 20, 450, 20, Color.GREEN, 200);
+        Label win3 = createLabel(String.valueOf(winPrice), 280, 450, 20, Color.GREEN, 100);
+        Slider winSlider = new Slider(0, 1, 0);
+        winSlider.setLayoutX(350);
+        winSlider.setLayoutY(460);
+        winSlider.setPrefWidth(200);
+        winSlider.setShowTickMarks(false);
+        tickUnit = 1;
+        winSlider.setMajorTickUnit(tickUnit);
+        //waterSlider.setMinorTickCount(tickUnitd);
+        //waterSlider.setBlockIncremenst(100);
+        winSlider.setSnapToTicks(true);
+        winSlider.setStyle("-fx-control-inner-background: green;");
+        Label winLabel = createLabel("0", 550, 450, 20, Color.GREEN, 35);
+        winSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue,
+                                Number number, Number t1) {
+                //System.out.println("hi");
+                winLabel.textProperty().setValue(String.valueOf(t1.intValue()));
+                int difference = (t1.intValue() - number.intValue())
+                        * winPrice;
                 purchase.textProperty().setValue("(" + (removeQuote(purchase.getText())
                         + difference) + ")");
                 if (removeQuote(purchase.getText()) < 20) {
@@ -1960,9 +2084,15 @@ public class SpaceTrader extends Application {
                 waterLabel, z1, z2, fur1, fur2, fur3, furSlider, furLabel,
                 food1, food2, food3, foodSlider, foodLabel, o1, o2, o3, oreSlider, oreLabel,
                 g1, g2, g3, gameSlider, gameLabel, fire1, fire2, fire3, fireSlider, fireLabel,
-                drug1, drug2, drug3, drugSlider, drugLabel, r1, r2, r3, robotSlider, robotLabel,
+                drug1, drug2, drug3, drugSlider, drugLabel,
                 tabLine, vertLine1, vertLine2, vertLine3, purchase, credits, backButton,
                 commandButton, sellButton, travelChartButton);
+        if (region.getIngredient()) {
+            grp.getChildren().addAll(win1, win3, winLabel, winSlider);
+        }
+        else {
+            grp.getChildren().addAll(r1, r2, r3, robotSlider, robotLabel);
+        }
 
         backButton.setOnAction(e -> {
             window.setScene(createRegionScene(window, region));
@@ -1973,59 +2103,70 @@ public class SpaceTrader extends Application {
         });
 
         commandButton.setOnAction(e -> {
-            int amountWaterAdded = (int) (waterSlider.getValue());
-            int amountFurAdded = (int) (furSlider.getValue());
-            System.out.println(amountFurAdded);
-            int amountOreAdded = (int) (oreSlider.getValue());
-            int amountFoodAdded = (int) (foodSlider.getValue());
-            int amountGameAdded = (int) (gameSlider.getValue());
-            int amountFireAdded = (int) (fireSlider.getValue());
-            int amountDrugAdded = (int) (drugSlider.getValue());
-            int amountRobotAdded = (int) (robotSlider.getValue());
-            int totalAdd = amountWaterAdded + amountFurAdded + amountOreAdded + amountFoodAdded
-                    + amountGameAdded + amountFireAdded + amountDrugAdded + amountRobotAdded;
-            int currentCapacity = player.getShip().getCurrentCapacity();
-            if (player.getCredits() > removeQuote(purchase.getText())
-                    && currentCapacity >= totalAdd) {
-                player.getShip().changeProductQuantity("Water", amountWaterAdded);
-                market.changeProductQuantity("Water", -amountWaterAdded);
-                player.getShip().changeProductQuantity("Furs", amountFurAdded);
-                market.changeProductQuantity("Furs", -amountFurAdded);
-                player.getShip().changeProductQuantity("Ore", amountOreAdded);
-                market.changeProductQuantity("Ore", -amountOreAdded);
-                player.getShip().changeProductQuantity("Food", amountFoodAdded);
-                market.changeProductQuantity("Food", -amountFoodAdded);
-                player.getShip().changeProductQuantity("Games", amountGameAdded);
-                market.changeProductQuantity("Games", -amountGameAdded);
-                player.getShip().changeProductQuantity("Firearms", amountFireAdded);
-                market.changeProductQuantity("Firearms", -amountFireAdded);
-                player.getShip().changeProductQuantity("Narcotics", amountDrugAdded);
-                market.changeProductQuantity("Narcotics", -amountDrugAdded);
-                player.getShip().changeProductQuantity("Robots", amountRobotAdded);
-                market.changeProductQuantity("Robots", -amountRobotAdded);
-                player.changeCredits(-removeQuote(purchase.getText()));
-                window.setScene(createMarket(window, region));
-            } else if (player.getCredits() < removeQuote(purchase.getText())) {
-                System.out.println("Not enough money");
-                waterSlider.setValue(0);
-                furSlider.setValue(0);
-                oreSlider.setValue(0);
-                foodSlider.setValue(0);
-                gameSlider.setValue(0);
-                fireSlider.setValue(0);
-                drugSlider.setValue(0);
-                robotSlider.setValue(0);
-            } else {
-                System.out.println("Not enough space in cargo holds, you can only add: "
-                        + player.getShip().getCurrentCapacity());
-                waterSlider.setValue(0);
-                furSlider.setValue(0);
-                oreSlider.setValue(0);
-                foodSlider.setValue(0);
-                gameSlider.setValue(0);
-                fireSlider.setValue(0);
-                drugSlider.setValue(0);
-                robotSlider.setValue(0);
+            if (winSlider.getValue() == 1) {
+                if (player.getCredits() > winPrice) {
+                    wonGame = true;
+                    shipAnimation.stop();
+                    shootAnimation.stop();
+                    window.setScene(makeEndCreditScene(window));
+                }
+            }
+            else {
+                int amountWaterAdded = (int) (waterSlider.getValue());
+                int amountFurAdded = (int) (furSlider.getValue());
+                System.out.println(amountFurAdded);
+                int amountOreAdded = (int) (oreSlider.getValue());
+                int amountFoodAdded = (int) (foodSlider.getValue());
+                int amountGameAdded = (int) (gameSlider.getValue());
+                int amountFireAdded = (int) (fireSlider.getValue());
+                int amountDrugAdded = (int) (drugSlider.getValue());
+                int amountRobotAdded = (int) (robotSlider.getValue());
+                int amountWinAdded = (int) (winSlider.getValue());
+                int totalAdd = amountWaterAdded + amountFurAdded + amountOreAdded + amountFoodAdded
+                        + amountGameAdded + amountFireAdded + amountDrugAdded + amountRobotAdded + amountWinAdded;
+                int currentCapacity = player.getShip().getCurrentCapacity();
+                if (player.getCredits() > removeQuote(purchase.getText())
+                        && currentCapacity >= totalAdd) {
+                    player.getShip().changeProductQuantity("Water", amountWaterAdded);
+                    market.changeProductQuantity("Water", -amountWaterAdded);
+                    player.getShip().changeProductQuantity("Furs", amountFurAdded);
+                    market.changeProductQuantity("Furs", -amountFurAdded);
+                    player.getShip().changeProductQuantity("Ore", amountOreAdded);
+                    market.changeProductQuantity("Ore", -amountOreAdded);
+                    player.getShip().changeProductQuantity("Food", amountFoodAdded);
+                    market.changeProductQuantity("Food", -amountFoodAdded);
+                    player.getShip().changeProductQuantity("Games", amountGameAdded);
+                    market.changeProductQuantity("Games", -amountGameAdded);
+                    player.getShip().changeProductQuantity("Firearms", amountFireAdded);
+                    market.changeProductQuantity("Firearms", -amountFireAdded);
+                    player.getShip().changeProductQuantity("Narcotics", amountDrugAdded);
+                    market.changeProductQuantity("Narcotics", -amountDrugAdded);
+                    player.getShip().changeProductQuantity("Robots", amountRobotAdded);
+                    market.changeProductQuantity("Robots", -amountRobotAdded);
+                    player.changeCredits(-removeQuote(purchase.getText()));
+                    window.setScene(createMarket(window, region));
+                } else if (player.getCredits() < removeQuote(purchase.getText())) {
+                    System.out.println("Not enough money");
+                    waterSlider.setValue(0);
+                    furSlider.setValue(0);
+                    oreSlider.setValue(0);
+                    foodSlider.setValue(0);
+                    gameSlider.setValue(0);
+                    fireSlider.setValue(0);
+                    drugSlider.setValue(0);
+                    robotSlider.setValue(0);
+                } else {
+                    System.out.println("Not enough space in cargo holds, you can only add: "
+                            + player.getShip().getCurrentCapacity());
+                    waterSlider.setValue(0);
+                    furSlider.setValue(0);
+                    oreSlider.setValue(0);
+                    foodSlider.setValue(0);
+                    gameSlider.setValue(0);
+                    fireSlider.setValue(0);
+                    drugSlider.setValue(0);
+                    robotSlider.setValue(0);
+                }
             }
         });
 
@@ -2413,6 +2554,54 @@ public class SpaceTrader extends Application {
             Group grp4 = getTravelChart(window);
             Scene s4 = new Scene(grp4, 600, 600);
             window.setScene(s4);
+        });
+
+        return new Scene(grp, 600, 600);
+    }
+
+    private Scene makeEndCreditScene(Stage window) {
+        ImageView goodBackground = createImage("winScene.jpg", 0, 0, 600, 600);
+        ImageView backBackground = createImage("deathScene.jpg", 0, 0, 600, 600);
+        Label won = createLabel("YOU WON THE GAME", 100, 0, 25, Color.GREEN, 400);
+        //Label lost = createLabel("YOU LOST THE GAME", 175, 0, 25, Color.YELLOW, 400);
+        won.setAlignment(Pos.CENTER);
+        //lost.setAlignment(Pos.CENTER);
+
+        Label winCredits = createLabel("Credits: " + player.getCredits(), 250, 50, 15, Color.GREEN, 200);
+        Label loseCredits = createLabel("Credits: " + player.getCredits(), 250, 350, 15, Color.RED, 200);
+
+        Button playAgain = createButton(225, 100, 150, 50, Color.GREEN, "PLAY AGAIN");
+        playAgain.setOnMouseEntered(e -> playAgain.setTextFill(Color.YELLOW));
+        playAgain.setOnMouseExited(e -> playAgain.setTextFill(Color.GREEN));
+
+        Button playAgainLost = createButton(225, 400, 150, 50, Color.RED, "PLAY AGAIN");
+        playAgainLost.setOnMouseEntered(e -> playAgainLost.setTextFill(Color.YELLOW));
+        playAgainLost.setOnMouseExited(e -> playAgainLost.setTextFill(Color.RED));
+
+        Group grp = new Group();
+
+        if (wonGame) {
+            grp.getChildren().addAll(goodBackground, won, winCredits, playAgain);
+        } else {
+            grp.getChildren().addAll(backBackground, loseCredits, playAgainLost);
+        }
+
+        playAgain.setOnAction(e -> {
+            player = new Player();
+            try {
+                start(window);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        playAgainLost.setOnAction(e -> {
+            player = new Player();
+            try {
+                start(window);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         });
 
         return new Scene(grp, 600, 600);
