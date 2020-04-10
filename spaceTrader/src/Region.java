@@ -16,7 +16,8 @@ public class Region {
         this(name, uniX, uniY, size, 1, "Democratic", 1);
     }
 
-    public Region(String name, int uniX, int uniY, int size, int techLevel, String government, int policePresence) {
+    public Region(String name, int uniX, int uniY, int size, int techLevel, String government,
+                int policePresence) {
         this.uniX = uniX;
         this.uniY = uniY;
         this.subX = uniX;
