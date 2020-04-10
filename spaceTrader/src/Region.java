@@ -10,13 +10,13 @@ public class Region {
     private String government;
     private int policePresence;
     private Market market;
+    private boolean winningRegion = false;
 
     public Region(String name, int uniX, int uniY, int size) {
         this(name, uniX, uniY, size, 1, "Democratic", 1);
     }
 
-    public Region(String name, int uniX, int uniY, int size, int techLevel, String government,
-            int policePresence) {
+    public Region(String name, int uniX, int uniY, int size, int techLevel, String government, int policePresence) {
         this.uniX = uniX;
         this.uniY = uniY;
         this.subX = uniX;
@@ -28,6 +28,13 @@ public class Region {
         this.policePresence = policePresence;
     }
 
+    public void makeSpecialMarket() {
+        winningRegion = true;
+    }
+
+    public boolean getIngredient() {
+        return winningRegion;
+    }
     public String getName() {
         return name;
     }
