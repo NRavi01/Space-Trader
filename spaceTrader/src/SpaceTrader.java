@@ -1326,7 +1326,9 @@ public class SpaceTrader extends Application {
             if (lastUpdateTime.get() > 0) {
                 final double elapsedSeconds = (timestamp - lastUpdateTime.get()) / 1_000_000_000.0;
                 Ship s1 = SpaceTrader.this.getPlayer().getShip();
-                s1.setSubY(s1.getSubY() + shipVelocity);
+                if (s1.getSubY() + shipVelocity < 550 && s1.getSubY() + shipVelocity >= 0) {
+                    s1.setSubY(s1.getSubY() + shipVelocity);
+                }
             }
             lastUpdateTime.set(timestamp);
         }
