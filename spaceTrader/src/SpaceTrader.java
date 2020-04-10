@@ -94,22 +94,27 @@ public class SpaceTrader extends Application {
         String government = governments[(int) (Math.random() * governments.length)];
         int policePresence = (int) (Math.random() * 3 + 1);
         int currRegionName = (int) (Math.random() * regionNumber);
-        currentSystem = new Region(names.get(currRegionName), (int) (Math.random() * 300),
-                (int) (Math.random() * 300), regionSize, techLevel, government, policePresence);
-        currentSystem.createMarket();
-        currentSystem.getMarket().populateMarket();
+        int winningIngredient = (int) (Math.random() * 10);
+        //System.out.println(winningIngredient);
+        if (winningIngredient == 0) {
+            currentSystem = new SpecialRegion(names.get(currRegionName), (int) (Math.random() * 300),
+                    (int) (Math.random() * 300), regionSize, techLevel, government, policePresence);
+            currentSystem.createMarket();
+            currentSystem.getMarket().populateMarket();
+        }
+        else {
+            currentSystem = new Region(names.get(currRegionName), (int) (Math.random() * 300),
+                    (int) (Math.random() * 300), regionSize, techLevel, government, policePresence);
+            currentSystem.createMarket();
+            currentSystem.getMarket().populateMarket();
+        }
 
         names.remove(currRegionName);
         visitedRegions.add(currentSystem);
 
         regions[0] = currentSystem;
 
-        int winningIngredient = (int) (Math.random() * 10);
-        //System.out.println(winningIngredient);
-        if (winningIngredient == 0) {
-            currentSystem.makeSpecialMarket();
-            System.out.println(currentSystem.getName());
-        }
+
 
 
         for (int i = 1; i < regions.length; i++) {
@@ -136,14 +141,19 @@ public class SpaceTrader extends Application {
                 }
             }
 
-            newSystem = new Region(names.get(sysName), x, y, regionSize2, techLevel2,
-                    government2, policePresence2);
-            newSystem.createMarket();
-            newSystem.getMarket().populateMarket();
             if (winningIngredient == i) {
-                newSystem.makeSpecialMarket();
+                newSystem = new SpecialRegion(names.get(sysName), x, y, regionSize2, techLevel2,
+                        government2, policePresence2);
+                newSystem.createMarket();
+                newSystem.getMarket().populateMarket();
                 System.out.println(newSystem.getName());
+            } else {
+                newSystem = new Region(names.get(sysName), x, y, regionSize2, techLevel2,
+                        government2, policePresence2);
+                newSystem.createMarket();
+                newSystem.getMarket().populateMarket();
             }
+
             regions[i] = newSystem;
             names.remove(sysName);
         }
@@ -1685,7 +1695,7 @@ public class SpaceTrader extends Application {
     private int getDifficultyChoice(ChoiceBox<String> choiceBox) {
         String level = choiceBox.getValue();
         if (level.equals("Easy")) {
-            value = 1000;
+            value = 10000;
             difficultyLevel = 1;
             setSkillPoints();
         } else if (level.equals("Medium")) {
@@ -2087,7 +2097,7 @@ public class SpaceTrader extends Application {
                 drug1, drug2, drug3, drugSlider, drugLabel,
                 tabLine, vertLine1, vertLine2, vertLine3, purchase, credits, backButton,
                 commandButton, sellButton, travelChartButton);
-        if (region.getIngredient()) {
+        if (region.getWin()) {
             grp.getChildren().addAll(win1, win3, winLabel, winSlider);
         }
         else {
@@ -2567,28 +2577,37 @@ public class SpaceTrader extends Application {
         won.setAlignment(Pos.CENTER);
         //lost.setAlignment(Pos.CENTER);
 
-        Label winCredits = createLabel("Credits: " + player.getCredits(), 250, 50, 15, Color.GREEN, 200);
-        Label loseCredits = createLabel("Credits: " + player.getCredits(), 250, 350, 15, Color.RED, 200);
+        Label winCredits = createLabel("Designers" , 250, 50, 20, Color.GREEN, 100);
+        winCredits.setStyle("-fx-underline: true");
+        Label winCredits2 = createLabel("Nishant Ravi + Bobby Bloomquist", 175, 110, 15, Color.PINK, 400);
+        Label winCredits3 = createLabel("Sharath Palathingal + Ashish Dsouza + Pranav Pusarla" , 125, 150, 15, Color.PINK, 400);
 
-        Button playAgain = createButton(225, 100, 150, 50, Color.GREEN, "PLAY AGAIN");
+        Label loseCredits = createLabel("Designers" , 250, 350, 20, Color.RED, 100);
+        loseCredits.setStyle("-fx-underline: true");
+        Label loseCredits2 = createLabel("Nishant Ravi + Bobby Bloomquist", 175, 400, 15, Color.RED, 400);
+        Label loseCredits3 = createLabel("Sharath Palathingal + Ashish Dsouza + Pranav Pusarla" , 125, 450, 15, Color.RED, 400);
+
+
+        Button playAgain = createButton(225, 200, 150, 50, Color.GREEN, "PLAY AGAIN");
         playAgain.setOnMouseEntered(e -> playAgain.setTextFill(Color.YELLOW));
         playAgain.setOnMouseExited(e -> playAgain.setTextFill(Color.GREEN));
 
-        Button playAgainLost = createButton(225, 400, 150, 50, Color.RED, "PLAY AGAIN");
+        Button playAgainLost = createButton(225, 500, 150, 50, Color.RED, "PLAY AGAIN");
         playAgainLost.setOnMouseEntered(e -> playAgainLost.setTextFill(Color.YELLOW));
         playAgainLost.setOnMouseExited(e -> playAgainLost.setTextFill(Color.RED));
 
         Group grp = new Group();
 
         if (wonGame) {
-            grp.getChildren().addAll(goodBackground, won, winCredits, playAgain);
+            grp.getChildren().addAll(goodBackground, won, winCredits, winCredits2, winCredits3, playAgain);
         } else {
-            grp.getChildren().addAll(backBackground, loseCredits, playAgainLost);
+            grp.getChildren().addAll(backBackground, loseCredits, loseCredits2, loseCredits3, playAgainLost);
         }
 
         playAgain.setOnAction(e -> {
             player = new Player();
             try {
+                wonGame = false;
                 start(window);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -2598,6 +2617,7 @@ public class SpaceTrader extends Application {
         playAgainLost.setOnAction(e -> {
             player = new Player();
             try {
+                wonGame = false;
                 start(window);
             } catch (Exception ex) {
                 ex.printStackTrace();
