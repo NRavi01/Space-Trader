@@ -157,6 +157,10 @@ public class Ship {
         return image;
     }
 
+    public void setImage(String im) {
+        image = im;
+    }
+
     public int getHealth() {
         return health;
     }

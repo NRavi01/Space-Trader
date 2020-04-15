@@ -100,12 +100,12 @@ public class SpaceTrader extends Application {
         int winningIngredient = (int) (Math.random() * 10);
         //System.out.println(winningIngredient);
         if (winningIngredient == 0) {
-            currentSystem = new SpecialRegion(names.get(currRegionName), (int) (Math.random() * 300),
-                    (int) (Math.random() * 300), regionSize, techLevel, government, policePresence);
+            currentSystem = new SpecialRegion(names.get(currRegionName),
+                    (int) (Math.random() * 300), (int) (Math.random() * 300), regionSize, techLevel,
+                    government, policePresence);
             currentSystem.createMarket();
             currentSystem.getMarket().populateMarket();
-        }
-        else {
+        } else {
             currentSystem = new Region(names.get(currRegionName), (int) (Math.random() * 300),
                     (int) (Math.random() * 300), regionSize, techLevel, government, policePresence);
             currentSystem.createMarket();
@@ -755,7 +755,8 @@ public class SpaceTrader extends Application {
         });
 
         Label shield = createLabel("Increase health: ", 0, 400, 20, Color.BLUE, 150);
-        Slider shieldSlider = createSlider(0, 100 - player.getShip().getHealth(), 0, 200, true, 1, 0);
+        Slider shieldSlider = createSlider(0, 100 - player.getShip().getHealth(), 0, 200,
+                true, 1, 0);
         shieldSlider.setLayoutX(150);
         shieldSlider.setLayoutY(410);
         shieldSlider.setBlockIncrement(1);
@@ -781,7 +782,8 @@ public class SpaceTrader extends Application {
         });
         addShield.setOnAction(e -> {
             int amountShieldAdded = (int) (shieldSlider.getValue());
-            int costAdded = (int) (amountShieldAdded * 20 * ((double) 1 / (double) points[2].getValue()));
+            int costAdded = (int) (amountShieldAdded * 20
+                    * ((double) 1 / (double) points[2].getValue()));
             if (points[2].getValue() == 0) {
                 costAdded = amountShieldAdded * 20;
             }
@@ -1137,7 +1139,8 @@ public class SpaceTrader extends Application {
         s2.setSpecialProduct(p);
 
         Label traderDemand = createLabel("The trader is selling " + p.getQuantity()
-                + " " + p.getName() + " for " + p.getPrice() + " each", 50, 300, 20, Color.RED, 500);
+                + " " + p.getName() + " for " + p.getPrice() + " each", 50, 300, 20,
+                Color.RED, 500);
         traderDemand.setAlignment(Pos.CENTER);
 
         Button buy = createButton(100, 450, 100, 50, Color.RED, "BUY");
@@ -1399,8 +1402,7 @@ public class SpaceTrader extends Application {
                     if (shots.get(i).getDirection() == 1) {
                         shotImage = createImage("spaceBullet.png", xc, yc, 50, 30);
                         shotImage.setRotate(180);
-                    }
-                    else {
+                    } else {
                         shotImage = createImage("spaceBulletGood.png", xc, yc, 50, 30);
                     }
                     shotImage.setRotate(Math.toDegrees(shots.get(i).getAngle()));
@@ -1511,8 +1513,10 @@ public class SpaceTrader extends Application {
                     }
                     if (shots.size() > i) {
                         if (shots.get(i).getDirection() == 0) {
-                            shots.get(i).setX((int) (shots.get(i).getX() + shots.get(i).getSpeedX()));
-                            shots.get(i).setY((int) (shots.get(i).getY() + shots.get(i).getSpeedY()));
+                            shots.get(i).setX((int) (shots.get(i).getX()
+                                    + shots.get(i).getSpeedX()));
+                            shots.get(i).setY((int) (shots.get(i).getY()
+                                    + shots.get(i).getSpeedY()));
                         } else {
                             shots.get(i).setX(shots.get(i).getX() - shots.get(i).getSpeed());
                         }
@@ -1535,8 +1539,7 @@ public class SpaceTrader extends Application {
                         shots.add(new Shot(xc, yc, speed, 1, power));
                         yc = s2.getSubY() - 10;
                         shots.add(new Shot(xc, yc, speed, 1, power));
-                    }
-                    else if (s2.getType().equals("Mosquito")){
+                    } else if (s2.getType().equals("Mosquito")) {
                         int xc = s2.getSubX() - s2.getSize();
                         int yc = s2.getSubY() - 10;
                         int speed = 40;
@@ -1544,8 +1547,7 @@ public class SpaceTrader extends Application {
                         shots.add(new Shot(xc, yc, speed, 1, power));
                         yc = s2.getSubY() + s2.getSize() - 10;
                         shots.add(new Shot(xc, yc, speed, 1, power));
-                    }
-                    else {
+                    } else {
                         int xc = s2.getSubX() - s2.getSize();
                         int yc = s2.getSubY() + s2.getSize() / 2 - 10;
                         int speed = 40;
@@ -2099,8 +2101,7 @@ public class SpaceTrader extends Application {
                 commandButton, sellButton, travelChartButton);
         if (region.getWin()) {
             grp.getChildren().addAll(win1, win3, winLabel, winSlider);
-        }
-        else {
+        } else {
             grp.getChildren().addAll(r1, r2, r3, robotSlider, robotLabel);
         }
 
@@ -2120,8 +2121,7 @@ public class SpaceTrader extends Application {
                     shootAnimation.stop();
                     window.setScene(makeEndCreditScene(window));
                 }
-            }
-            else {
+            } else {
                 int amountWaterAdded = (int) (waterSlider.getValue());
                 int amountFurAdded = (int) (furSlider.getValue());
                 System.out.println(amountFurAdded);
@@ -2133,7 +2133,8 @@ public class SpaceTrader extends Application {
                 int amountRobotAdded = (int) (robotSlider.getValue());
                 int amountWinAdded = (int) (winSlider.getValue());
                 int totalAdd = amountWaterAdded + amountFurAdded + amountOreAdded + amountFoodAdded
-                        + amountGameAdded + amountFireAdded + amountDrugAdded + amountRobotAdded + amountWinAdded;
+                        + amountGameAdded + amountFireAdded + amountDrugAdded + amountRobotAdded
+                        + amountWinAdded;
                 int currentCapacity = player.getShip().getCurrentCapacity();
                 if (player.getCredits() > removeQuote(purchase.getText())
                         && currentCapacity >= totalAdd) {
@@ -2577,15 +2578,19 @@ public class SpaceTrader extends Application {
         won.setAlignment(Pos.CENTER);
         //lost.setAlignment(Pos.CENTER);
 
-        Label winCredits = createLabel("Designers" , 250, 50, 20, Color.GREEN, 100);
+        Label winCredits = createLabel("Designers", 250, 50, 20, Color.GREEN, 100);
         winCredits.setStyle("-fx-underline: true");
-        Label winCredits2 = createLabel("Nishant Ravi + Bobby Bloomquist", 175, 110, 15, Color.PINK, 400);
-        Label winCredits3 = createLabel("Sharath Palathingal + Ashish Dsouza + Pranav Pusarla" , 125, 150, 15, Color.PINK, 400);
+        Label winCredits2 = createLabel("Nishant Ravi + Bobby Bloomquist", 175, 110, 15,
+                Color.PINK, 400);
+        Label winCredits3 = createLabel("Sharath Palathingal + Ashish Dsouza + Pranav Pusarla",
+                125, 150, 15, Color.PINK, 400);
 
-        Label loseCredits = createLabel("Designers" , 250, 350, 20, Color.RED, 100);
+        Label loseCredits = createLabel("Designers", 250, 350, 20, Color.RED, 100);
         loseCredits.setStyle("-fx-underline: true");
-        Label loseCredits2 = createLabel("Nishant Ravi + Bobby Bloomquist", 175, 400, 15, Color.RED, 400);
-        Label loseCredits3 = createLabel("Sharath Palathingal + Ashish Dsouza + Pranav Pusarla" , 125, 450, 15, Color.RED, 400);
+        Label loseCredits2 = createLabel("Nishant Ravi + Bobby Bloomquist", 175, 400, 15,
+                Color.RED, 400);
+        Label loseCredits3 = createLabel("Sharath Palathingal + Ashish Dsouza + Pranav Pusarla",
+                125, 450, 15, Color.RED, 400);
 
 
         Button playAgain = createButton(225, 200, 150, 50, Color.GREEN, "PLAY AGAIN");
@@ -2599,9 +2604,11 @@ public class SpaceTrader extends Application {
         Group grp = new Group();
 
         if (wonGame) {
-            grp.getChildren().addAll(goodBackground, won, winCredits, winCredits2, winCredits3, playAgain);
+            grp.getChildren().addAll(goodBackground, won, winCredits, winCredits2,
+                    winCredits3, playAgain);
         } else {
-            grp.getChildren().addAll(backBackground, loseCredits, loseCredits2, loseCredits3, playAgainLost);
+            grp.getChildren().addAll(backBackground, loseCredits, loseCredits2,
+                    loseCredits3, playAgainLost);
         }
 
         playAgain.setOnAction(e -> {
